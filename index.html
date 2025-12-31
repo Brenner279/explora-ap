@@ -90,11 +90,11 @@
     const db = {
       'vitoria': {
         nome: 'Vitória do Jari',
-        somAmbiente: './assets/audios/audio01.mp3', 
+        somAmbiente: '', 
         conteudos: {
-          'historia': { t: 'HISTÓRIA DO JARI', txt: 'Cidade nascida do grande Projeto Jari (celulose) na decada de 60.', cor: '#5D4037', narra: 'https://cdn.pixabay.com/download/audio/2022/03/24/audio_c8c8a73467.mp3' },
-          'culinaria': { t: 'PEIXES E FARINHA', txt: 'Destaque para o Filhote, Tucunare e a producao de farinha local.', cor: '#E64A19', narra: '' },
-          'mapa':      { t: 'LOCALIZAÇÃO', txt: 'Extremo sul do Amapa, na divisa com o Para, as margens do rio.', cor: '#388E3C', narra: '' }
+          'historia': { t: 'HISTÓRIA DO JARI', txt: 'Cidade nascida do grande Projeto Jari (celulose) na decada de 60.', imagemFundo:'./assets/imagens/imagem01.png', narra: './assets/audios/audio01.mp3' },
+          'culinaria': { t: 'PEIXES E FARINHA', txt: 'Destaque para o Filhote, Tucunare e a producao de farinha local.', cor: '#E64A19', video:'./assets/videos/video01.mp4' },
+          'mapa':      { t: 'LOCALIZAÇÃO', txt: 'Extremo sul do Amapa, na divisa com o Para, as margens do rio.', cor: '#388E3C', modelo3d: './assets/3d/obj3d01.glb', escalaModelo: '0.5 0.5 0.5'}
         }
       },
       'macapa': {
@@ -260,4 +260,5 @@
 </body>
 
 </html>
+
 

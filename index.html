@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Explora AP - TCC</title>
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  
+  <style>
+    /* --- DESIGN GERAL --- */
+    body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+    /* VÍDEO DA CÂMERA (Fundo do modo RA) */
+    #webcam {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      object-fit: cover; z-index: 1; display: none;
+    }
+
+    /* TELAS DE MENU */
+    .tela {
+      position: absolute; width: 100%; height: 100%;
+      background: linear-gradient(135deg, #004d40, #00695c, #80cbc4); /* Tons de Verde (Amazônia/Amapá) */
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 999; transition: opacity 0.5s;
+    }
+    .escondido { display: none !important; }
+
+    /* IDENTIDADE VISUAL EXPLORA AP */
+    h1 { 
+      font-size: 2.8rem; color: white; margin-bottom: 5px; 
+      text-shadow: 0 3px 6px rgba(0,0,0,0.4); 
+      text-transform: uppercase; letter-spacing: 2px;
+      font-weight: 800;
+    }
+    .subtitulo { 
+      color: #b2dfdb; margin-bottom: 40px; text-align: center; 
+      max-width: 80%; font-size: 1rem; font-style: italic;
+    }
+    h2 { color: #FFD700; margin-bottom: 20px; text-shadow: 1px 1px 2px black; }
+    p { color: #eee; margin-bottom: 30px; text-align: center; max-width: 80%; }
+
+    /* BOTÕES */
+    .btn {
+      width: 280px; padding: 18px; margin: 10px;
+      border: none; border-radius: 50px;
+      font-size: 1.1rem; font-weight: bold; cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      transition: transform 0.2s;
+    }
+    .btn:hover { transform: scale(1.05); }
+
+    /* Cores dos Botões */
+    .btn-ra { background-color: #fff; color: #004d40; }
+    .btn-vr { background-color: #222; color: #FFD700; border: 2px solid #FFD700; }
+    .btn-cidade { background: linear-gradient(90deg, #FFD700 0%, #FFA000 100%); color: #3e2723; }
+    
+    /* Grid de botões pequenos (Categorias) */
+    .grid-botoes { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .btn-cat {
+      width: 130px; padding: 15px; border-radius: 15px; font-size: 0.95rem;
+      background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.4);
+      cursor: pointer;
+    }
+    .btn-cat:hover { background: rgba(255,255,255,0.3); }
+
+    /* Botão Voltar Fixo */
+    .btn-voltar-fixo {
+      position: absolute; top: 20px; left: 20px;
+      background: rgba(0,0,0,0.6); color: white;
+      padding: 10px 20px; border-radius: 20px;
+      text-decoration: none; font-weight: bold; font-size: 0.9rem;
+      z-index: 500; cursor: pointer;
+    }
+
+    /* RODAPÉ DO TCC */
+    footer {
+      position: absolute; bottom: 10px; width: 100%; text-align: center;
+      color: rgba(255,255,255,0.5); font-size: 0.8rem;
+    }
+  </style>
+
+  <script>
+    /* --- LÓGICA (JAVASCRIPT) --- */
+    
+    let cidadeAtual = '';
+    let audioFundo = null;
+    let audioNarracao = null;
+
+    // BANCO DE DADOS (MANTIDO)
+    const db = {
+      'vitoria': {
+        nome: 'Vitória do Jari',
+        somAmbiente: 'https://github.com/Brenner279/explora-ap/blob/main/assets/audios/audio01.mp3', 
+        conteudos: {
+          'historia': { t: 'HISTÓRIA DO JARI', txt: 'Cidade nascida do grande Projeto Jari (celulose) na decada de 60.', cor: '#5D4037', narra: 'https://cdn.pixabay.com/download/audio/2022/03/24/audio_c8c8a73467.mp3' },
+          'culinaria': { t: 'PEIXES E FARINHA', txt: 'Destaque para o Filhote, Tucunare e a producao de farinha local.', cor: '#E64A19', narra: '' },
+          'mapa':      { t: 'LOCALIZAÇÃO', txt: 'Extremo sul do Amapa, na divisa com o Para, as margens do rio.', cor: '#388E3C', narra: '' }
+        }
+      },
+      'macapa': {
+        nome: 'Macapá',
+        somAmbiente: 'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3', 
+        conteudos: {
+          'historia': { t: 'FORTALEZA DE S. JOSÉ', txt: 'Maior fortificacao portuguesa fora da Europa (1782).', cor: '#455A64', narra: '' },
+          'culinaria': { t: 'CAMARÃO NO BAFO', txt: 'Prato tipico servido com acai e farinha d\'agua.', cor: '#FF6F00', narra: '' },
+          'mapa':      { t: 'LINHA DO EQUADOR', txt: 'Unica capital cortada pela linha do Equador (Latitude Zero).', cor: '#0288D1', narra: '' }
+        }
+      },
+      'mazagao': {
+        nome: 'Mazagão',
+        somAmbiente: 'https://cdn.pixabay.com/download/audio/2022/10/28/audio_9855325565.mp3', 
+        conteudos: {
+          'historia': { t: 'ORIGEM MARROQUINA', txt: 'Familias vieram de Mazagao (Africa) para povoar a Amazonia.', cor: '#3E2723', narra: '' },
+          'culinaria': { t: 'GENGIBIRRA', txt: 'Bebida de gengibre e aguardente, tipica das festas.', cor: '#D84315', narra: '' },
+          'mapa':      { t: 'MAZAGÃO VELHO', txt: 'Distrito historico e cultural a 30km da capital.', cor: '#689F38', narra: '' }
+        }
+      }
+    };
+
+    function tocarFundo(url) {
+      pararTudo();
+      if(url) {
+        audioFundo = new Audio(url);
+        audioFundo.volume = 0.3; audioFundo.loop = true;
+        audioFundo.play().catch(e => console.log("Interaja para tocar"));
+      }
+    }
+
+    function tocarVoz(url) {
+      if(audioNarracao) audioNarracao.pause();
+      if(url) {
+        audioNarracao = new Audio(url);
+        audioNarracao.volume = 1.0; audioNarracao.play();
+        if(audioFundo) audioFundo.volume = 0.1;
+        audioNarracao.onended = function() { if(audioFundo) audioFundo.volume = 0.3; };
+      }
+    }
+
+    function pararTudo() {
+      if(audioFundo) { audioFundo.pause(); audioFundo = null; }
+      if(audioNarracao) { audioNarracao.pause(); audioNarracao = null; }
+    }
+
+    function irPara(telaId) {
+      document.querySelectorAll('.tela').forEach(t => t.classList.add('escondido'));
+      if(telaId !== 'cenario') document.getElementById(telaId).classList.remove('escondido');
+    }
+
+    function iniciarRA() {
+      iniciarWebcam();
+      document.getElementById('ceu').setAttribute('visible', 'false');
+      document.getElementById('vr-titulo').setAttribute('value', 'MODO AR ATIVADO');
+      document.getElementById('vr-texto').setAttribute('value', 'Aponte o dispositivo para o marcador');
+      irPara('cenario');
+      document.getElementById('btn-voltar-ra').classList.remove('escondido');
+      document.getElementById('btn-voltar-vr').classList.add('escondido');
+    }
+
+    function sairRA() {
+      pararWebcam(); pararTudo();
+      document.getElementById('btn-voltar-ra').classList.add('escondido');
+      irPara('tela-inicio');
+    }
+
+    function iniciarFluxoVR() { irPara('tela-cidades'); }
+
+    function selecionarCidade(chave) {
+      cidadeAtual = chave;
+      document.getElementById('nome-cidade-escolhida').innerText = db[chave].nome;
+      tocarFundo(db[chave].somAmbiente);
+      irPara('tela-categorias');
+    }
+
+    function verConteudoVR(tipo) {
+      const dados = db[cidadeAtual].conteudos[tipo];
+      pararWebcam();
+      document.getElementById('webcam').style.display = 'none';
+      document.getElementById('ceu').setAttribute('visible', 'true');
+      document.getElementById('vr-titulo').setAttribute('value', dados.t);
+      document.getElementById('vr-texto').setAttribute('value', dados.txt);
+      document.getElementById('ceu').setAttribute('color', dados.cor);
+      tocarVoz(dados.narra);
+      irPara('cenario');
+      document.getElementById('btn-voltar-vr').classList.remove('escondido');
+      document.getElementById('btn-voltar-ra').classList.add('escondido');
+    }
+
+    function voltarParaCategorias() {
+      if(audioNarracao) audioNarracao.pause();
+      if(audioFundo) audioFundo.volume = 0.3;
+      document.getElementById('btn-voltar-vr').classList.add('escondido');
+      irPara('tela-categorias');
+    }
+
+    function iniciarWebcam() {
+      const video = document.getElementById('webcam');
+      video.style.display = 'block';
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(s => { video.srcObject = s; video.play(); });
+      }
+    }
+    function pararWebcam() {
+      const video = document.getElementById('webcam');
+      video.style.display = 'none';
+      if(video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
+    }
+  </script>
+</head>
+<body>
+
+  <video id="webcam" autoplay playsinline muted></video>
+
+  <div id="tela-inicio" class="tela">
+    <h1>Explora AP</h1>
+    <p class="subtitulo">"O Uso de Tecnologias Imersivas (RA e RV) na Valorização do Patrimônio Cultural e Geográfico do Amapá"</p>
+    
+    <button class="btn btn-ra" onclick="iniciarRA()">📷 Realidade Aumentada</button>
+    <button class="btn btn-vr" onclick="iniciarFluxoVR()">🥽 Realidade Virtual</button>
+
+    <footer>
+      TCC - Inovação e Tecnologias Educacionais • 2025
+    </footer>
+  </div>
+
+  <div id="tela-cidades" class="tela escondido">
+    <h2>Destinos</h2>
+    <button class="btn btn-cidade" onclick="selecionarCidade('vitoria')">📍 Vitória do Jari</button>
+    <button class="btn btn-cidade" onclick="selecionarCidade('macapa')">📍 Macapá</button>
+    <button class="btn btn-cidade" onclick="selecionarCidade('mazagao')">📍 Mazagão</button>
+    <button class="btn" style="background:transparent; border:1px solid #aaa; color:#ddd; margin-top:30px" onclick="pararTudo(); irPara('tela-inicio')">⬅ Voltar ao Início</button>
+  </div>
+
+  <div id="tela-categorias" class="tela escondido">
+    <h2 id="nome-cidade-escolhida">Cidade</h2>
+    <p>O que deseja explorar?</p>
+    <div class="grid-botoes">
+      <button class="btn-cat" onclick="verConteudoVR('historia')">📜 História</button>
+      <button class="btn-cat" onclick="verConteudoVR('culinaria')">🥘 Culinária</button>
+      <button class="btn-cat" onclick="verConteudoVR('mapa')">🗺️ Mapa</button>
+    </div>
+    <button class="btn" style="background:transparent; border:1px solid #aaa; color:#ddd; margin-top:30px" onclick="pararTudo(); irPara('tela-cidades')">⬅ Trocar Cidade</button>
+  </div>
+
+  <div id="btn-voltar-vr" class="btn-voltar-fixo escondido" onclick="voltarParaCategorias()">⬅ Voltar ao Menu</div>
+  <div id="btn-voltar-ra" class="btn-voltar-fixo escondido" onclick="sairRA()">⬅ Sair da RA</div>
+
+  <a-scene>
+    <a-sky id="ceu" color="#333"></a-sky>
+    <a-entity position="0 1.6 -3">
+      <a-plane color="#111" opacity="0.95" width="3.5" height="2" border="color: white; width: 0.05"></a-plane>
+      <a-text id="vr-titulo" value="TITULO" align="center" position="0 0.6 0.1" color="#FFD700" width="6"></a-text>
+      <a-text id="vr-texto" value="Texto..." align="center" position="0 0 0.1" width="3.2" wrap-count="32"></a-text>
+      <a-circle position="1.4 -0.7 0.1" radius="0.15" color="white" animation="property: scale; to: 1.2 1.2 1.2; dir: alternate; loop: true; dur: 800">
+          <a-text value="♫" color="black" align="center" width="8" position="0 0 0.1"></a-text>
+      </a-circle>
+    </a-entity>
+    <a-camera><a-cursor color="yellow"></a-cursor></a-camera>
+  </a-scene>
+
+</body>
+</html>

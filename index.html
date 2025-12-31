@@ -173,36 +173,62 @@
 
     function verConteudoVR(tipo) {
       const dados = db[cidadeAtual].conteudos[tipo];
+      
+      // VR Setup (Câmera e Webcam)
       pararWebcam();
       document.getElementById('webcam').style.display = 'none';
       document.getElementById('ceu').setAttribute('visible', 'true');
+      
+      // 1. TEXTOS E COR
       document.getElementById('vr-titulo').setAttribute('value', dados.t);
       document.getElementById('vr-texto').setAttribute('value', dados.txt);
       document.getElementById('ceu').setAttribute('color', dados.cor);
+      
+      // 2. VÍDEO (Lógica Inteligente)
+      const videoEl = document.getElementById('video-player');
+      const telaVideo = document.getElementById('vr-video');
+
+      if (dados.video && dados.video !== '') {
+        // Se tem vídeo: Mostra a tela, carrega o vídeo e dá Play
+        videoEl.setAttribute('src', dados.video);
+        telaVideo.setAttribute('visible', 'true');
+        videoEl.play();
+        // Esconde o texto para não ficar bagunçado em cima do vídeo
+        document.getElementById('vr-texto').setAttribute('visible', 'false');
+      } else {
+        // Se NÃO tem vídeo: Esconde a tela, para o player
+        videoEl.pause();
+        telaVideo.setAttribute('visible', 'false');
+        // Mostra o texto de volta
+        document.getElementById('vr-texto').setAttribute('visible', 'true');
+      }
+
+      // 3. OBJETO 3D
+      const entidadeModelo = document.getElementById('vr-modelo');
+      // Acessa o a-gltf-model que está dentro da entidade
+      const modeloGltf = entidadeModelo.querySelector('a-gltf-model');
+
+      if (dados.modelo3d && dados.modelo3d !== '') {
+        modeloGltf.setAttribute('src', dados.modelo3d);
+        entidadeModelo.setAttribute('visible', 'true');
+        
+        // Aplica escala se existir (pois modelos vêm em tamanhos variados)
+        if(dados.escalaModelo) modeloGltf.setAttribute('scale', dados.escalaModelo);
+        else modeloGltf.setAttribute('scale', '1 1 1');
+        
+      } else {
+        entidadeModelo.setAttribute('visible', 'false');
+      }
+
+      // 4. ÁUDIO (Narração)
       tocarVoz(dados.narra);
+
+      // Troca de Tela
       irPara('cenario');
       document.getElementById('btn-voltar-vr').classList.remove('escondido');
       document.getElementById('btn-voltar-ra').classList.add('escondido');
     }
 
-    function voltarParaCategorias() {
-      if(audioNarracao) audioNarracao.pause();
-      if(audioFundo) audioFundo.volume = 0.3;
-      document.getElementById('btn-voltar-vr').classList.add('escondido');
-      irPara('tela-categorias');
-    }
-
-    function iniciarWebcam() {
-      const video = document.getElementById('webcam');
-      video.style.display = 'block';
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(s => { video.srcObject = s; video.play(); });
-      }
-    }
-    function pararWebcam() {
-      const video = document.getElementById('webcam');
-      video.style.display = 'none';
-      if(video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
     }
   </script>
 </head>
@@ -246,19 +272,35 @@
 
   <a-scene>
     <a-sky id="ceu" color="#333"></a-sky>
+
+    <a-assets>
+       <video id="video-player" loop="true" crossorigin="anonymous" playsinline webkit-playsinline></video>
+    </a-assets>
+
     <a-entity position="0 1.6 -3">
-      <a-plane color="#111" opacity="0.95" width="3.5" height="2" border="color: white; width: 0.05"></a-plane>
-      <a-text id="vr-titulo" value="TITULO" align="center" position="0 0.6 0.1" color="#FFD700" width="6"></a-text>
-      <a-text id="vr-texto" value="Texto..." align="center" position="0 0 0.1" width="3.2" wrap-count="32"></a-text>
-      <a-circle position="1.4 -0.7 0.1" radius="0.15" color="white" animation="property: scale; to: 1.2 1.2 1.2; dir: alternate; loop: true; dur: 800">
-          <a-text value="♫" color="black" align="center" width="8" position="0 0 0.1"></a-text>
-      </a-circle>
+      
+      <a-plane color="#222" opacity="0.95" width="3.5" height="2"></a-plane>
+      
+      <a-text id="vr-titulo" value="TITULO" align="center" position="0 0.8 0.1" color="#FFD700" width="6"></a-text>
+      <a-text id="vr-texto" value="Texto..." align="center" position="0 -0.8 0.1" width="3.2"></a-text>
+
+      <a-video id="vr-video" src="#video-player" width="3" height="1.6" position="0 0 0.05" visible="false"></a-video>
+
+      <a-entity id="vr-modelo" 
+                position="2.5 0 0" 
+                rotation="0 -30 0"
+                animation="property: rotation; to: 0 330 0; loop: true; dur: 10000">
+          <a-gltf-model src=""></a-gltf-model>
+      </a-entity>
+
     </a-entity>
+
     <a-camera><a-cursor color="yellow"></a-cursor></a-camera>
   </a-scene>
 
 </body>
 
 </html>
+
 
 

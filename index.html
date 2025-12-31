@@ -107,22 +107,22 @@
         somAmbiente: '', 
         conteudos: {
           'historia': { 
-             t: 'HISTÓRIA (Imagem)', 
+             t: 'VIDEO (video)', 
              txt: 'Visualizando sua imagem de fundo.', 
-             imagemFundo: './assets/imagens/imagem01.png', 
-             video: '', modelo3d: '', cor: '#5D4037', narra: '' 
+             imagemFundo: '', 
+             video: './assets/videos/vitoria.mp4', modelo3d: '', cor: '#5D4037', narra: '' 
           },
           'culinaria': { 
-             t: 'CULINÁRIA (Vídeo)', 
+             t: 'HINO (Audio)', 
              txt: 'Visualizando seu vídeo no painel.', 
-             video: './assets/videos/video01.mp4', 
-             imagemFundo: '', modelo3d: '', cor: '#E64A19', narra: ''
+             video: '', 
+             imagemFundo: '', modelo3d: '', cor: '#E64A19', narra: 'assets/audios/vitoria.mp3'
           },
           'mapa': { 
-             t: 'MAPA (3D)', 
+             t: 'Bandeira (imagem)', 
              txt: 'Visualizando seu objeto 3D.', 
-             modelo3d: './assets/3d/obj3d01.glb', 
-             imagemFundo: '', video: '', cor: '#388E3C', narra: ''
+             modelo3d: '', 
+             imagemFundo: '', video: '', cor: '#388E3C', narra: '', imagem: 'assets/imagens/vitoria.png'
           }
         }
       },
@@ -467,9 +467,9 @@
     <h2 id="nome-cidade-escolhida">Cidade</h2>
     <p>O que deseja explorar?</p>
     <div class="grid-botoes">
-      <button class="btn-cat" onclick="verConteudoVR('historia')">📜 História</button>
-      <button class="btn-cat" onclick="verConteudoVR('culinaria')">🥘 Culinária</button>
-      <button class="btn-cat" onclick="verConteudoVR('mapa')">🗺️ Mapa</button>
+      <button class="btn-cat" onclick="verConteudoVR('video')">📜 video</button>
+      <button class="btn-cat" onclick="verConteudoVR('hino')">🥘 hino</button>
+      <button class="btn-cat" onclick="verConteudoVR('bandeira')">🗺️ bandeira</button>
     </div>
     <button class="btn" style="background:transparent; border:1px solid #aaa; color:#ddd; margin-top:30px" onclick="pararTudo(); irPara('tela-cidades')">⬅ Trocar Cidade</button>
   </div>
@@ -504,3 +504,4 @@
 
 </body>
 </html>
+

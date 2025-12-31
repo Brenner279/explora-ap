@@ -9,12 +9,10 @@
     /* --- DESIGN GERAL --- */
     body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
-
     #webcam {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       object-fit: cover; z-index: 1; display: none;
     }
-
 
     .tela {
       position: absolute; width: 100%; height: 100%;
@@ -25,32 +23,54 @@
     }
     .escondido { display: none !important; }
 
+    /* Estilo para permitir rolagem na lista de cidades */
+    .conteudo-scroll {
+      width: 100%;
+      height: 70%;
+      overflow-y: auto; /* Permite rolar para baixo */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
     h1 { 
-      font-size: 2.8rem; color: white; margin-bottom: 5px; 
+      font-size: 2.5rem; color: white; margin-bottom: 5px; 
       text-shadow: 0 3px 6px rgba(0,0,0,0.4); 
       text-transform: uppercase; letter-spacing: 2px; font-weight: 800; text-align: center;
     }
     .subtitulo { 
-      color: #b2dfdb; margin-bottom: 40px; text-align: center; 
-      max-width: 80%; font-size: 1rem; font-style: italic;
+      color: #b2dfdb; margin-bottom: 20px; text-align: center; 
+      max-width: 90%; font-size: 0.9rem; font-style: italic;
     }
     h2 { color: #FFD700; margin-bottom: 20px; text-shadow: 1px 1px 2px black; }
     p { color: #eee; margin-bottom: 30px; text-align: center; max-width: 80%; }
 
-
+    /* BOTÕES GERAIS */
     .btn {
-      width: 280px; padding: 18px; margin: 10px;
+      width: 280px; padding: 15px; margin: 8px;
       border: none; border-radius: 50px;
-      font-size: 1.1rem; font-weight: bold; cursor: pointer;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      font-size: 1rem; font-weight: bold; cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
       transition: transform 0.2s;
     }
-    .btn:hover { transform: scale(1.05); }
+    .btn:hover { transform: scale(1.02); }
     .btn-ra { background-color: #fff; color: #004d40; }
     .btn-vr { background-color: #222; color: #FFD700; border: 2px solid #FFD700; }
-    .btn-cidade { background: linear-gradient(90deg, #FFD700 0%, #FFA000 100%); color: #3e2723; }
     
+    /* BOTÕES DAS CIDADES (GRID) */
+    .grid-cidades {
+      display: grid;
+      grid-template-columns: 1fr 1fr; /* Duas colunas */
+      gap: 10px;
+      padding-bottom: 50px; /* Espaço para rolar até o fim */
+    }
+    .btn-cidade { 
+      width: 140px; padding: 12px; margin: 0;
+      background: linear-gradient(90deg, #FFD700 0%, #FFA000 100%); 
+      color: #3e2723; font-size: 0.85rem; border-radius: 10px;
+    }
+    
+    /* BOTÕES DE CATEGORIA */
     .grid-botoes { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
     .btn-cat {
       width: 130px; padding: 15px; border-radius: 15px; font-size: 0.95rem;
@@ -65,13 +85,11 @@
       z-index: 500; cursor: pointer;
     }
 
-
     footer {
-      position: absolute; bottom: 10px; width: 100%; text-align: center;
-      color: rgba(255,255,255,0.5); font-size: 0.8rem;
+      position: absolute; bottom: 5px; width: 100%; text-align: center;
+      color: rgba(255,255,255,0.4); font-size: 0.7rem;
     }
   </style>
-
 
   <script>
     /* --- LÓGICA DO SISTEMA --- */
@@ -80,191 +98,202 @@
     let audioFundo = null;
     let audioNarracao = null;
 
-
-    // --- CONFIGURAÇÃO ESPECÍFICA PARA VITÓRIA DO JARI ---
+    // --- BANCO DE DADOS COMPLETO (16 MUNICÍPIOS) ---
     const db = {
-      'Amapá': {
-        nome: 'Amapá',
+      
+      // 1. VITÓRIA DO JARI (CONFIGURADO COM SEUS ARQUIVOS)
+      'vitoria': {
+        nome: 'Vitória do Jari',
         somAmbiente: '', 
         conteudos: {
-          
-          // 1. HISTÓRIA -> CARREGA A IMAGEM
           'historia': { 
-             t: 'HISTÓRIA', 
-             txt: 'Visualizando Imagem de Fundo.', 
-             
-             imagemFundo: './assets/imagens/imagem01.png', // Seu Asset aqui
-             
-             video: '', 
-             modelo3d: '', 
-             cor: '#5D4037', narra: '' 
+             t: 'HISTÓRIA (Imagem)', 
+             txt: 'Visualizando sua imagem de fundo.', 
+             imagemFundo: './assets/imagens/imagem01.png', 
+             video: '', modelo3d: '', cor: '#5D4037', narra: '' 
           },
-
-
-          // 2. CULINÁRIA -> CARREGA O VÍDEO
           'culinaria': { 
-             t: 'CULINÁRIA', 
-             txt: 'Assista ao vídeo no painel.', 
-             
-             video: './assets/videos/video01.mp4', // Seu Asset aqui
-             
+             t: 'CULINÁRIA (Vídeo)', 
+             txt: 'Visualizando seu vídeo no painel.', 
+             video: './assets/videos/video01.mp4', 
              imagemFundo: '', modelo3d: '', cor: '#E64A19', narra: ''
           },
-
-
-          // 3. MAPA -> CARREGA O OBJETO 3D
           'mapa': { 
-             t: 'MAPA 3D', 
-             txt: 'Objeto 3D flutuando à direita.', 
-             
-             modelo3d: './assets/3d/obj3d01.glb', // Seu Asset aqui
-             
+             t: 'MAPA (3D)', 
+             txt: 'Visualizando seu objeto 3D.', 
+             modelo3d: './assets/3d/obj3d01.glb', 
              imagemFundo: '', video: '', cor: '#388E3C', narra: ''
           }
         }
       },
 
+      // 2. AMAPÁ
+      'amapa': {
+        nome: 'Amapá (Município)',
+        somAmbiente: '', 
+        conteudos: {
+          'historia': { t: 'HISTÓRIA', txt: 'Conteúdo em breve.', cor: '#455A64', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'culinaria': { t: 'CULINÁRIA', txt: 'Conteúdo em breve.', cor: '#FF6F00', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'mapa':      { t: 'MAPA', txt: 'Conteúdo em breve.', cor: '#0288D1', narra: '', video: '', modelo3d: '', imagemFundo: '' }
+        }
+      },
 
-      // CIDADES VAZIAS (Apenas para não quebrar o menu)
-      'Calçoene': {
+      // 3. CALÇOENE
+      'calcoene': {
         nome: 'Calçoene',
         somAmbiente: '', 
         conteudos: {
-          'historia': { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#455A64', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'culinaria': { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#FF6F00', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'mapa':      { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#0288D1', narra: '', video: '', modelo3d: '', imagemFundo: '' }
+          'historia': { t: 'HISTÓRIA', txt: 'Conteúdo em breve.', cor: '#455A64', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'culinaria': { t: 'CULINÁRIA', txt: 'Conteúdo em breve.', cor: '#FF6F00', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'mapa':      { t: 'MAPA', txt: 'Conteúdo em breve.', cor: '#0288D1', narra: '', video: '', modelo3d: '', imagemFundo: '' }
         }
       },
-        'Cutias': {
+
+      // 4. CUTIAS
+      'cutias': {
         nome: 'Cutias',
         somAmbiente: '', 
         conteudos: {
-          'historia': { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#455A64', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'culinaria': { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#FF6F00', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'mapa':      { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#0288D1', narra: '', video: '', modelo3d: '', imagemFundo: '' }
+          'historia': { t: 'HISTÓRIA', txt: 'Conteúdo em breve.', cor: '#455A64', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'culinaria': { t: 'CULINÁRIA', txt: 'Conteúdo em breve.', cor: '#FF6F00', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'mapa':      { t: 'MAPA', txt: 'Conteúdo em breve.', cor: '#0288D1', narra: '', video: '', modelo3d: '', imagemFundo: '' }
         }
       },
-       'Ferreira Gomes': {
+
+      // 5. FERREIRA GOMES
+      'ferreira': {
         nome: 'Ferreira Gomes',
         somAmbiente: '', 
         conteudos: {
-          'historia': { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#455A64', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'culinaria': { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#FF6F00', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'mapa':      { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#0288D1', narra: '', video: '', modelo3d: '', imagemFundo: '' }
+          'historia': { t: 'HISTÓRIA', txt: 'Conteúdo em breve.', cor: '#455A64', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'culinaria': { t: 'CULINÁRIA', txt: 'Conteúdo em breve.', cor: '#FF6F00', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'mapa':      { t: 'MAPA', txt: 'Conteúdo em breve.', cor: '#0288D1', narra: '', video: '', modelo3d: '', imagemFundo: '' }
         }
       },
-        'Itaubal': {
+
+      // 6. ITAUBAL
+      'itaubal': {
         nome: 'Itaubal',
         somAmbiente: '', 
         conteudos: {
-          'historia': { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#455A64', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'culinaria': { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#FF6F00', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'mapa':      { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#0288D1', narra: '', video: '', modelo3d: '', imagemFundo: '' }
+          'historia': { t: 'HISTÓRIA', txt: 'Conteúdo em breve.', cor: '#455A64', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'culinaria': { t: 'CULINÁRIA', txt: 'Conteúdo em breve.', cor: '#FF6F00', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'mapa':      { t: 'MAPA', txt: 'Conteúdo em breve.', cor: '#0288D1', narra: '', video: '', modelo3d: '', imagemFundo: '' }
         }
       },
-        'Laranjal do Jari': {
+
+      // 7. LARANJAL DO JARI
+      'laranjal': {
         nome: 'Laranjal do Jari',
         somAmbiente: '', 
         conteudos: {
-          'historia': { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#455A64', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'culinaria': { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#FF6F00', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'mapa':      { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#0288D1', narra: '', video: '', modelo3d: '', imagemFundo: '' }
+          'historia': { t: 'HISTÓRIA', txt: 'Conteúdo em breve.', cor: '#455A64', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'culinaria': { t: 'CULINÁRIA', txt: 'Conteúdo em breve.', cor: '#FF6F00', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'mapa':      { t: 'MAPA', txt: 'Conteúdo em breve.', cor: '#0288D1', narra: '', video: '', modelo3d: '', imagemFundo: '' }
         }
       },
-        'Macapá (Capital)': {
-        nome: 'Macapá (Capital)',
+
+      // 8. MACAPÁ
+      'macapa': {
+        nome: 'Macapá',
         somAmbiente: '', 
         conteudos: {
-          'historia': { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#455A64', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'culinaria': { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#FF6F00', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'mapa':      { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#0288D1', narra: '', video: '', modelo3d: '', imagemFundo: '' }
+          'historia': { t: 'HISTÓRIA', txt: 'Conteúdo em breve.', cor: '#455A64', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'culinaria': { t: 'CULINÁRIA', txt: 'Conteúdo em breve.', cor: '#FF6F00', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'mapa':      { t: 'MAPA', txt: 'Conteúdo em breve.', cor: '#0288D1', narra: '', video: '', modelo3d: '', imagemFundo: '' }
         }
       },
-        'Mazagão': {
+
+      // 9. MAZAGÃO
+      'mazagao': {
         nome: 'Mazagão',
         somAmbiente: '', 
         conteudos: {
-          'historia': { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#455A64', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'culinaria': { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#FF6F00', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'mapa':      { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#0288D1', narra: '', video: '', modelo3d: '', imagemFundo: '' }
+          'historia': { t: 'HISTÓRIA', txt: 'Conteúdo em breve.', cor: '#3E2723', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'culinaria': { t: 'CULINÁRIA', txt: 'Conteúdo em breve.', cor: '#D84315', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'mapa':      { t: 'MAPA', txt: 'Conteúdo em breve.', cor: '#689F38', narra: '', video: '', modelo3d: '', imagemFundo: '' }
         }
       },
-        'Oiapoque': {
+
+      // 10. OIAPOQUE
+      'oiapoque': {
         nome: 'Oiapoque',
         somAmbiente: '', 
         conteudos: {
-          'historia': { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#455A64', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'culinaria': { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#FF6F00', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'mapa':      { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#0288D1', narra: '', video: '', modelo3d: '', imagemFundo: '' }
+          'historia': { t: 'HISTÓRIA', txt: 'Conteúdo em breve.', cor: '#455A64', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'culinaria': { t: 'CULINÁRIA', txt: 'Conteúdo em breve.', cor: '#FF6F00', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'mapa':      { t: 'MAPA', txt: 'Conteúdo em breve.', cor: '#0288D1', narra: '', video: '', modelo3d: '', imagemFundo: '' }
         }
       },
-        'Pedra Branca do Amapari': {
-        nome: 'Pedra Branca do Amapari',
+
+      // 11. PEDRA BRANCA DO AMAPARI
+      'pedra': {
+        nome: 'Pedra Branca',
         somAmbiente: '', 
         conteudos: {
-          'historia': { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#455A64', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'culinaria': { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#FF6F00', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'mapa':      { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#0288D1', narra: '', video: '', modelo3d: '', imagemFundo: '' }
+          'historia': { t: 'HISTÓRIA', txt: 'Conteúdo em breve.', cor: '#455A64', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'culinaria': { t: 'CULINÁRIA', txt: 'Conteúdo em breve.', cor: '#FF6F00', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'mapa':      { t: 'MAPA', txt: 'Conteúdo em breve.', cor: '#0288D1', narra: '', video: '', modelo3d: '', imagemFundo: '' }
         }
       },
-        'Porto Grande': {
+
+      // 12. PORTO GRANDE
+      'porto': {
         nome: 'Porto Grande',
         somAmbiente: '', 
         conteudos: {
-          'historia': { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#455A64', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'culinaria': { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#FF6F00', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'mapa':      { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#0288D1', narra: '', video: '', modelo3d: '', imagemFundo: '' }
+          'historia': { t: 'HISTÓRIA', txt: 'Conteúdo em breve.', cor: '#455A64', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'culinaria': { t: 'CULINÁRIA', txt: 'Conteúdo em breve.', cor: '#FF6F00', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'mapa':      { t: 'MAPA', txt: 'Conteúdo em breve.', cor: '#0288D1', narra: '', video: '', modelo3d: '', imagemFundo: '' }
         }
       },
-        'Pracuúba': {
+
+      // 13. PRACUÚBA
+      'pracuuba': {
         nome: 'Pracuúba',
         somAmbiente: '', 
         conteudos: {
-          'historia': { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#455A64', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'culinaria': { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#FF6F00', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'mapa':      { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#0288D1', narra: '', video: '', modelo3d: '', imagemFundo: '' }
+          'historia': { t: 'HISTÓRIA', txt: 'Conteúdo em breve.', cor: '#455A64', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'culinaria': { t: 'CULINÁRIA', txt: 'Conteúdo em breve.', cor: '#FF6F00', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'mapa':      { t: 'MAPA', txt: 'Conteúdo em breve.', cor: '#0288D1', narra: '', video: '', modelo3d: '', imagemFundo: '' }
         }
       },
-        'Santana': {
+
+      // 14. SANTANA
+      'santana': {
         nome: 'Santana',
         somAmbiente: '', 
         conteudos: {
-          'historia': { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#455A64', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'culinaria': { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#FF6F00', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'mapa':      { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#0288D1', narra: '', video: '', modelo3d: '', imagemFundo: '' }
+          'historia': { t: 'HISTÓRIA', txt: 'Conteúdo em breve.', cor: '#455A64', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'culinaria': { t: 'CULINÁRIA', txt: 'Conteúdo em breve.', cor: '#FF6F00', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'mapa':      { t: 'MAPA', txt: 'Conteúdo em breve.', cor: '#0288D1', narra: '', video: '', modelo3d: '', imagemFundo: '' }
         }
       },
-        'Serra do Navio': {
+
+      // 15. SERRA DO NAVIO
+      'serra': {
         nome: 'Serra do Navio',
         somAmbiente: '', 
         conteudos: {
-          'historia': { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#455A64', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'culinaria': { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#FF6F00', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'mapa':      { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#0288D1', narra: '', video: '', modelo3d: '', imagemFundo: '' }
+          'historia': { t: 'HISTÓRIA', txt: 'Conteúdo em breve.', cor: '#455A64', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'culinaria': { t: 'CULINÁRIA', txt: 'Conteúdo em breve.', cor: '#FF6F00', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'mapa':      { t: 'MAPA', txt: 'Conteúdo em breve.', cor: '#0288D1', narra: '', video: '', modelo3d: '', imagemFundo: '' }
         }
       },
-        'Tartarugalzinho': {
+
+      // 16. TARTARUGALZINHO
+      'tartarugal': {
         nome: 'Tartarugalzinho',
         somAmbiente: '', 
         conteudos: {
-          'historia': { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#455A64', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'culinaria': { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#FF6F00', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'mapa':      { t: 'MACAPÁ', txt: 'Sem assets configurados.', cor: '#0288D1', narra: '', video: '', modelo3d: '', imagemFundo: '' }
-        }
-      },
-      'Vitória do Jari': {
-        nome: 'Vitória do Jari',
-        somAmbiente: '', 
-        conteudos: {
-          'historia': { t: 'MAZAGÃO', txt: 'Sem assets configurados.', cor: '#3E2723', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'culinaria': { t: 'MAZAGÃO', txt: 'Sem assets configurados.', cor: '#D84315', narra: '', video: '', modelo3d: '', imagemFundo: '' },
-          'mapa':      { t: 'MAZAGÃO', txt: 'Sem assets configurados.', cor: '#689F38', narra: '', video: '', modelo3d: '', imagemFundo: '' }
+          'historia': { t: 'HISTÓRIA', txt: 'Conteúdo em breve.', cor: '#455A64', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'culinaria': { t: 'CULINÁRIA', txt: 'Conteúdo em breve.', cor: '#FF6F00', narra: '', video: '', modelo3d: '', imagemFundo: '' },
+          'mapa':      { t: 'MAPA', txt: 'Conteúdo em breve.', cor: '#0288D1', narra: '', video: '', modelo3d: '', imagemFundo: '' }
         }
       }
     };
 
-
-    // --- FUNÇÕES (Lógica Mantida) ---
+    // --- FUNÇÕES ---
     function tocarFundo(url) {
       pararTudo();
       if(url && url.length > 5) {
@@ -273,7 +302,6 @@
         audioFundo.play().catch(e => console.log("Aguardando interação"));
       }
     }
-
 
     function tocarVoz(url) {
       if(audioNarracao) audioNarracao.pause();
@@ -285,18 +313,15 @@
       }
     }
 
-
     function pararTudo() {
       if(audioFundo) { audioFundo.pause(); audioFundo = null; }
       if(audioNarracao) { audioNarracao.pause(); audioNarracao = null; }
     }
 
-
     function irPara(telaId) {
       document.querySelectorAll('.tela').forEach(t => t.classList.add('escondido'));
       if(telaId !== 'cenario') document.getElementById(telaId).classList.remove('escondido');
     }
-
 
     function iniciarRA() {
       iniciarWebcam();
@@ -310,16 +335,13 @@
       document.getElementById('btn-voltar-vr').classList.add('escondido');
     }
 
-
     function sairRA() {
       pararWebcam(); pararTudo();
       document.getElementById('btn-voltar-ra').classList.add('escondido');
       irPara('tela-inicio');
     }
 
-
     function iniciarFluxoVR() { irPara('tela-cidades'); }
-
 
     function selecionarCidade(chave) {
       cidadeAtual = chave;
@@ -327,7 +349,6 @@
       tocarFundo(db[chave].somAmbiente);
       irPara('tela-categorias');
     }
-
 
     function verConteudoVR(tipo) {
       const dados = db[cidadeAtual].conteudos[tipo];
@@ -339,7 +360,7 @@
       document.getElementById('vr-titulo').setAttribute('value', dados.t);
       document.getElementById('vr-texto').setAttribute('value', dados.txt);
       
-      // 1. Lógica da IMAGEM
+      // Lógica da IMAGEM
       if(dados.imagemFundo && dados.imagemFundo.length > 5) {
          document.getElementById('ceu').setAttribute('src', dados.imagemFundo);
          document.getElementById('ceu').removeAttribute('color');
@@ -348,12 +369,9 @@
          document.getElementById('ceu').removeAttribute('src');
       }
 
-
-      // 2. Lógica do VÍDEO
+      // Lógica do VÍDEO
       const videoEl = document.getElementById('video-player');
       const telaVideo = document.getElementById('vr-video');
-
-
       if (dados.video && dados.video.length > 5) {
         videoEl.setAttribute('src', dados.video);
         telaVideo.setAttribute('visible', 'true');
@@ -365,29 +383,23 @@
         document.getElementById('vr-texto').setAttribute('visible', 'true');
       }
 
-
-      // 3. Lógica do 3D
+      // Lógica do 3D
       const entidadeModelo = document.getElementById('vr-modelo');
       const modeloGltf = entidadeModelo.querySelector('a-gltf-model');
-
-
       if (dados.modelo3d && dados.modelo3d.length > 5) {
         modeloGltf.setAttribute('src', dados.modelo3d);
         entidadeModelo.setAttribute('visible', 'true');
-        modeloGltf.setAttribute('scale', '0.5 0.5 0.5'); // Escala padrão ajustada
+        modeloGltf.setAttribute('scale', '0.5 0.5 0.5'); 
       } else {
         entidadeModelo.setAttribute('visible', 'false');
       }
 
-
       tocarVoz(dados.narra);
-
 
       irPara('cenario');
       document.getElementById('btn-voltar-vr').classList.remove('escondido');
       document.getElementById('btn-voltar-ra').classList.add('escondido');
     }
-
 
     function voltarParaCategorias() {
       if(audioNarracao) audioNarracao.pause();
@@ -397,7 +409,6 @@
       document.getElementById('btn-voltar-vr').classList.add('escondido');
       irPara('tela-categorias');
     }
-
 
     function iniciarWebcam() {
       const video = document.getElementById('webcam');
@@ -415,9 +426,7 @@
 </head>
 <body>
 
-
   <video id="webcam" autoplay playsinline muted></video>
-
 
   <div id="tela-inicio" class="tela">
     <h1>Explora AP</h1>
@@ -427,40 +436,53 @@
     <footer>TCC - Inovação e Tecnologias Educacionais • 2025</footer>
   </div>
 
-
   <div id="tela-cidades" class="tela escondido">
     <h2>Destinos</h2>
-    <button class="btn btn-cidade" onclick="selecionarCidade('vitoria')">📍 Vitória do Jari (TESTE)</button>
-    <button class="btn btn-cidade" onclick="selecionarCidade('macapa')">📍 Macapá</button>
-    <button class="btn btn-cidade" onclick="selecionarCidade('mazagao')">📍 Mazagão</button>
-    <button class="btn" style="background:transparent; border:1px solid #aaa; color:#ddd; margin-top:30px" onclick="pararTudo(); irPara('tela-inicio')">⬅ Voltar ao Início</button>
-  </div>
+    
+    <div class="conteudo-scroll">
+      <div class="grid-cidades">
+        <button class="btn btn-cidade" onclick="selecionarCidade('vitoria')">Vitória do Jari</button>
+        <button class="btn btn-cidade" onclick="selecionarCidade('amapa')">Amapá</button>
+        <button class="btn btn-cidade" onclick="selecionarCidade('calcoene')">Calçoene</button>
+        <button class="btn btn-cidade" onclick="selecionarCidade('cutias')">Cutias</button>
+        <button class="btn btn-cidade" onclick="selecionarCidade('ferreira')">Ferreira Gomes</button>
+        <button class="btn btn-cidade" onclick="selecionarCidade('itaubal')">Itaubal</button>
+        <button class="btn btn-cidade" onclick="selecionarCidade('laranjal')">Laranjal do Jari</button>
+        <button class="btn btn-cidade" onclick="selecionarCidade('macapa')">Macapá</button>
+        <button class="btn btn-cidade" onclick="selecionarCidade('mazagao')">Mazagão</button>
+        <button class="btn btn-cidade" onclick="selecionarCidade('oiapoque')">Oiapoque</button>
+        <button class="btn btn-cidade" onclick="selecionarCidade('pedra')">Pedra Branca</button>
+        <button class="btn btn-cidade" onclick="selecionarCidade('porto')">Porto Grande</button>
+        <button class="btn btn-cidade" onclick="selecionarCidade('pracuuba')">Pracuúba</button>
+        <button class="btn btn-cidade" onclick="selecionarCidade('santana')">Santana</button>
+        <button class="btn btn-cidade" onclick="selecionarCidade('serra')">Serra do Navio</button>
+        <button class="btn btn-cidade" onclick="selecionarCidade('tartarugal')">Tartarugalzinho</button>
+      </div>
+    </div>
 
+    <button class="btn" style="background:transparent; border:1px solid #aaa; color:#ddd; margin-top:15px" onclick="pararTudo(); irPara('tela-inicio')">⬅ Voltar</button>
+  </div>
 
   <div id="tela-categorias" class="tela escondido">
     <h2 id="nome-cidade-escolhida">Cidade</h2>
     <p>O que deseja explorar?</p>
     <div class="grid-botoes">
-      <button class="btn-cat" onclick="verConteudoVR('historia')">📜 História (Imagem)</button>
-      <button class="btn-cat" onclick="verConteudoVR('culinaria')">🥘 Culinária (Vídeo)</button>
-      <button class="btn-cat" onclick="verConteudoVR('mapa')">🗺️ Mapa (3D)</button>
+      <button class="btn-cat" onclick="verConteudoVR('historia')">📜 História</button>
+      <button class="btn-cat" onclick="verConteudoVR('culinaria')">🥘 Culinária</button>
+      <button class="btn-cat" onclick="verConteudoVR('mapa')">🗺️ Mapa</button>
     </div>
     <button class="btn" style="background:transparent; border:1px solid #aaa; color:#ddd; margin-top:30px" onclick="pararTudo(); irPara('tela-cidades')">⬅ Trocar Cidade</button>
   </div>
 
-
   <div id="btn-voltar-vr" class="btn-voltar-fixo escondido" onclick="voltarParaCategorias()">⬅ Voltar ao Menu</div>
   <div id="btn-voltar-ra" class="btn-voltar-fixo escondido" onclick="sairRA()">⬅ Sair da RA</div>
-
 
   <a-scene>
     <a-sky id="ceu" color="#333"></a-sky>
 
-
     <a-assets>
        <video id="video-player" loop="true" crossorigin="anonymous" playsinline webkit-playsinline></video>
     </a-assets>
-
 
     <a-entity position="0 1.6 -3">
       <a-plane color="#111" opacity="0.95" width="3.5" height="2" border="color: white; width: 0.05"></a-plane>
@@ -482,4 +504,3 @@
 
 </body>
 </html>
-

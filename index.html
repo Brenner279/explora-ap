@@ -2,16 +2,16 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Explora AP - Sistema Completo</title>
+  <title>Explora AP - TCC (RA com Superfície)</title>
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
   
   <style>
-    /* --- ESTILOS 2D (TELA INICIAL) --- */
+    /* DESIGN DA TELA DE ENTRADA */
     body { margin: 0; overflow: hidden; font-family: 'Segoe UI', sans-serif; background-color: #000; }
     
     #webcam {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      object-fit: cover; z-index: 1; display: none; /* Começa escondida */
+      object-fit: cover; z-index: 1; display: none;
     }
 
     .tela-entrada {
@@ -23,6 +23,17 @@
     
     .escondido { display: none !important; }
 
+    /* MENSAGEM DE INSTRUÇÃO RA */
+    #aviso-ra {
+      position: absolute; bottom: 10%; left: 0; width: 100%;
+      text-align: center; pointer-events: none; z-index: 9999;
+      display: none;
+    }
+    .aviso-texto {
+      background: rgba(0,0,0,0.7); color: #FFD700; padding: 10px 20px;
+      border-radius: 30px; font-size: 1.2rem; font-weight: bold;
+    }
+
     h1 { color: white; font-size: 2.5rem; margin-bottom: 5px; text-align: center; text-transform: uppercase; }
     p { color: #b2dfdb; margin-bottom: 30px; font-style: italic; }
 
@@ -31,7 +42,6 @@
       font-size: 1.1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
       transition: transform 0.2s;
     }
-    .btn-menu:active { transform: scale(0.95); }
     .btn-ra { background: #fff; color: #004d40; }
     .btn-vr { background: #222; color: #FFD700; border: 2px solid #FFD700; }
   </style>
@@ -40,6 +50,7 @@
     /* --- LÓGICA DO SISTEMA --- */
     let cidadeAtual = '';
     let audioNarracao = null;
+    let mapaPosicionado = false;
 
     // BANCO DE DADOS
     const db = {
@@ -51,7 +62,6 @@
           'mapa': { t: 'BANDEIRA', txt: 'Visualizando bandeira.', video: '', tipo: 'imagem', imagemPainel: './assets/imagens/vitoria.png', narra: '' }
         }
       },
-      // Exemplo para testes (Preencher depois)
       'macapa': { nome: 'Macapa', conteudos: {} }, 'amapa': { nome: 'Amapa', conteudos: {} },
       'oiapoque': { nome: 'Oiapoque', conteudos: {} }, 'mazagao': { nome: 'Mazagao', conteudos: {} },
       'santana': { nome: 'Santana', conteudos: {} }, 'laranjal': { nome: 'Laranjal', conteudos: {} },
@@ -62,65 +72,108 @@
       'tartarugal': { nome: 'Tartarugalzinho', conteudos: {} }
     };
 
+    // --- COMPONENTE DE RA (HIT-TEST) ---
+    // Este componente controla o "anel" que detecta o chão
+    AFRAME.registerComponent('ar-controlador', {
+      init: function () {
+        this.reticulo = document.getElementById('ar-reticulo');
+        this.mapaContainer = document.getElementById('menu-mapa-ra');
+        this.aviso = document.getElementById('txt-aviso');
+        
+        // Quando tocar na tela (select)
+        this.el.sceneEl.addEventListener('click', () => {
+          if (this.reticulo.getAttribute('visible') === true && !mapaPosicionado) {
+            // Posiciona o mapa onde o retículo está
+            this.mapaContainer.setAttribute('position', this.reticulo.getAttribute('position'));
+            this.mapaContainer.setAttribute('rotation', this.reticulo.getAttribute('rotation'));
+            this.mapaContainer.setAttribute('visible', 'true');
+            
+            // Trava o mapa e esconde o retículo
+            mapaPosicionado = true;
+            this.reticulo.setAttribute('visible', 'false');
+            this.aviso.innerText = "Toque nas cidades para explorar";
+            
+            // Remove o listener de hit-test para economizar bateria
+            this.el.removeAttribute('ar-hit-test'); 
+          }
+        });
+      }
+    });
+
     // --- FUNÇÕES DE NAVEGAÇÃO ---
 
     function iniciarRA() {
-      // 1. Liga a Webcam (Fundo)
-      const video = document.getElementById('webcam');
-      video.style.display = 'block';
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(s => { video.srcObject = s; video.play(); });
-      }
-
-      // 2. Ajusta a Cena 3D para RA
-      document.querySelector('.tela-entrada').classList.add('escondido');
-      document.getElementById('ceu').setAttribute('visible', 'false'); // Sem céu (transparente)
+      // Entra no modo WebXR AR
+      const cena = document.querySelector('a-scene');
       
-      // 3. Mostra o MAPA (Menu RA) e esconde o GRID (Menu VR)
-      document.getElementById('menu-mapa-ra').setAttribute('visible', 'true');
-      document.getElementById('menu-grade-vr').setAttribute('visible', 'false');
+      document.querySelector('.tela-entrada').classList.add('escondido');
+      document.getElementById('aviso-ra').style.display = 'block';
+      
+      // Ativa o Hit Test na cena
+      cena.setAttribute('webxr', 'optionalFeatures: hit-test, dom-overlay; overlayElement: #aviso-ra');
+      cena.enterVR(); 
 
-      // Feedback de áudio (hack para ativar som no browser)
-      tocarSomMudo();
+      // Configura visibilidade
+      document.getElementById('ceu').setAttribute('visible', 'false');
+      document.getElementById('menu-grade-vr').setAttribute('visible', 'false');
+      
+      // O mapa começa invisível até o usuário clicar no chão
+      document.getElementById('menu-mapa-ra').setAttribute('visible', 'false');
+      mapaPosicionado = false;
     }
 
     function iniciarVR() {
-      // 1. Desliga Webcam (Fundo Preto/Céu)
-      pararWebcam();
-
-      // 2. Ajusta a Cena 3D para VR
+      // Modo VR clássico
       document.querySelector('.tela-entrada').classList.add('escondido');
-      document.getElementById('ceu').setAttribute('visible', 'true'); // Com céu
-
-      // 3. Mostra o GRID (Menu VR) e esconde o MAPA (Menu RA)
+      document.getElementById('ceu').setAttribute('visible', 'true');
       document.getElementById('menu-grade-vr').setAttribute('visible', 'true');
       document.getElementById('menu-mapa-ra').setAttribute('visible', 'false');
-
-      tocarSomMudo();
+      
+      // Desativa o retículo de RA se estiver visível
+      document.getElementById('ar-reticulo').setAttribute('visible', 'false');
     }
 
     function selecionarCidade(chave) {
+      if(!db[chave]) return;
       cidadeAtual = chave;
       let nome = db[chave].nome || chave;
       document.getElementById('titulo-cat').setAttribute('value', nome.toUpperCase());
 
-      // Esconde menus de seleção, mostra categorias
-      document.getElementById('menu-mapa-ra').setAttribute('visible', 'false');
-      document.getElementById('menu-grade-vr').setAttribute('visible', 'false');
+      // Se estiver em RA, esconde o mapa e mostra o painel flutuando no mesmo lugar
+      if (document.querySelector('a-scene').is('ar-mode')) {
+         document.getElementById('menu-mapa-ra').setAttribute('visible', 'false');
+         
+         // Move o menu de categorias para onde o mapa estava
+         const posMapa = document.getElementById('menu-mapa-ra').getAttribute('position');
+         const rotMapa = document.getElementById('menu-mapa-ra').getAttribute('rotation');
+         
+         const menuCat = document.getElementById('menu-categorias');
+         menuCat.setAttribute('position', `${posMapa.x} ${posMapa.y + 0.5} ${posMapa.z}`);
+         menuCat.setAttribute('rotation', rotMapa); // Mantém rotação alinhada
+         // Força "olhar" para o usuário se necessário, mas usar a rotação do chão é melhor pra estabilidade
+      } else {
+         // Lógica VR normal
+         document.getElementById('menu-grade-vr').setAttribute('visible', 'false');
+      }
+      
       document.getElementById('menu-categorias').setAttribute('visible', 'true');
     }
 
     function verConteudo(tipo) {
-      if (!db[cidadeAtual]) return;
-      const dados = (db[cidadeAtual].conteudos && db[cidadeAtual].conteudos[tipo]) 
+      const dados = (db[cidadeAtual] && db[cidadeAtual].conteudos && db[cidadeAtual].conteudos[tipo]) 
                     ? db[cidadeAtual].conteudos[tipo] 
                     : { t: 'EM BREVE', txt: 'Conteudo em desenvolvimento.', tipo: 'texto' };
 
-      // Vai para o painel final
       document.getElementById('menu-categorias').setAttribute('visible', 'false');
-      document.getElementById('painel-conteudo').setAttribute('visible', 'true');
+      
+      // Posiciona o painel final no mesmo lugar do menu anterior
+      const menuCat = document.getElementById('menu-categorias');
+      const painel = document.getElementById('painel-conteudo');
+      painel.setAttribute('position', menuCat.getAttribute('position'));
+      painel.setAttribute('rotation', menuCat.getAttribute('rotation'));
+      painel.setAttribute('visible', 'true');
 
-      // Preenche textos
+      // Preenche dados
       document.getElementById('vr-titulo').setAttribute('value', dados.t);
       document.getElementById('vr-texto').setAttribute('value', dados.txt);
       
@@ -131,7 +184,6 @@
       const imgPainel = document.getElementById('vr-imagem');
       const controles = document.getElementById('controles-media');
 
-      // LÓGICA DE EXIBIÇÃO
       if (dados.tipo === 'video' && dados.video) {
         videoEl.setAttribute('src', dados.video);
         telaVideo.setAttribute('visible', 'true');
@@ -152,7 +204,7 @@
       }
     }
 
-    // --- CONTROLES DE MÍDIA ---
+    // --- CONTROLES MÍDIA ---
     function togglePlay() {
       const videoEl = document.getElementById('video-player');
       if (videoEl && videoEl.getAttribute('src')) {
@@ -190,48 +242,33 @@
         document.getElementById('painel-conteudo').setAttribute('visible', 'false');
         document.getElementById('menu-categorias').setAttribute('visible', 'true');
       } else {
-        // Volta para o menu correto dependendo se a webcam está ligada ou não
-        const webcamLigada = document.getElementById('webcam').style.display === 'block';
         document.getElementById('menu-categorias').setAttribute('visible', 'false');
         
-        if(webcamLigada) {
+        // Se estiver em AR, volta para o mapa AR
+        if (document.querySelector('a-scene').is('ar-mode')) {
            document.getElementById('menu-mapa-ra').setAttribute('visible', 'true');
         } else {
            document.getElementById('menu-grade-vr').setAttribute('visible', 'true');
         }
       }
     }
-
-    function pararWebcam() {
-      const video = document.getElementById('webcam');
-      video.style.display = 'none';
-      if(video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
-    }
-
-    function tocarSomMudo() { const a = new Audio(); a.play().catch(()=>{}); }
-
-    // Componente para efeito visual no mapa
-    AFRAME.registerComponent('hover-mapa', {
-      init: function () {
-        var el = this.el;
-        el.addEventListener('mouseenter', function () { el.setAttribute('material', 'opacity', '0.5'); });
-        el.addEventListener('mouseleave', function () { el.setAttribute('material', 'opacity', '0.2'); });
-      }
-    });
   </script>
 </head>
 <body>
 
-  <video id="webcam" autoplay playsinline muted></video>
+  <div id="aviso-ra">
+    <span id="txt-aviso" class="aviso-texto">Mova o celular para detectar o chão...</span>
+  </div>
 
   <div class="tela-entrada">
     <h1>Explora AP</h1>
     <p>Escolha o modo de exploração:</p>
-    <button class="btn-menu btn-ra" onclick="iniciarRA()">📷 Realidade Aumentada<br><span style="font-size:0.8rem">(Mapa na sua frente)</span></button>
-    <button class="btn-menu btn-vr" onclick="iniciarVR()">🥽 Realidade Virtual<br><span style="font-size:0.8rem">(Ambiente Imersivo)</span></button>
+    <button class="btn-menu btn-ra" onclick="iniciarRA()">📷 Iniciar RA<br><span style="font-size:0.8rem">(Detectar Chão)</span></button>
+    <button class="btn-menu btn-vr" onclick="iniciarVR()">🥽 Iniciar VR<br><span style="font-size:0.8rem">(Mundo Virtual)</span></button>
   </div>
 
-  <a-scene>
+  <a-scene ar-hit-test="target: #ar-reticulo; type: map" ar-controlador cursor="rayOrigin: mouse" raycaster="objects: .interativo">
+    
     <a-sky id="ceu" color="#202020"></a-sky>
 
     <a-assets>
@@ -246,17 +283,18 @@
                animation__leave="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"></a-mixin>
     </a-assets>
 
-    <a-entity id="menu-mapa-ra" visible="false" position="0 1.6 -3">
-      <a-text value="MAPA INTERATIVO" align="center" position="0 2.2 0" width="6" color="#FFD700" style="font-weight:bold"></a-text>
-      <a-text value="(Olhe para o municipio)" align="center" position="0 1.9 0" width="3"></a-text>
+    <a-entity id="ar-reticulo" geometry="primitive: ring; radiusInner: 0.2; radiusOuter: 0.3" 
+              material="color: #FFD700; shader: flat" rotation="-90 0 0" visible="false"></a-entity>
 
-      <a-image src="#img-mapa" width="4" height="4" position="0 0 0" opacity="0.9"></a-image>
+    <a-entity id="menu-mapa-ra" visible="false">
+      
+      <a-image src="#img-mapa" width="4" height="4" position="0 0 0" rotation="-90 0 0" opacity="0.9"></a-image>
 
-      <a-entity position="0 1.5 0.1" geometry="primitive: circle; radius: 0.3" material="color: yellow; opacity: 0.2" class="interativo" onclick="selecionarCidade('oiapoque')" hover-mapa></a-entity>
+      <a-entity position="0 0 -1.5" rotation="-90 0 0" geometry="primitive: circle; radius: 0.3" material="color: yellow; opacity: 0.3" class="interativo" onclick="selecionarCidade('oiapoque')"></a-entity>
       
-      <a-entity position="0.8 -0.5 0.1" geometry="primitive: circle; radius: 0.3" material="color: yellow; opacity: 0.2" class="interativo" onclick="selecionarCidade('macapa')" hover-mapa></a-entity>
+      <a-entity position="0.8 0 0.5" rotation="-90 0 0" geometry="primitive: circle; radius: 0.3" material="color: yellow; opacity: 0.3" class="interativo" onclick="selecionarCidade('macapa')"></a-entity>
       
-      <a-entity position="-0.5 -1.5 0.1" geometry="primitive: circle; radius: 0.3" material="color: yellow; opacity: 0.2" class="interativo" onclick="selecionarCidade('vitoria')" hover-mapa></a-entity>
+      <a-entity position="-0.5 0 1.5" rotation="-90 0 0" geometry="primitive: circle; radius: 0.3" material="color: yellow; opacity: 0.3" class="interativo" onclick="selecionarCidade('vitoria')"></a-entity>
 
       </a-entity>
 
@@ -267,22 +305,7 @@
       <a-entity mixin="btn-cidade" position="-0.55 1.2 0" text="value: Macapa" class="interativo" onclick="selecionarCidade('macapa')"></a-entity>
       <a-entity mixin="btn-cidade" position="0.55 1.2 0" text="value: Santana" class="interativo" onclick="selecionarCidade('santana')"></a-entity>
       <a-entity mixin="btn-cidade" position="1.6 1.2 0" text="value: Mazagao" class="interativo" onclick="selecionarCidade('mazagao')"></a-entity>
-
-      <a-entity mixin="btn-cidade" position="-1.6 0.7 0" text="value: Oiapoque" class="interativo" onclick="selecionarCidade('oiapoque')"></a-entity>
-      <a-entity mixin="btn-cidade" position="-0.55 0.7 0" text="value: Laranjal" class="interativo" onclick="selecionarCidade('laranjal')"></a-entity>
-      <a-entity mixin="btn-cidade" position="0.55 0.7 0" text="value: Amapa" class="interativo" onclick="selecionarCidade('amapa')"></a-entity>
-      <a-entity mixin="btn-cidade" position="1.6 0.7 0" text="value: Calcoene" class="interativo" onclick="selecionarCidade('calcoene')"></a-entity>
-
-      <a-entity mixin="btn-cidade" position="-1.6 0.2 0" text="value: Tartarugalzinho" class="interativo" onclick="selecionarCidade('tartarugal')"></a-entity>
-      <a-entity mixin="btn-cidade" position="-0.55 0.2 0" text="value: Porto Grande" class="interativo" onclick="selecionarCidade('porto')"></a-entity>
-      <a-entity mixin="btn-cidade" position="0.55 0.2 0" text="value: Ferreira Gomes" class="interativo" onclick="selecionarCidade('ferreira')"></a-entity>
-      <a-entity mixin="btn-cidade" position="1.6 0.2 0" text="value: Cutias" class="interativo" onclick="selecionarCidade('cutias')"></a-entity>
-
-      <a-entity mixin="btn-cidade" position="-1.6 -0.3 0" text="value: Itaubal" class="interativo" onclick="selecionarCidade('itaubal')"></a-entity>
-      <a-entity mixin="btn-cidade" position="-0.55 -0.3 0" text="value: Pedra Branca" class="interativo" onclick="selecionarCidade('pedra')"></a-entity>
-      <a-entity mixin="btn-cidade" position="0.55 -0.3 0" text="value: Pracuuba" class="interativo" onclick="selecionarCidade('pracuuba')"></a-entity>
-      <a-entity mixin="btn-cidade" position="1.6 -0.3 0" text="value: Serra do Navio" class="interativo" onclick="selecionarCidade('serra')"></a-entity>
-    </a-entity>
+      </a-entity>
 
     <a-entity id="menu-categorias" visible="false" position="0 1.6 -3">
       <a-text id="titulo-cat" value="CIDADE" align="center" position="0 1.5 0" color="#FFD700" width="7"></a-text>
@@ -321,15 +344,6 @@
                 class="interativo" onclick="voltarMenu('conteudo')"></a-entity>
     </a-entity>
 
-    <a-camera>
-      <a-cursor fuse="true" fuse-timeout="1500" color="yellow" scale="1.5 1.5 1.5" raycaster="objects: .interativo"
-        animation__click="property: scale; startEvents: click; from: 0.1 0.1 0.1; to: 1.5 1.5 1.5; dur: 150"
-        animation__fusing="property: scale; startEvents: fusing; from: 1.5 1.5 1.5; to: 0.1 0.1 0.1; dur: 1500"
-        animation__mouseleave="property: scale; startEvents: mouseleave; to: 1.5 1.5 1.5; dur: 500">
-      </a-cursor>
-    </a-camera>
-
   </a-scene>
 </body>
-  </html>
-  
+</html>

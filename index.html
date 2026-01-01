@@ -23,92 +23,107 @@
     }
     .escondido { display: none !important; }
 
-    /* Estilo para permitir rolagem na lista de cidades */
-    .conteudo-scroll {
-      width: 100%; height: 70%; overflow-y: auto; display: flex; flex-direction: column; align-items: center;
+    h1 { 
+      font-size: 2.8rem; color: white; margin-bottom: 5px; 
+      text-shadow: 0 3px 6px rgba(0,0,0,0.4); 
+      text-transform: uppercase; letter-spacing: 2px; font-weight: 800; text-align: center;
     }
-
-    h1 { font-size: 2.5rem; color: white; margin-bottom: 5px; text-shadow: 0 3px 6px rgba(0,0,0,0.4); text-transform: uppercase; letter-spacing: 2px; font-weight: 800; text-align: center; }
-    .subtitulo { color: #b2dfdb; margin-bottom: 20px; text-align: center; max-width: 90%; font-size: 0.9rem; font-style: italic; }
+    .subtitulo { 
+      color: #b2dfdb; margin-bottom: 40px; text-align: center; 
+      max-width: 80%; font-size: 1rem; font-style: italic;
+    }
     h2 { color: #FFD700; margin-bottom: 20px; text-shadow: 1px 1px 2px black; }
     p { color: #eee; margin-bottom: 30px; text-align: center; max-width: 80%; }
 
-    .btn { width: 280px; padding: 15px; margin: 8px; border: none; border-radius: 50px; font-size: 1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: transform 0.2s; }
-    .btn:hover { transform: scale(1.02); }
+    .btn {
+      width: 280px; padding: 18px; margin: 10px;
+      border: none; border-radius: 50px;
+      font-size: 1.1rem; font-weight: bold; cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      transition: transform 0.2s;
+    }
+    .btn:hover { transform: scale(1.05); }
     .btn-ra { background-color: #fff; color: #004d40; }
     .btn-vr { background-color: #222; color: #FFD700; border: 2px solid #FFD700; }
-    
-    .grid-cidades { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-bottom: 50px; }
-    .btn-cidade { width: 140px; padding: 12px; margin: 0; background: linear-gradient(90deg, #FFD700 0%, #FFA000 100%); color: #3e2723; font-size: 0.85rem; border-radius: 10px; }
+    .btn-cidade { background: linear-gradient(90deg, #FFD700 0%, #FFA000 100%); color: #3e2723; }
     
     .grid-botoes { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    .btn-cat { width: 130px; padding: 15px; border-radius: 15px; font-size: 0.95rem; background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.4); cursor: pointer; }
+    .btn-cat {
+      width: 130px; padding: 15px; border-radius: 15px; font-size: 0.95rem;
+      background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.4); cursor: pointer;
+    }
     
-    .btn-voltar-fixo { position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.6); color: white; padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 0.9rem; z-index: 500; cursor: pointer; }
-    footer { position: absolute; bottom: 5px; width: 100%; text-align: center; color: rgba(255,255,255,0.4); font-size: 0.7rem; }
+    .btn-voltar-fixo {
+      position: absolute; top: 20px; left: 20px;
+      background: rgba(0,0,0,0.6); color: white;
+      padding: 10px 20px; border-radius: 20px;
+      text-decoration: none; font-weight: bold; font-size: 0.9rem;
+      z-index: 500; cursor: pointer;
+    }
+
+    footer {
+      position: absolute; bottom: 10px; width: 100%; text-align: center;
+      color: rgba(255,255,255,0.5); font-size: 0.8rem;
+    }
   </style>
 
   <script>
+    /* --- LÓGICA DO SISTEMA --- */
+    
     let cidadeAtual = '';
     let audioFundo = null;
     let audioNarracao = null;
 
+    // --- BANCO DE DADOS ATUALIZADO COM SEUS LINKS ---
     const db = {
+      'macapa': {
+        nome: 'Macapá (Teste Completo)',
+        somAmbiente: './assets/audios/audio01.mp3', // Ajuste se tiver áudio de fundo
+        conteudos: {
+          'historia': { 
+             t: 'TESTE DOS ASSETS', 
+             txt: 'Veja o vídeo no painel, a imagem no fundo e o objeto 3D ao lado.', 
+             
+             // AQUI ESTÃO OS SEUS LINKS NOVOS:
+             imagemFundo: './assets/imagens/imagem01.png', 
+             video: './assets/videos/video01.mp4', 
+             modelo3d: './assets/3d/obj3d01.glb',
+             
+             narra: './assets/audios/audio01.mp3' // Ajuste conforme necessário
+          },
+          'culinaria': { t: 'SEM VÍDEO', txt: 'Apenas texto aqui.', cor: '#FF6F00', narra: '', video: '', modelo3d: '' },
+          'mapa':      { t: 'SEM VÍDEO', txt: 'Apenas texto aqui.', cor: '#0288D1', narra: '', video: '', modelo3d: '' }
+        }
+      },
       
-      // 1. VITÓRIA DO JARI (CORRIGIDO)
+      // Mantive Vitória e Mazagão como exemplos básicos
       'vitoria': {
         nome: 'Vitória do Jari',
         somAmbiente: '', 
         conteudos: {
-          // Mantivemos as chaves originais (historia, culinaria, mapa) para não quebrar a lógica
-          'historia': { 
-             t: 'VÍDEO DA CIDADE', 
-             txt: 'Assista ao vídeo no painel.', 
-             imagemFundo: '', 
-             video: './assets/videos/vitoria.mp4', modelo3d: '', cor: '#5D4037', narra: '' 
-          },
-          'culinaria': { 
-             t: 'HINO MUNICIPAL', 
-             txt: 'Ouça o hino oficial.', 
-             video: '', 
-             imagemFundo: '', modelo3d: '', cor: '#E64A19', narra: './assets/audios/vitoria.mp3'
-          },
-          'mapa': { 
-             t: 'BANDEIRA 3D', 
-             txt: 'Visualizando a bandeira.', 
-             modelo3d: '', 
-             // CORRIGIDO: de 'imagem' para 'imagemFundo'
-             imagemFundo: './assets/imagens/vitoria.png', 
-             video: '', cor: '#388E3C', narra: ''
-          }
+          'historia': { t: 'HISTÓRIA', txt: 'Texto exemplo...', cor: '#5D4037', narra: '', video: '', modelo3d: '' },
+          'culinaria': { t: 'CULINÁRIA', txt: 'Texto exemplo...', cor: '#E64A19', narra: '', video: '', modelo3d: '' },
+          'mapa':      { t: 'MAPA', txt: 'Texto exemplo...', cor: '#388E3C', narra: '', video: '', modelo3d: '' }
         }
       },
-
-      // OUTRAS CIDADES (MANTIDAS IGUAIS)
-      'amapa': { nome: 'Amapá', somAmbiente: '', conteudos: { 'historia': {t:'',txt:'Em breve',cor:'#444'}, 'culinaria': {t:'',txt:'Em breve',cor:'#444'}, 'mapa': {t:'',txt:'Em breve',cor:'#444'} } },
-      'calcoene': { nome: 'Calçoene', somAmbiente: '', conteudos: { 'historia': {t:'',txt:'Em breve',cor:'#444'}, 'culinaria': {t:'',txt:'Em breve',cor:'#444'}, 'mapa': {t:'',txt:'Em breve',cor:'#444'} } },
-      'cutias': { nome: 'Cutias', somAmbiente: '', conteudos: { 'historia': {t:'',txt:'Em breve',cor:'#444'}, 'culinaria': {t:'',txt:'Em breve',cor:'#444'}, 'mapa': {t:'',txt:'Em breve',cor:'#444'} } },
-      'ferreira': { nome: 'Ferreira Gomes', somAmbiente: '', conteudos: { 'historia': {t:'',txt:'Em breve',cor:'#444'}, 'culinaria': {t:'',txt:'Em breve',cor:'#444'}, 'mapa': {t:'',txt:'Em breve',cor:'#444'} } },
-      'itaubal': { nome: 'Itaubal', somAmbiente: '', conteudos: { 'historia': {t:'',txt:'Em breve',cor:'#444'}, 'culinaria': {t:'',txt:'Em breve',cor:'#444'}, 'mapa': {t:'',txt:'Em breve',cor:'#444'} } },
-      'laranjal': { nome: 'Laranjal do Jari', somAmbiente: '', conteudos: { 'historia': {t:'',txt:'Em breve',cor:'#444'}, 'culinaria': {t:'',txt:'Em breve',cor:'#444'}, 'mapa': {t:'',txt:'Em breve',cor:'#444'} } },
-      'macapa': { nome: 'Macapá', somAmbiente: '', conteudos: { 'historia': {t:'',txt:'Em breve',cor:'#444'}, 'culinaria': {t:'',txt:'Em breve',cor:'#444'}, 'mapa': {t:'',txt:'Em breve',cor:'#444'} } },
-      'mazagao': { nome: 'Mazagão', somAmbiente: '', conteudos: { 'historia': {t:'',txt:'Em breve',cor:'#444'}, 'culinaria': {t:'',txt:'Em breve',cor:'#444'}, 'mapa': {t:'',txt:'Em breve',cor:'#444'} } },
-      'oiapoque': { nome: 'Oiapoque', somAmbiente: '', conteudos: { 'historia': {t:'',txt:'Em breve',cor:'#444'}, 'culinaria': {t:'',txt:'Em breve',cor:'#444'}, 'mapa': {t:'',txt:'Em breve',cor:'#444'} } },
-      'pedra': { nome: 'Pedra Branca', somAmbiente: '', conteudos: { 'historia': {t:'',txt:'Em breve',cor:'#444'}, 'culinaria': {t:'',txt:'Em breve',cor:'#444'}, 'mapa': {t:'',txt:'Em breve',cor:'#444'} } },
-      'porto': { nome: 'Porto Grande', somAmbiente: '', conteudos: { 'historia': {t:'',txt:'Em breve',cor:'#444'}, 'culinaria': {t:'',txt:'Em breve',cor:'#444'}, 'mapa': {t:'',txt:'Em breve',cor:'#444'} } },
-      'pracuuba': { nome: 'Pracuúba', somAmbiente: '', conteudos: { 'historia': {t:'',txt:'Em breve',cor:'#444'}, 'culinaria': {t:'',txt:'Em breve',cor:'#444'}, 'mapa': {t:'',txt:'Em breve',cor:'#444'} } },
-      'santana': { nome: 'Santana', somAmbiente: '', conteudos: { 'historia': {t:'',txt:'Em breve',cor:'#444'}, 'culinaria': {t:'',txt:'Em breve',cor:'#444'}, 'mapa': {t:'',txt:'Em breve',cor:'#444'} } },
-      'serra': { nome: 'Serra do Navio', somAmbiente: '', conteudos: { 'historia': {t:'',txt:'Em breve',cor:'#444'}, 'culinaria': {t:'',txt:'Em breve',cor:'#444'}, 'mapa': {t:'',txt:'Em breve',cor:'#444'} } },
-      'tartarugal': { nome: 'Tartarugalzinho', somAmbiente: '', conteudos: { 'historia': {t:'',txt:'Em breve',cor:'#444'}, 'culinaria': {t:'',txt:'Em breve',cor:'#444'}, 'mapa': {t:'',txt:'Em breve',cor:'#444'} } }
+      'mazagao': {
+        nome: 'Mazagão',
+        somAmbiente: '', 
+        conteudos: {
+          'historia': { t: 'HISTÓRIA', txt: 'Texto exemplo...', cor: '#3E2723', narra: '', video: '', modelo3d: '' },
+          'culinaria': { t: 'CULINÁRIA', txt: 'Texto exemplo...', cor: '#D84315', narra: '', video: '', modelo3d: '' },
+          'mapa':      { t: 'MAPA', txt: 'Texto exemplo...', cor: '#689F38', narra: '', video: '', modelo3d: '' }
+        }
+      }
     };
 
-    // --- FUNÇÕES ---
+    // --- FUNÇÕES DE ÁUDIO ---
     function tocarFundo(url) {
       pararTudo();
       if(url && url.length > 5) {
         audioFundo = new Audio(url);
         audioFundo.volume = 0.3; audioFundo.loop = true;
-        audioFundo.play().catch(e => console.log("Interaja"));
+        audioFundo.play().catch(e => console.log("Aguardando interação"));
       }
     }
 
@@ -127,6 +142,7 @@
       if(audioNarracao) { audioNarracao.pause(); audioNarracao = null; }
     }
 
+    // --- NAVEGAÇÃO ---
     function irPara(telaId) {
       document.querySelectorAll('.tela').forEach(t => t.classList.add('escondido'));
       if(telaId !== 'cenario') document.getElementById(telaId).classList.remove('escondido');
@@ -160,59 +176,56 @@
     }
 
     function verConteudoVR(tipo) {
-      // Verifica se a chave existe antes de tentar acessar
-      if (db[cidadeAtual] && db[cidadeAtual].conteudos[tipo]) {
-         const dados = db[cidadeAtual].conteudos[tipo];
-         
-         pararWebcam();
-         document.getElementById('webcam').style.display = 'none';
-         document.getElementById('ceu').setAttribute('visible', 'true');
-         
-         document.getElementById('vr-titulo').setAttribute('value', dados.t);
-         document.getElementById('vr-texto').setAttribute('value', dados.txt);
-         
-         // IMAGEM
-         if(dados.imagemFundo && dados.imagemFundo.length > 5) {
-            document.getElementById('ceu').setAttribute('src', dados.imagemFundo);
-            document.getElementById('ceu').removeAttribute('color');
-         } else {
-            document.getElementById('ceu').setAttribute('color', dados.cor || '#333');
-            document.getElementById('ceu').removeAttribute('src');
-         }
-
-         // VÍDEO
-         const videoEl = document.getElementById('video-player');
-         const telaVideo = document.getElementById('vr-video');
-         if (dados.video && dados.video.length > 5) {
-           videoEl.setAttribute('src', dados.video);
-           telaVideo.setAttribute('visible', 'true');
-           videoEl.play();
-           document.getElementById('vr-texto').setAttribute('visible', 'false');
-         } else {
-           videoEl.pause();
-           telaVideo.setAttribute('visible', 'false');
-           document.getElementById('vr-texto').setAttribute('visible', 'true');
-         }
-
-         // 3D
-         const entidadeModelo = document.getElementById('vr-modelo');
-         const modeloGltf = entidadeModelo.querySelector('a-gltf-model');
-         if (dados.modelo3d && dados.modelo3d.length > 5) {
-           modeloGltf.setAttribute('src', dados.modelo3d);
-           entidadeModelo.setAttribute('visible', 'true');
-           modeloGltf.setAttribute('scale', '0.5 0.5 0.5'); 
-         } else {
-           entidadeModelo.setAttribute('visible', 'false');
-         }
-
-         tocarVoz(dados.narra);
-
-         irPara('cenario');
-         document.getElementById('btn-voltar-vr').classList.remove('escondido');
-         document.getElementById('btn-voltar-ra').classList.add('escondido');
+      const dados = db[cidadeAtual].conteudos[tipo];
+      
+      pararWebcam();
+      document.getElementById('webcam').style.display = 'none';
+      document.getElementById('ceu').setAttribute('visible', 'true');
+      
+      document.getElementById('vr-titulo').setAttribute('value', dados.t);
+      document.getElementById('vr-texto').setAttribute('value', dados.txt);
+      
+      // Imagem de Fundo vs Cor Sólida
+      if(dados.imagemFundo && dados.imagemFundo.length > 5) {
+         document.getElementById('ceu').setAttribute('src', dados.imagemFundo);
+         document.getElementById('ceu').removeAttribute('color');
       } else {
-         console.error("Erro: Conteúdo não encontrado para", tipo);
+         document.getElementById('ceu').setAttribute('color', dados.cor || '#333');
+         document.getElementById('ceu').removeAttribute('src');
       }
+
+      // Vídeo
+      const videoEl = document.getElementById('video-player');
+      const telaVideo = document.getElementById('vr-video');
+
+      if (dados.video && dados.video.length > 5) {
+        videoEl.setAttribute('src', dados.video);
+        telaVideo.setAttribute('visible', 'true');
+        videoEl.play();
+        document.getElementById('vr-texto').setAttribute('visible', 'false');
+      } else {
+        videoEl.pause();
+        telaVideo.setAttribute('visible', 'false');
+        document.getElementById('vr-texto').setAttribute('visible', 'true');
+      }
+
+      // Objeto 3D
+      const entidadeModelo = document.getElementById('vr-modelo');
+      const modeloGltf = entidadeModelo.querySelector('a-gltf-model');
+
+      if (dados.modelo3d && dados.modelo3d.length > 5) {
+        modeloGltf.setAttribute('src', dados.modelo3d);
+        entidadeModelo.setAttribute('visible', 'true');
+        modeloGltf.setAttribute('scale', dados.escalaModelo || '1 1 1');
+      } else {
+        entidadeModelo.setAttribute('visible', 'false');
+      }
+
+      tocarVoz(dados.narra);
+
+      irPara('cenario');
+      document.getElementById('btn-voltar-vr').classList.remove('escondido');
+      document.getElementById('btn-voltar-ra').classList.add('escondido');
     }
 
     function voltarParaCategorias() {
@@ -252,36 +265,19 @@
 
   <div id="tela-cidades" class="tela escondido">
     <h2>Destinos</h2>
-    <div class="conteudo-scroll">
-      <div class="grid-cidades">
-        <button class="btn btn-cidade" onclick="selecionarCidade('vitoria')">Vitória do Jari</button>
-        <button class="btn btn-cidade" onclick="selecionarCidade('amapa')">Amapá</button>
-        <button class="btn btn-cidade" onclick="selecionarCidade('calcoene')">Calçoene</button>
-        <button class="btn btn-cidade" onclick="selecionarCidade('cutias')">Cutias</button>
-        <button class="btn btn-cidade" onclick="selecionarCidade('ferreira')">Ferreira Gomes</button>
-        <button class="btn btn-cidade" onclick="selecionarCidade('itaubal')">Itaubal</button>
-        <button class="btn btn-cidade" onclick="selecionarCidade('laranjal')">Laranjal do Jari</button>
-        <button class="btn btn-cidade" onclick="selecionarCidade('macapa')">Macapá</button>
-        <button class="btn btn-cidade" onclick="selecionarCidade('mazagao')">Mazagão</button>
-        <button class="btn btn-cidade" onclick="selecionarCidade('oiapoque')">Oiapoque</button>
-        <button class="btn btn-cidade" onclick="selecionarCidade('pedra')">Pedra Branca</button>
-        <button class="btn btn-cidade" onclick="selecionarCidade('porto')">Porto Grande</button>
-        <button class="btn btn-cidade" onclick="selecionarCidade('pracuuba')">Pracuúba</button>
-        <button class="btn btn-cidade" onclick="selecionarCidade('santana')">Santana</button>
-        <button class="btn btn-cidade" onclick="selecionarCidade('serra')">Serra do Navio</button>
-        <button class="btn btn-cidade" onclick="selecionarCidade('tartarugal')">Tartarugalzinho</button>
-      </div>
-    </div>
-    <button class="btn" style="background:transparent; border:1px solid #aaa; color:#ddd; margin-top:15px" onclick="pararTudo(); irPara('tela-inicio')">⬅ Voltar</button>
+    <button class="btn btn-cidade" onclick="selecionarCidade('vitoria')">📍 Vitória do Jari</button>
+    <button class="btn btn-cidade" onclick="selecionarCidade('macapa')">📍 Macapá (Teste)</button>
+    <button class="btn btn-cidade" onclick="selecionarCidade('mazagao')">📍 Mazagão</button>
+    <button class="btn" style="background:transparent; border:1px solid #aaa; color:#ddd; margin-top:30px" onclick="pararTudo(); irPara('tela-inicio')">⬅ Voltar ao Início</button>
   </div>
 
   <div id="tela-categorias" class="tela escondido">
     <h2 id="nome-cidade-escolhida">Cidade</h2>
     <p>O que deseja explorar?</p>
     <div class="grid-botoes">
-      <button class="btn-cat" onclick="verConteudoVR('historia')">📜 Vídeo</button>
-      <button class="btn-cat" onclick="verConteudoVR('culinaria')">🥘 Hino</button>
-      <button class="btn-cat" onclick="verConteudoVR('mapa')">🗺️ Bandeira</button>
+      <button class="btn-cat" onclick="verConteudoVR('historia')">📜 História</button>
+      <button class="btn-cat" onclick="verConteudoVR('culinaria')">🥘 Culinária</button>
+      <button class="btn-cat" onclick="verConteudoVR('mapa')">🗺️ Mapa</button>
     </div>
     <button class="btn" style="background:transparent; border:1px solid #aaa; color:#ddd; margin-top:30px" onclick="pararTudo(); irPara('tela-cidades')">⬅ Trocar Cidade</button>
   </div>
@@ -298,9 +294,12 @@
 
     <a-entity position="0 1.6 -3">
       <a-plane color="#111" opacity="0.95" width="3.5" height="2" border="color: white; width: 0.05"></a-plane>
+      
       <a-text id="vr-titulo" value="TITULO" align="center" position="0 0.8 0.1" color="#FFD700" width="6"></a-text>
       <a-text id="vr-texto" value="Texto..." align="center" position="0 -0.2 0.1" width="3.2" wrap-count="32"></a-text>
+
       <a-video id="vr-video" src="#video-player" width="3" height="1.5" position="0 -0.1 0.05" visible="false"></a-video>
+
       <a-circle position="1.4 -0.7 0.1" radius="0.15" color="white" animation="property: scale; to: 1.2 1.2 1.2; dir: alternate; loop: true; dur: 800">
           <a-text value="♫" color="black" align="center" width="8" position="0 0 0.1"></a-text>
       </a-circle>

@@ -2,185 +2,142 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Explora AP - TCC (Modo VR Completo)</title>
+  <title>Explora AP - VR Final</title>
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-  <script src="https://unpkg.com/aframe-layout-component@5.3.0/dist/aframe-layout-component.min.js"></script>
   
   <style>
-    /* DESIGN DA TELA DE ENTRADA (A única parte 2D que sobrou) */
-    body { margin: 0; overflow: hidden; font-family: 'Segoe UI', sans-serif; }
-    .tela {
-      position: absolute; width: 100%; height: 100%;
-      background: linear-gradient(135deg, #004d40, #00695c, #80cbc4);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      z-index: 999; transition: opacity 0.5s;
+    /* Tela de entrada 2D (Só para clicar em "Entrar") */
+    body { margin: 0; overflow: hidden; font-family: sans-serif; background-color: #004d40; }
+    .tela-entrada {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #004d40, #00251a); z-index: 999;
     }
-    .escondido { display: none !important; }
-    h1 { font-size: 2.5rem; color: white; margin: 0; text-transform: uppercase; font-weight: 800; text-align: center; }
-    p { color: #b2dfdb; margin-top: 10px; margin-bottom: 30px; text-align: center; font-style: italic; }
-    .btn {
-      width: 280px; padding: 20px; margin: 10px; border: none; border-radius: 50px;
-      font-size: 1.1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    h1 { color: white; font-size: 2rem; margin-bottom: 10px; }
+    button {
+      padding: 20px 40px; font-size: 1.2rem; border-radius: 50px; border: none;
+      background: #FFD700; color: #333; font-weight: bold; cursor: pointer;
     }
-    .btn-vr { background-color: #222; color: #FFD700; border: 2px solid #FFD700; }
-    footer { position: absolute; bottom: 10px; color: rgba(255,255,255,0.5); font-size: 0.8rem; }
+    .escondido { display: none; }
   </style>
 
   <script>
-    /* --- LÓGICA DO SISTEMA VR --- */
-    
+    /* --- LÓGICA DO SISTEMA --- */
     let cidadeAtual = '';
-    let audioFundo = null;
     let audioNarracao = null;
 
-    // --- BANCO DE DADOS (Seus Assets) ---
+    // BANCO DE DADOS (Seus Assets)
     const db = {
       'vitoria': {
         nome: 'Vitoria do Jari',
-        somAmbiente: '', 
         conteudos: {
-          'historia': { t: 'VIDEO', txt: 'Assista ao video.', video: './assets/videos/vitoria.mp4', imagemPainel: '', tipo: 'video', narra: '' },
-          'culinaria': { t: 'HINO', txt: 'Ouca o hino.', video: '', imagemPainel: '', tipo: 'audio', narra: './assets/audios/vitoria.mp3' },
-          'mapa': { t: 'BANDEIRA', txt: 'Veja a bandeira.', video: '', imagemPainel: './assets/imagens/vitoria.png', tipo: 'imagem', narra: '' }
+          'historia': { t: 'VIDEO DA CIDADE', txt: 'Assista ao video no painel.', video: './assets/videos/vitoria.mp4', tipo: 'video', imagemPainel: '', narra: '' },
+          'culinaria': { t: 'HINO OFICIAL', txt: 'Ouca o audio.', video: '', tipo: 'audio', imagemPainel: '', narra: './assets/audios/vitoria.mp3' },
+          'mapa': { t: 'BANDEIRA', txt: 'Visualizando bandeira.', video: '', tipo: 'imagem', imagemPainel: './assets/imagens/vitoria.png', narra: '' }
         }
       },
-      // Exemplo genérico para as outras cidades
-      'macapa': { nome: 'Macapa', conteudos: {} },
-      'amapa': { nome: 'Amapa', conteudos: {} },
-      'calcoene': { nome: 'Calcoene', conteudos: {} },
-      'cutias': { nome: 'Cutias', conteudos: {} },
-      'ferreira': { nome: 'Ferreira Gomes', conteudos: {} },
-      'itaubal': { nome: 'Itaubal', conteudos: {} },
-      'laranjal': { nome: 'Laranjal', conteudos: {} },
-      'mazagao': { nome: 'Mazagao', conteudos: {} },
-      'oiapoque': { nome: 'Oiapoque', conteudos: {} },
-      'pedra': { nome: 'Pedra Branca', conteudos: {} },
-      'porto': { nome: 'Porto Grande', conteudos: {} },
-      'pracuuba': { nome: 'Pracuuba', conteudos: {} },
-      'santana': { nome: 'Santana', conteudos: {} },
-      'serra': { nome: 'Serra do Navio', conteudos: {} },
+      // Cidades Genéricas (Preencher depois)
+      'macapa': { nome: 'Macapa', conteudos: {} }, 'amapa': { nome: 'Amapa', conteudos: {} },
+      'calcoene': { nome: 'Calcoene', conteudos: {} }, 'cutias': { nome: 'Cutias', conteudos: {} },
+      'ferreira': { nome: 'Ferreira Gomes', conteudos: {} }, 'itaubal': { nome: 'Itaubal', conteudos: {} },
+      'laranjal': { nome: 'Laranjal', conteudos: {} }, 'mazagao': { nome: 'Mazagao', conteudos: {} },
+      'oiapoque': { nome: 'Oiapoque', conteudos: {} }, 'pedra': { nome: 'Pedra Branca', conteudos: {} },
+      'porto': { nome: 'Porto Grande', conteudos: {} }, 'pracuuba': { nome: 'Pracuuba', conteudos: {} },
+      'santana': { nome: 'Santana', conteudos: {} }, 'serra': { nome: 'Serra do Navio', conteudos: {} },
       'tartarugal': { nome: 'Tartarugalzinho', conteudos: {} }
     };
 
-    // --- NAVEGAÇÃO 3D (Alternar Grupos Visíveis) ---
     function entrarVR() {
-      // Esconde a tela HTML 2D
-      document.getElementById('tela-inicio').classList.add('escondido');
-      // Mostra o Menu de Cidades 3D
-      document.getElementById('grupo-cidades').setAttribute('visible', 'true');
-      // Ativa o som de clique (feedback)
-      tocarSomClique();
+      document.querySelector('.tela-entrada').classList.add('escondido');
+      // Mostra o menu principal
+      document.getElementById('menu-cidades').setAttribute('visible', 'true');
+      
+      // Tenta iniciar áudio (hack para navegadores liberarem som)
+      const audioDummy = new Audio(); 
+      audioDummy.play().catch(() => {});
     }
 
-    function selecionarCidade3D(chave) {
+    function selecionarCidade(chave) {
       cidadeAtual = chave;
-      tocarSomClique();
+      // Troca de Menu: Cidades -> Categorias
+      document.getElementById('menu-cidades').setAttribute('visible', 'false');
+      document.getElementById('menu-categorias').setAttribute('visible', 'true');
       
-      // Esconde Cidades, Mostra Categorias
-      document.getElementById('grupo-cidades').setAttribute('visible', 'false');
-      document.getElementById('grupo-categorias').setAttribute('visible', 'true');
-      
-      // Atualiza o título do menu de categorias
-      const nomeBonito = db[chave].nome || chave.toUpperCase();
-      document.getElementById('titulo-cat').setAttribute('value', nomeBonito);
+      let nome = db[chave].nome || chave;
+      document.getElementById('titulo-cat').setAttribute('value', nome.toUpperCase());
     }
 
-    function verConteudo3D(tipo) {
-      if (!cidadeAtual || !db[cidadeAtual]) return;
+    function verConteudo(tipo) {
+      if (!db[cidadeAtual] || !db[cidadeAtual].conteudos) return;
       
-      // Verifica se existe conteúdo configurado (para não travar)
-      const dados = db[cidadeAtual].conteudos && db[cidadeAtual].conteudos[tipo] 
-                    ? db[cidadeAtual].conteudos[tipo] 
-                    : { t: 'EM BREVE', txt: 'Conteudo em desenvolvimento.', tipo: 'texto' };
+      // Se não tiver conteúdo configurado, cria um genérico para não travar
+      const dados = db[cidadeAtual].conteudos[tipo] || { t: 'EM BREVE', txt: 'Conteudo nao disponivel.', tipo: 'texto' };
 
-      tocarSomClique();
+      // Troca de Menu: Categorias -> Painel Final
+      document.getElementById('menu-categorias').setAttribute('visible', 'false');
+      document.getElementById('painel-conteudo').setAttribute('visible', 'true');
 
-      // Esconde Categorias, Mostra Painel de Conteúdo
-      document.getElementById('grupo-categorias').setAttribute('visible', 'false');
-      document.getElementById('grupo-conteudo').setAttribute('visible', 'true');
-
-      // Preenche os dados no Painel
+      // Preenche textos
       document.getElementById('vr-titulo').setAttribute('value', dados.t);
       document.getElementById('vr-texto').setAttribute('value', dados.txt);
 
-      // Reseta mídias
-      resetarMidias();
+      resetarMidia();
 
-      // LÓGICA DE EXIBIÇÃO
       const videoEl = document.getElementById('video-player');
       const telaVideo = document.getElementById('vr-video');
-      const imgPainel = document.getElementById('vr-imagem-painel');
+      const imgPainel = document.getElementById('vr-imagem');
       const controles = document.getElementById('controles-media');
 
       // 1. VÍDEO
-      if (dados.video && dados.video.length > 3) {
+      if (dados.tipo === 'video' && dados.video) {
         videoEl.setAttribute('src', dados.video);
         telaVideo.setAttribute('visible', 'true');
-        controles.setAttribute('visible', 'true');
+        controles.setAttribute('visible', 'true'); // MOSTRA OS BOTÕES
         document.getElementById('vr-texto').setAttribute('visible', 'false');
+        atualizarBtnPlay('PLAY', 'green'); // Começa pausado
+      }
+      // 2. ÁUDIO
+      else if (dados.tipo === 'audio' && dados.narra) {
+        audioNarracao = new Audio(dados.narra);
+        controles.setAttribute('visible', 'true'); // MOSTRA OS BOTÕES
+        document.getElementById('vr-texto').setAttribute('visible', 'true');
         atualizarBtnPlay('PLAY', 'green');
       }
-      // 2. IMAGEM
-      else if (dados.imagemPainel && dados.imagemPainel.length > 3) {
+      // 3. IMAGEM
+      else if (dados.tipo === 'imagem' && dados.imagemPainel) {
         imgPainel.setAttribute('src', dados.imagemPainel);
         imgPainel.setAttribute('visible', 'true');
         document.getElementById('vr-texto').setAttribute('visible', 'false');
       }
-      // 3. ÁUDIO
-      else if (dados.tipo === 'audio' && dados.narra) {
-        prepararAudio(dados.narra);
-        controles.setAttribute('visible', 'true');
-        document.getElementById('vr-texto').setAttribute('visible', 'true');
-        atualizarBtnPlay('PLAY', 'green');
-      }
-      // 4. PADRÃO
-      else {
-        document.getElementById('vr-texto').setAttribute('visible', 'true');
-      }
     }
 
-    function voltarParaCidades() {
-      tocarSomClique();
-      resetarMidias();
-      document.getElementById('grupo-categorias').setAttribute('visible', 'false');
-      document.getElementById('grupo-cidades').setAttribute('visible', 'true');
-    }
-
-    function voltarParaCategorias() {
-      tocarSomClique();
-      resetarMidias();
-      document.getElementById('grupo-conteudo').setAttribute('visible', 'false');
-      document.getElementById('grupo-categorias').setAttribute('visible', 'true');
-    }
-
-    // --- CONTROLE DE MÍDIA ---
     function togglePlay() {
       const videoEl = document.getElementById('video-player');
       
-      // Vídeo
+      // Lógica Vídeo
       if (videoEl && videoEl.getAttribute('src')) {
         if (videoEl.paused) {
           videoEl.play();
-          atualizarBtnPlay('PAUSE', 'red');
+          atualizarBtnPlay('PAUSE', '#FF0000');
         } else {
           videoEl.pause();
-          atualizarBtnPlay('PLAY', 'green');
+          atualizarBtnPlay('PLAY', '#008000');
         }
       }
-      // Áudio
+      
+      // Lógica Áudio
       if (audioNarracao) {
         if (audioNarracao.paused) {
           audioNarracao.play();
-          atualizarBtnPlay('PAUSE', 'red');
+          atualizarBtnPlay('PAUSE', '#FF0000');
         } else {
           audioNarracao.pause();
-          atualizarBtnPlay('PLAY', 'green');
+          atualizarBtnPlay('PLAY', '#008000');
         }
       }
     }
 
-    function restartMedia() {
+    function reiniciar() {
       const videoEl = document.getElementById('video-player');
       if (videoEl && videoEl.getAttribute('src')) {
         videoEl.currentTime = 0;
@@ -190,120 +147,121 @@
         audioNarracao.currentTime = 0;
         audioNarracao.play();
       }
-      atualizarBtnPlay('PAUSE', 'red');
+      atualizarBtnPlay('PAUSE', '#FF0000');
     }
 
     function atualizarBtnPlay(texto, cor) {
-      document.getElementById('txt-play').setAttribute('value', texto);
-      document.getElementById('bg-play').setAttribute('color', cor);
+      const btn = document.getElementById('btn-play-bg');
+      const txt = document.getElementById('btn-play-txt');
+      if(btn) btn.setAttribute('color', cor);
+      if(txt) txt.setAttribute('value', texto);
     }
 
-    function prepararAudio(url) {
-      if(audioNarracao) { audioNarracao.pause(); }
-      audioNarracao = new Audio(url);
-    }
-
-    function resetarMidias() {
+    function resetarMidia() {
       const v = document.getElementById('video-player');
-      if(v) { v.pause(); v.removeAttribute('src'); }
+      v.pause(); v.removeAttribute('src');
       if(audioNarracao) { audioNarracao.pause(); audioNarracao = null; }
-      
+
       document.getElementById('vr-video').setAttribute('visible', 'false');
-      document.getElementById('vr-imagem-painel').setAttribute('visible', 'false');
+      document.getElementById('vr-imagem').setAttribute('visible', 'false');
       document.getElementById('controles-media').setAttribute('visible', 'false');
     }
 
-    function tocarSomClique() {
-      // Pequeno feedback sonoro (opcional)
+    function voltarMenu(origem) {
+      resetarMidia();
+      if(origem === 'conteudo') {
+        document.getElementById('painel-conteudo').setAttribute('visible', 'false');
+        document.getElementById('menu-categorias').setAttribute('visible', 'true');
+      } else {
+        document.getElementById('menu-categorias').setAttribute('visible', 'false');
+        document.getElementById('menu-cidades').setAttribute('visible', 'true');
+      }
     }
   </script>
 </head>
 <body>
 
-  <div id="tela-inicio" class="tela">
-    <h1>Explora AP</h1>
-    <p>Modo Realidade Virtual (Cardboard)</p>
-    <button class="btn btn-vr" onclick="entrarVR()">🥽 ENTRAR NO MUNDO 3D</button>
-    <footer>TCC - Inovação e Tecnologias Educacionais • 2025</footer>
+  <div class="tela-entrada">
+    <h1>Explora AP - VR</h1>
+    <button onclick="entrarVR()">ENTRAR (VR)</button>
   </div>
 
-  <a-scene>
-    <a-sky color="#202020"></a-sky>
-
+  <a-scene background="color: #202020">
     <a-assets>
       <video id="video-player" loop="true" crossorigin="anonymous" playsinline webkit-playsinline></video>
-      <a-mixin id="botao" geometry="primitive: plane; width: 2.5; height: 0.5" 
-               material="color: #333; opacity: 0.9" 
-               text="align: center; color: white; width: 4"
+      
+      <a-mixin id="btn-padrao" geometry="primitive: plane; width: 2.2; height: 0.5" 
+               material="color: #333; opacity: 0.9" text="align: center; color: white; width: 4"></a-mixin>
+      
+      <a-mixin id="btn-cidade" geometry="primitive: plane; width: 1.4; height: 0.4"
+               material="color: #FFD700" text="align: center; color: black; width: 3.5"
                animation__hover="property: scale; to: 1.1 1.1 1; startEvents: mouseenter; dur: 200"
                animation__leave="property: scale; to: 1 1 1; startEvents: mouseleave; dur: 200"></a-mixin>
-      
-      <a-mixin id="botao-cidade" geometry="primitive: plane; width: 1.8; height: 0.4"
-               material="color: #FFD700" text="align: center; color: black; width: 4"
-               animation__hover="property: material.color; to: #FFA000; startEvents: mouseenter; dur: 200"
-               animation__leave="property: material.color; to: #FFD700; startEvents: mouseleave; dur: 200"></a-mixin>
     </a-assets>
 
-    <a-entity id="grupo-cidades" visible="false" position="0 1.6 -3">
-      <a-text value="ESCOLHA O DESTINO" align="center" position="0 2 0" color="#FFF" width="6"></a-text>
-      <a-text value="(Olhe para selecionar)" align="center" position="0 1.7 0" color="#AAA" width="3"></a-text>
+    <a-entity id="menu-cidades" visible="false" position="0 1.6 -3">
+      <a-text value="PARA ONDE VAMOS?" align="center" position="0 2.2 0" width="6"></a-text>
+      <a-text value="(Olhe fixamente para selecionar)" align="center" position="0 1.9 0" color="#AAA" width="3"></a-text>
 
-      <a-entity layout="type: box; columns: 2; margin: 0.5" position="-1 1 0">
-        <a-entity mixin="botao-cidade" text="value: Vitoria do Jari" onclick="selecionarCidade3D('vitoria')" class="interativo"></a-entity>
-        <a-entity mixin="botao-cidade" text="value: Macapa" onclick="selecionarCidade3D('macapa')" class="interativo"></a-entity>
-        <a-entity mixin="botao-cidade" text="value: Mazagao" onclick="selecionarCidade3D('mazagao')" class="interativo"></a-entity>
-        <a-entity mixin="botao-cidade" text="value: Santana" onclick="selecionarCidade3D('santana')" class="interativo"></a-entity>
-        <a-entity mixin="botao-cidade" text="value: Oiapoque" onclick="selecionarCidade3D('oiapoque')" class="interativo"></a-entity>
-        <a-entity mixin="botao-cidade" text="value: Amapa" onclick="selecionarCidade3D('amapa')" class="interativo"></a-entity>
-        <a-entity mixin="botao-cidade" text="value: Calcoene" onclick="selecionarCidade3D('calcoene')" class="interativo"></a-entity>
-        <a-entity mixin="botao-cidade" text="value: Tartarugalzinho" onclick="selecionarCidade3D('tartarugal')" class="interativo"></a-entity>
-      </a-entity>
+      <a-entity mixin="btn-cidade" position="-1.6 1.2 0" text="value: Vitoria do Jari" class="interativo" onclick="selecionarCidade('vitoria')"></a-entity>
+      <a-entity mixin="btn-cidade" position="-0.55 1.2 0" text="value: Macapa" class="interativo" onclick="selecionarCidade('macapa')"></a-entity>
+      <a-entity mixin="btn-cidade" position="0.55 1.2 0" text="value: Santana" class="interativo" onclick="selecionarCidade('santana')"></a-entity>
+      <a-entity mixin="btn-cidade" position="1.6 1.2 0" text="value: Mazagao" class="interativo" onclick="selecionarCidade('mazagao')"></a-entity>
 
-      <a-entity layout="type: box; columns: 2; margin: 0.5" position="1 1 0">
-        <a-entity mixin="botao-cidade" text="value: Laranjal" onclick="selecionarCidade3D('laranjal')" class="interativo"></a-entity>
-        <a-entity mixin="botao-cidade" text="value: Ferreira Gomes" onclick="selecionarCidade3D('ferreira')" class="interativo"></a-entity>
-        <a-entity mixin="botao-cidade" text="value: Cutias" onclick="selecionarCidade3D('cutias')" class="interativo"></a-entity>
-        <a-entity mixin="botao-cidade" text="value: Itaubal" onclick="selecionarCidade3D('itaubal')" class="interativo"></a-entity>
-        <a-entity mixin="botao-cidade" text="value: Pedra Branca" onclick="selecionarCidade3D('pedra')" class="interativo"></a-entity>
-        <a-entity mixin="botao-cidade" text="value: Porto Grande" onclick="selecionarCidade3D('porto')" class="interativo"></a-entity>
-        <a-entity mixin="botao-cidade" text="value: Pracuuba" onclick="selecionarCidade3D('pracuuba')" class="interativo"></a-entity>
-        <a-entity mixin="botao-cidade" text="value: Serra do Navio" onclick="selecionarCidade3D('serra')" class="interativo"></a-entity>
-      </a-entity>
+      <a-entity mixin="btn-cidade" position="-1.6 0.7 0" text="value: Oiapoque" class="interativo" onclick="selecionarCidade('oiapoque')"></a-entity>
+      <a-entity mixin="btn-cidade" position="-0.55 0.7 0" text="value: Laranjal" class="interativo" onclick="selecionarCidade('laranjal')"></a-entity>
+      <a-entity mixin="btn-cidade" position="0.55 0.7 0" text="value: Amapa" class="interativo" onclick="selecionarCidade('amapa')"></a-entity>
+      <a-entity mixin="btn-cidade" position="1.6 0.7 0" text="value: Calcoene" class="interativo" onclick="selecionarCidade('calcoene')"></a-entity>
+
+      <a-entity mixin="btn-cidade" position="-1.6 0.2 0" text="value: Tartarugalzinho" class="interativo" onclick="selecionarCidade('tartarugal')"></a-entity>
+      <a-entity mixin="btn-cidade" position="-0.55 0.2 0" text="value: Porto Grande" class="interativo" onclick="selecionarCidade('porto')"></a-entity>
+      <a-entity mixin="btn-cidade" position="0.55 0.2 0" text="value: Ferreira Gomes" class="interativo" onclick="selecionarCidade('ferreira')"></a-entity>
+      <a-entity mixin="btn-cidade" position="1.6 0.2 0" text="value: Cutias" class="interativo" onclick="selecionarCidade('cutias')"></a-entity>
+
+      <a-entity mixin="btn-cidade" position="-1.6 -0.3 0" text="value: Itaubal" class="interativo" onclick="selecionarCidade('itaubal')"></a-entity>
+      <a-entity mixin="btn-cidade" position="-0.55 -0.3 0" text="value: Pedra Branca" class="interativo" onclick="selecionarCidade('pedra')"></a-entity>
+      <a-entity mixin="btn-cidade" position="0.55 -0.3 0" text="value: Pracuuba" class="interativo" onclick="selecionarCidade('pracuuba')"></a-entity>
+      <a-entity mixin="btn-cidade" position="1.6 -0.3 0" text="value: Serra do Navio" class="interativo" onclick="selecionarCidade('serra')"></a-entity>
     </a-entity>
 
-    <a-entity id="grupo-categorias" visible="false" position="0 1.6 -3">
-      <a-text id="titulo-cat" value="CIDADE" align="center" position="0 1.2 0" color="#FFD700" width="7"></a-text>
+    <a-entity id="menu-categorias" visible="false" position="0 1.6 -3">
+      <a-text id="titulo-cat" value="CIDADE" align="center" position="0 1.5 0" color="#FFD700" width="7"></a-text>
       
-      <a-entity layout="type: line; margin: 1.2" position="-1.2 0 0">
-        <a-entity mixin="botao" geometry="width: 1" text="value: VIDEO" onclick="verConteudo3D('historia')" class="interativo"></a-entity>
-        <a-entity mixin="botao" geometry="width: 1" text="value: HINO" onclick="verConteudo3D('culinaria')" class="interativo"></a-entity>
-        <a-entity mixin="botao" geometry="width: 1" text="value: BANDEIRA" onclick="verConteudo3D('mapa')" class="interativo"></a-entity>
-      </a-entity>
+      <a-entity mixin="btn-padrao" position="0 0.8 0" text="value: VIDEO" class="interativo" onclick="verConteudo('historia')"></a-entity>
+      <a-entity mixin="btn-padrao" position="0 0.2 0" text="value: HINO" class="interativo" onclick="verConteudo('culinaria')"></a-entity>
+      <a-entity mixin="btn-padrao" position="0 -0.4 0" text="value: BANDEIRA" class="interativo" onclick="verConteudo('mapa')"></a-entity>
 
-      <a-entity position="0 -1 0" mixin="botao" geometry="width: 1.5; height: 0.4" material="color: #555" text="value: VOLTAR" onclick="voltarParaCidades()" class="interativo"></a-entity>
+      <a-entity geometry="primitive: plane; width: 1.5; height: 0.4" material="color: #777" 
+                text="value: << VOLTAR; align: center; width: 4" position="0 -1.2 0"
+                class="interativo" onclick="voltarMenu('cidades')"></a-entity>
     </a-entity>
 
-    <a-entity id="grupo-conteudo" visible="false" position="0 1.6 -3">
-      <a-plane color="#111" opacity="0.98" width="4" height="2.5"></a-plane>
+    <a-entity id="painel-conteudo" visible="false" position="0 1.6 -3">
+      <a-plane color="#000" width="4" height="3" opacity="0.95"></a-plane>
 
-      <a-text id="vr-titulo" value="TITULO" align="center" position="0 1 0.1" color="#FFD700" width="6"></a-text>
-      <a-text id="vr-texto" value="Texto..." align="center" position="0 -0.2 0.1" width="3.5" wrap-count="35"></a-text>
+      <a-text id="vr-titulo" value="TITULO" align="center" position="0 1.2 0.1" color="#FFD700" width="6"></a-text>
+      <a-text id="vr-texto" value="Texto..." align="center" position="0 0 0.1" width="3.5" wrap-count="35"></a-text>
 
-      <a-video id="vr-video" src="#video-player" width="3.2" height="1.8" position="0 0 0.05" visible="false"></a-video>
-      <a-image id="vr-imagem-painel" width="2" height="1.4" position="0 0 0.06" visible="false"></a-image>
+      <a-video id="vr-video" src="#video-player" width="3.2" height="1.8" position="0 0.1 0.05" visible="false"></a-video>
+      <a-image id="vr-imagem" width="2.5" height="1.6" position="0 0.1 0.05" visible="false"></a-image>
 
-      <a-entity id="controles-media" position="0 -1.6 0.2" visible="false">
-        <a-entity position="-0.6 0 0" onclick="togglePlay()" class="interativo">
-          <a-circle id="bg-play" radius="0.3" color="green"></a-circle>
-          <a-text id="txt-play" value="PLAY" align="center" position="0 0 0.1" scale="0.8 0.8 0.8"></a-text>
+      <a-entity id="controles-media" position="0 -1.1 0.2" visible="false">
+        
+        <a-entity position="-0.7 0 0" class="interativo" onclick="togglePlay()">
+           <a-circle id="btn-play-bg" radius="0.35" color="#008000"></a-circle>
+           <a-text id="btn-play-txt" value="PLAY" align="center" position="0 0 0.05" width="4"></a-text>
         </a-entity>
-        <a-entity position="0.6 0 0" onclick="restartMedia()" class="interativo">
-           <a-circle radius="0.3" color="#0055ff"></a-circle>
-           <a-text value="RESTART" align="center" position="0 0 0.1" scale="0.6 0.6 0.6"></a-text>
+
+        <a-entity position="0.7 0 0" class="interativo" onclick="reiniciar()">
+           <a-circle radius="0.35" color="#0055ff"></a-circle>
+           <a-text value="REINICIAR" align="center" position="0 0 0.05" width="2.5"></a-text>
         </a-entity>
+
       </a-entity>
 
-      <a-entity position="0 -2.4 0" mixin="botao" geometry="width: 1.5; height: 0.4" material="color: #555" text="value: VOLTAR" onclick="voltarParaCategorias()" class="interativo"></a-entity>
+      <a-entity geometry="primitive: plane; width: 1.5; height: 0.4" material="color: #555" 
+                text="value: << VOLTAR; align: center; width: 4" position="0 -1.8 0"
+                class="interativo" onclick="voltarMenu('conteudo')"></a-entity>
     </a-entity>
 
     <a-camera>
@@ -314,11 +272,11 @@
         scale="1.5 1.5 1.5"
         raycaster="objects: .interativo"
         animation__click="property: scale; startEvents: click; easing: easeInCubic; dur: 150; from: 0.1 0.1 0.1; to: 1.5 1.5 1.5"
-        animation__fusing="property: scale; startEvents: fusing; easing: easeInCubic; dur: 1500; from: 1.5 1.5 1.5; to: 0.1 0.1 0.1">
+        animation__fusing="property: scale; startEvents: fusing; easing: easeInCubic; dur: 1500; from: 1.5 1.5 1.5; to: 0.1 0.1 0.1"
+        animation__mouseleave="property: scale; startEvents: mouseleave; dur: 500; to: 1.5 1.5 1.5">
       </a-cursor>
     </a-camera>
 
   </a-scene>
 </body>
-                                                                                                                          </html>
-          
+</html>

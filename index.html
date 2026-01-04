@@ -105,54 +105,85 @@
     }
 
     // --- LÓGICA DE MÍDIA (A parte que precisava consertar) ---
-    function verConteudo(tipo) {
-      if(!db[cidadeAtual].conteudos[tipo]) return;
-
-      const dados = db[cidadeAtual].conteudos[tipo];
-      
-      // Referências aos elementos da cena
+        // --- CONTROLES ---
+    function togglePlay() {
+      console.log("Tentando dar Play/Pause..."); // Debug
       const videoEl = document.getElementById('video-player');
-      const telaVideo = document.getElementById('vr-video-screen');
-      const imgPainel = document.getElementById('vr-imagem-screen');
-      const controles = document.getElementById('controles-media');
-      const titulo = document.getElementById('vr-titulo');
-      const texto = document.getElementById('vr-texto');
+      const btnTexto = document.getElementById('txt-btn-play');
+      const btnCor = document.getElementById('btn-play');
 
-      // Reset
-      pararTudo();
-      telaVideo.setAttribute('visible', 'false');
-      imgPainel.setAttribute('visible', 'false');
-      controles.setAttribute('visible', 'false');
-      
-      titulo.setAttribute('value', dados.t);
-      texto.setAttribute('value', dados.txt || '');
-
-      // 1. É VIDEO?
-      if (dados.tipo === 'video' && dados.video) {
-         videoEl.setAttribute('src', dados.video);
-         telaVideo.setAttribute('visible', 'true');
-         controles.setAttribute('visible', 'true');
-         
-         // Botão Play Verde e Texto "PLAY"
-         document.getElementById('btn-play-cor').setAttribute('color', 'green');
-         document.getElementById('btn-play-txt').setAttribute('value', 'PLAY');
-      }
-      // 2. É AUDIO?
-      else if (dados.tipo === 'audio' && dados.narra) {
-         audioNarracao = new Audio(dados.narra);
-         controles.setAttribute('visible', 'true');
-         
-         document.getElementById('btn-play-cor').setAttribute('color', 'green');
-         document.getElementById('btn-play-txt').setAttribute('value', 'PLAY');
-      }
-      // 3. É IMAGEM?
-      else if (dados.tipo === 'imagem' && dados.imagemPainel) {
-         imgPainel.setAttribute('src', dados.imagemPainel);
-         imgPainel.setAttribute('visible', 'true');
+      // Se for Vídeo
+      if (videoEl && videoEl.getAttribute('src')) {
+        if (!videoEl.paused) {
+          videoEl.pause();
+          btnTexto.setAttribute('value', 'PLAY');
+          btnCor.setAttribute('color', 'green');
+        } else {
+          videoEl.play().catch(e => console.log("Erro play video:", e));
+          btnTexto.setAttribute('value', 'PAUSE');
+          btnCor.setAttribute('color', 'red');
+        }
       }
 
-      irPara('grupo-player');
+      // Se for Áudio
+      if (audioNarracao) {
+        if (!audioNarracao.paused) {
+          audioNarracao.pause();
+          btnTexto.setAttribute('value', 'PLAY');
+          btnCor.setAttribute('color', 'green');
+        } else {
+          audioNarracao.play().catch(e => console.log("Erro play audio:", e));
+          btnTexto.setAttribute('value', 'PAUSE');
+          btnCor.setAttribute('color', 'red');
+        }
+      }
     }
+
+    function reiniciarMedia() {
+      console.log("Reiniciando..."); // Debug
+      const videoEl = document.getElementById('video-player');
+      if (videoEl && videoEl.getAttribute('src')) {
+        videoEl.currentTime = 0;
+        videoEl.play();
+      }
+      if (audioNarracao) {
+        audioNarracao.currentTime = 0;
+        audioNarracao.play();
+      }
+      document.getElementById('txt-btn-play').setAttribute('value', 'PAUSE');
+      document.getElementById('btn-play').setAttribute('color', 'red');
+    }
+
+    // --- NAVEGAÇÃO ---
+    function tocarFundo(url) {
+      if(audioFundo) { audioFundo.pause(); audioFundo = null; }
+      if(url && url.length > 5) {
+        audioFundo = new Audio(url);
+        audioFundo.volume = 0.2; audioFundo.loop = true;
+        audioFundo.play().catch(e => console.log("Aguardando interação"));
+      }
+    }
+
+    function prepararAudioPrincipal(url) {
+      if(audioNarracao) { audioNarracao.pause(); audioNarracao = null; }
+      if(url && url.length > 5) {
+        audioNarracao = new Audio(url);
+        audioNarracao.volume = 1.0;
+      }
+    }
+
+    function pararTudo() {
+      if(audioFundo) { audioFundo.pause(); audioFundo = null; }
+      if(audioNarracao) { audioNarracao.pause(); audioNarracao = null; }
+      const v = document.getElementById('video-player');
+      if(v) { v.pause(); v.removeAttribute('src'); }
+    }
+
+    function irPara(telaId) {
+      document.querySelectorAll('.tela').forEach(t => t.classList.add('escondido'));
+      if(telaId !== 'cenario') document.getElementById(telaId).classList.remove('escondido');
+    }
+
 
     function togglePlay() {
       const videoEl = document.getElementById('video-player');
@@ -315,4 +346,5 @@
   </a-scene>
 </body>
 </html>
+
 

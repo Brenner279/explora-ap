@@ -344,8 +344,8 @@
   <div id="btn-voltar-vr" class="btn-voltar-fixo escondido" onclick="voltarParaCategorias()">⬅ Voltar ao Menu</div>
   <div id="btn-voltar-ra" class="btn-voltar-fixo escondido" onclick="sairRA()">⬅ Sair da RA</div>
 
-  <a-scene cursor="rayOrigin: mouse">
-    <a-sky id="ceu" color="#333"></a-sky>
+  <a-scene>
+      <a-sky id="ceu" color="#333"></a-sky>
 
     <a-assets>
        <video id="video-player" loop="true" crossorigin="anonymous" playsinline webkit-playsinline></video>
@@ -381,10 +381,18 @@
           <a-gltf-model src=""></a-gltf-model>
     </a-entity>
 
-    <a-camera>
-        <a-cursor color="yellow" fuse="false"></a-cursor>
-    </a-camera>
-  </a-scene>
-
+<a-camera>
+    <a-cursor
+        id="cursor"
+        fuse="true"
+        fuse-timeout="1500"
+        color="yellow"
+        raycaster="objects: .clickable"
+        animation__fusing="property: scale; startEvents: fusing; easing: easeInCubic; dur: 1500; from: 1 1 1; to: 0.1 0.1 0.1"
+        animation__click="property: scale; startEvents: click; easing: easeInCubic; dur: 150; from: 0.1 0.1 0.1; to: 1 1 1"
+        animation__mouseleave="property: scale; startEvents: mouseleave; easing: easeInCubic; dur: 500; to: 1 1 1">
+    </a-cursor>
+</a-camera>
+    
 </body>
 </html>

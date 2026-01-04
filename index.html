@@ -9,21 +9,21 @@
   <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
   
   <style>
-    /* --- DESIGN GERAL --- */
+    /* --- DESIGN DA INTERFACE (Sua estrutura original) --- */
     body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #004d40; }
     
-    /* INTERFACE 2D (Fica por cima de tudo) */
+    /* MENU PRINCIPAL - Z-Index altíssimo para garantir que fique por cima da câmera */
     .tela { 
       position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
       background: linear-gradient(135deg, #004d40, #00695c, #80cbc4); 
       display: flex; flex-direction: column; align-items: center; justify-content: center; 
-      z-index: 9999; /* Z-Index bem alto para garantir que cubra a câmera */
+      z-index: 99999; 
       transition: opacity 0.5s; 
     }
     .escondido { display: none !important; }
     
     .conteudo-scroll { width: 100%; height: 70%; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
-    h1 { font-size: 2.5rem; color: white; margin-bottom: 5px; text-shadow: 0 3px 6px rgba(0,0,0,0.4); text-transform: uppercase; font-weight: 800; text-align: center; }
+    h1 { font-size: 2.5rem; color: white; margin-bottom: 5px; text-shadow: 0 3px 6px rgba(0,0,0,0.4); text-transform: uppercase; letter-spacing: 2px; font-weight: 800; text-align: center; }
     .subtitulo { color: #b2dfdb; margin-bottom: 20px; text-align: center; max-width: 90%; font-size: 0.9rem; font-style: italic; }
     h2 { color: #FFD700; margin-bottom: 20px; text-shadow: 1px 1px 2px black; }
     p { color: #eee; margin-bottom: 30px; text-align: center; max-width: 80%; }
@@ -37,36 +37,42 @@
     .btn-cidade { width: 140px; padding: 12px; margin: 0; background: linear-gradient(90deg, #FFD700 0%, #FFA000 100%); color: #3e2723; font-size: 0.85rem; border-radius: 10px; }
     .grid-botoes { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
     .btn-cat { width: 130px; padding: 15px; border-radius: 15px; font-size: 0.95rem; background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.4); cursor: pointer; }
-    .btn-voltar-fixo { position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.6); color: white; padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 0.9rem; z-index: 10000; cursor: pointer; }
+    .btn-voltar-fixo { position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.6); color: white; padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 0.9rem; z-index: 100000; cursor: pointer; }
     footer { position: absolute; bottom: 5px; width: 100%; text-align: center; color: rgba(255,255,255,0.4); font-size: 0.7rem; }
 
-    /* --- CORREÇÃO DO AR.JS (CRUCIAL) --- */
-    /* Força o vídeo da câmera a começar INVISÍVEL */
-    video { 
-        display: none !important; 
-        z-index: -1 !important; 
-        position: absolute; top: 0; left: 0; 
+    /* CONTROLE DE VISIBILIDADE DO MUNDO 3D */
+    /* Container que guarda a cena: começa escondido para não mostrar a câmera */
+    #cena-conteiner {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        z-index: 1;
+        visibility: hidden; /* O segredo: visibilidade oculta mantém o 3D carregado mas invisível */
     }
-    .a-canvas { z-index: 1 !important; }
+
+    /* Força bruta para esconder o vídeo da câmera do AR.js */
+    .arjs-video {
+        display: none !important;
+        z-index: -999 !important;
+    }
   </style>
 
   <script>
-    /* --- LÓGICA DO SISTEMA --- */
+    /* --- SCRIPT DE CONTROLE DE INICIALIZAÇÃO --- */
     
-    // Configuração Inicial ao Carregar
-    window.onload = function() {
-        // Garante que a tela de início está visível
-        irPara('tela-inicio');
-        // Garante que a câmera está desligada visualmente
-        const videoAr = document.querySelector('video');
-        if(videoAr) videoAr.style.display = 'none';
-    };
+    // Este intervalo garante que o vídeo da câmera fique escondido até decidirmos mostrar
+    let checkVideoInterval = setInterval(() => {
+        const v = document.querySelector('video');
+        if(v) {
+            v.classList.add('arjs-video'); // Adiciona a classe que esconde
+            v.pause(); // Pausa o stream para economizar bateria
+        }
+    }, 500);
 
+    /* --- LÓGICA DO SISTEMA --- */
     let cidadeAtual = '';
     let audioFundo = null;
     let audioNarracao = null; 
 
-    // --- BANCO DE DADOS ---
+    // --- SEU BANCO DE DADOS COMPLETO ---
     const db = {
       'vitoria': {
         nome: 'Vitória do Jari', somAmbiente: '', 
@@ -76,25 +82,25 @@
           'mapa': { t: 'BANDEIRA', txt: 'Bandeira Oficial.', imagemPainel: './assets/imagens/vitoria.png', tipo: 'imagem', video: '', cor: '#388E3C', narra: '' }
         }
       },
-      // ... Outras cidades (Placeholders para não travar)
+      // Adicionei placeholders para todas as cidades para o menu não quebrar
       'macapa': { nome: 'Macapá', somAmbiente: '', conteudos: { 'historia': {t:'Em breve',txt:'...',cor:'#444'}, 'culinaria': {t:'',txt:'...',cor:'#444'}, 'mapa': {t:'',txt:'...',cor:'#444'} } },
       'amapa': { nome: 'Amapá', somAmbiente: '', conteudos: { 'historia': {t:'Em breve',txt:'...',cor:'#444'}, 'culinaria': {t:'',txt:'...',cor:'#444'}, 'mapa': {t:'',txt:'...',cor:'#444'} } },
-      'santana': { nome: 'Santana', somAmbiente: '', conteudos: { 'historia': {t:'Em breve',txt:'...',cor:'#444'}, 'culinaria': {t:'',txt:'...',cor:'#444'}, 'mapa': {t:'',txt:'...',cor:'#444'} } },
-      'mazagao': { nome: 'Mazagão', somAmbiente: '', conteudos: { 'historia': {t:'Em breve',txt:'...',cor:'#444'}, 'culinaria': {t:'',txt:'...',cor:'#444'}, 'mapa': {t:'',txt:'...',cor:'#444'} } },
-      'oiapoque': { nome: 'Oiapoque', somAmbiente: '', conteudos: { 'historia': {t:'Em breve',txt:'...',cor:'#444'}, 'culinaria': {t:'',txt:'...',cor:'#444'}, 'mapa': {t:'',txt:'...',cor:'#444'} } },
       'calcoene': { nome: 'Calçoene', somAmbiente: '', conteudos: { 'historia': {t:'Em breve',txt:'...',cor:'#444'}, 'culinaria': {t:'',txt:'...',cor:'#444'}, 'mapa': {t:'',txt:'...',cor:'#444'} } },
       'cutias': { nome: 'Cutias', somAmbiente: '', conteudos: { 'historia': {t:'Em breve',txt:'...',cor:'#444'}, 'culinaria': {t:'',txt:'...',cor:'#444'}, 'mapa': {t:'',txt:'...',cor:'#444'} } },
       'ferreira': { nome: 'Ferreira Gomes', somAmbiente: '', conteudos: { 'historia': {t:'Em breve',txt:'...',cor:'#444'}, 'culinaria': {t:'',txt:'...',cor:'#444'}, 'mapa': {t:'',txt:'...',cor:'#444'} } },
       'itaubal': { nome: 'Itaubal', somAmbiente: '', conteudos: { 'historia': {t:'Em breve',txt:'...',cor:'#444'}, 'culinaria': {t:'',txt:'...',cor:'#444'}, 'mapa': {t:'',txt:'...',cor:'#444'} } },
       'laranjal': { nome: 'Laranjal do Jari', somAmbiente: '', conteudos: { 'historia': {t:'Em breve',txt:'...',cor:'#444'}, 'culinaria': {t:'',txt:'...',cor:'#444'}, 'mapa': {t:'',txt:'...',cor:'#444'} } },
+      'mazagao': { nome: 'Mazagão', somAmbiente: '', conteudos: { 'historia': {t:'Em breve',txt:'...',cor:'#444'}, 'culinaria': {t:'',txt:'...',cor:'#444'}, 'mapa': {t:'',txt:'...',cor:'#444'} } },
+      'oiapoque': { nome: 'Oiapoque', somAmbiente: '', conteudos: { 'historia': {t:'Em breve',txt:'...',cor:'#444'}, 'culinaria': {t:'',txt:'...',cor:'#444'}, 'mapa': {t:'',txt:'...',cor:'#444'} } },
       'pedra': { nome: 'Pedra Branca', somAmbiente: '', conteudos: { 'historia': {t:'Em breve',txt:'...',cor:'#444'}, 'culinaria': {t:'',txt:'...',cor:'#444'}, 'mapa': {t:'',txt:'...',cor:'#444'} } },
       'porto': { nome: 'Porto Grande', somAmbiente: '', conteudos: { 'historia': {t:'Em breve',txt:'...',cor:'#444'}, 'culinaria': {t:'',txt:'...',cor:'#444'}, 'mapa': {t:'',txt:'...',cor:'#444'} } },
       'pracuuba': { nome: 'Pracuúba', somAmbiente: '', conteudos: { 'historia': {t:'Em breve',txt:'...',cor:'#444'}, 'culinaria': {t:'',txt:'...',cor:'#444'}, 'mapa': {t:'',txt:'...',cor:'#444'} } },
+      'santana': { nome: 'Santana', somAmbiente: '', conteudos: { 'historia': {t:'Em breve',txt:'...',cor:'#444'}, 'culinaria': {t:'',txt:'...',cor:'#444'}, 'mapa': {t:'',txt:'...',cor:'#444'} } },
       'serra': { nome: 'Serra do Navio', somAmbiente: '', conteudos: { 'historia': {t:'Em breve',txt:'...',cor:'#444'}, 'culinaria': {t:'',txt:'...',cor:'#444'}, 'mapa': {t:'',txt:'...',cor:'#444'} } },
       'tartarugal': { nome: 'Tartarugalzinho', somAmbiente: '', conteudos: { 'historia': {t:'Em breve',txt:'...',cor:'#444'}, 'culinaria': {t:'',txt:'...',cor:'#444'}, 'mapa': {t:'',txt:'...',cor:'#444'} } }
     };
 
-    // --- CONTROLE DE PLAY/PAUSE ---
+    // --- FUNÇÕES DE MÍDIA ---
     function togglePlay() {
       const videoEl = document.getElementById('video-player');
       const btnTexto = document.getElementById('txt-btn-play');
@@ -115,7 +121,6 @@
       document.getElementById('btn-play').setAttribute('color', 'red');
     }
 
-    // --- FUNÇÕES GERAIS ---
     function tocarFundo(url) {
       if(audioFundo) { audioFundo.pause(); audioFundo = null; }
       if(url && url.length > 5) {
@@ -140,28 +145,37 @@
       if(telaId !== 'cenario') document.getElementById(telaId).classList.remove('escondido');
     }
 
-    // --- CONTROLE DA CÂMERA (A MÁGICA ACONTECE AQUI) ---
-    function ativarCamera(ligar) {
+    // --- CONTROLE DE MODO (AR vs VR) ---
+    function gerenciarModo(modo) {
         const videoAr = document.querySelector('video');
-        if(!videoAr) return; // Se ainda não carregou, ignora
+        const container = document.getElementById('cena-conteiner');
 
-        if(ligar) {
-            // Remove o "display: none !important" do CSS
-            videoAr.style.setProperty('display', 'block', 'important');
+        // Mostra o container 3D
+        container.style.visibility = 'visible';
+
+        if (modo === 'AR') {
+            // LIGAR CÂMERA
+            if(videoAr) {
+                videoAr.classList.remove('arjs-video'); // Remove a classe que esconde
+                videoAr.style.display = 'block';
+                videoAr.play();
+            }
         } else {
-            // Restaura o bloqueio
-            videoAr.style.setProperty('display', 'none', 'important');
+            // DESLIGAR CÂMERA (Modo VR)
+            if(videoAr) {
+                videoAr.classList.add('arjs-video'); // Adiciona a classe que esconde
+                videoAr.style.display = 'none';
+                videoAr.pause();
+            }
         }
     }
 
-    // --- MODO RA (HIRO + T-REX) ---
+    // --- INICIAR AR ---
     function iniciarRA() {
-      irPara('cenario');
-      
-      // 1. Liga a câmera
-      ativarCamera(true);
+      irPara('cenario'); // Esconde o menu HTML
+      gerenciarModo('AR'); // Liga a câmera
 
-      // 2. Configura a cena para AR
+      // Configura os objetos da cena
       document.getElementById('marcador-hiro').setAttribute('visible', 'true');
       document.getElementById('grupo-vr').setAttribute('visible', 'false');
       document.getElementById('ceu').setAttribute('visible', 'false');
@@ -174,15 +188,16 @@
 
     function sairRA() {
       pararTudo();
-      ativarCamera(false); // Desliga câmera
       irPara('tela-inicio');
+      // Esconde o container 3D inteiro para voltar ao menu limpo
+      document.getElementById('cena-conteiner').style.visibility = 'hidden';
       document.getElementById('btn-voltar-ra').classList.add('escondido');
     }
 
-    // --- MODO VR (CIDADES) ---
+    // --- INICIAR VR ---
     function iniciarFluxoVR() { 
         irPara('tela-cidades'); 
-        ativarCamera(false); // Garante câmera desligada
+        gerenciarModo('VR'); // Garante câmera desligada
     }
 
     function selecionarCidade(chave) {
@@ -196,8 +211,8 @@
       if (db[cidadeAtual] && db[cidadeAtual].conteudos[tipo]) {
          const dados = db[cidadeAtual].conteudos[tipo];
          
-         // Garante modo VR
-         ativarCamera(false);
+         // 1. Configura Ambiente VR
+         gerenciarModo('VR');
          document.getElementById('marcador-hiro').setAttribute('visible', 'false');
          
          document.getElementById('grupo-vr').setAttribute('visible', 'true');
@@ -205,6 +220,7 @@
          ceu.setAttribute('visible', 'true');
          ceu.setAttribute('color', dados.cor || '#333');
 
+         // 2. Preenche os dados (Título, Texto, Mídia)
          document.getElementById('vr-titulo').setAttribute('value', dados.t);
          document.getElementById('vr-texto').setAttribute('value', dados.txt);
          
@@ -218,6 +234,7 @@
          controles.setAttribute('visible', 'false');
          videoEl.pause(); videoEl.removeAttribute('src');
 
+         // Verifica o tipo de conteúdo e ajusta o painel
          if (dados.video && dados.video.length > 5) {
            videoEl.setAttribute('src', dados.video);
            telaVideo.setAttribute('visible', 'true');
@@ -240,17 +257,9 @@
            document.getElementById('vr-texto').setAttribute('visible', 'true');
          }
          
-         // Lógica do Modelo 3D (Se houver)
-         const entidadeModelo = document.getElementById('vr-modelo');
-         const modeloGltf = entidadeModelo.querySelector('a-gltf-model');
-         if (dados.modelo3d && dados.modelo3d.length > 5) {
-            modeloGltf.setAttribute('src', dados.modelo3d);
-            entidadeModelo.setAttribute('visible', 'true');
-         } else {
-            entidadeModelo.setAttribute('visible', 'false');
-         }
-
          irPara('cenario');
+         // No VR, o container 3D precisa estar visível, mas sem câmera
+         document.getElementById('cena-conteiner').style.visibility = 'visible';
          document.getElementById('btn-voltar-vr').classList.remove('escondido');
          document.getElementById('btn-voltar-ra').classList.add('escondido');
       }
@@ -260,6 +269,8 @@
       pararTudo();
       if(audioFundo) audioFundo.volume = 0.3;
       document.getElementById('btn-voltar-vr').classList.add('escondido');
+      // Esconde o 3D temporariamente enquanto escolhe categorias
+      document.getElementById('cena-conteiner').style.visibility = 'hidden'; 
       irPara('tela-categorias');
     }
   </script>
@@ -268,10 +279,10 @@
 
   <div id="tela-inicio" class="tela">
     <h1>Explora AP</h1>
-    <p class="subtitulo">"TCC - Tecnologias Imersivas"</p>
+    <p class="subtitulo">"Tecnologias Imersivas - TCC 2025"</p>
     <button class="btn btn-ra" onclick="iniciarRA()">📷 Realidade Aumentada</button>
     <button class="btn btn-vr" onclick="iniciarFluxoVR()">👓 Realidade Virtual</button>
-    <footer>Inovação e Tecnologias Educacionais • 2025</footer>
+    <footer>Inovação e Tecnologias Educacionais</footer>
   </div>
 
   <div id="tela-cidades" class="tela escondido">
@@ -314,60 +325,57 @@
   <div id="btn-voltar-ra" class="btn-voltar-fixo escondido" onclick="sairRA()">⬅ Sair da RA</div>
 
 
-  <a-scene 
-      embedded 
-      arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
-      renderer="logarithmicDepthBuffer: true;"
-      vr-mode-ui="enabled: false">
-    
-    <a-assets>
-       <video id="video-player" loop="true" crossorigin="anonymous" playsinline webkit-playsinline></video>
-    </a-assets>
-
-    <a-marker preset="hiro" id="marcador-hiro" visible="false">
-        <a-entity
-          position="0 0 0"
-          scale="0.05 0.05 0.05"
-          gltf-model="https://raw.githack.com/AR-js-org/AR.js/master/aframe/examples/image-tracking/nft/trex/scene.gltf"
-          animation="property: rotation; to: 0 360 0; loop: true; dur: 10000"
-        ></a-entity>
-    </a-marker>
-
-    <a-sky id="ceu" color="#333" visible="false"></a-sky>
-
-    <a-entity id="grupo-vr" visible="false">
-        <a-entity position="0 1.6 -3">
-          <a-plane color="#111" opacity="0.95" width="3.5" height="2" border="color: white; width: 0.05"></a-plane>
-          
-          <a-text id="vr-titulo" value="TITULO" align="center" position="0 0.8 0.1" color="#FFD700" width="6"></a-text>
-          <a-text id="vr-texto" value="Texto..." align="center" position="0 -0.2 0.1" width="3.2" wrap-count="32"></a-text>
-          
-          <a-video id="vr-video" src="#video-player" width="3" height="1.5" position="0 -0.1 0.05" visible="false"></a-video>
-          <a-image id="vr-imagem-painel" width="2" height="1.4" position="0 -0.1 0.06" visible="false"></a-image>
-
-          <a-entity id="controles-media" position="0 -1.3 0" visible="false">
-              <a-entity position="-0.5 0 0" onclick="togglePlay()" class="clickable">
-                  <a-circle id="btn-play" radius="0.25" color="green"></a-circle>
-                  <a-text id="txt-btn-play" value="PLAY" align="center" position="0 0 0.1" scale="0.8 0.8 0.8"></a-text>
-              </a-entity>
-              <a-entity position="0.5 0 0" onclick="reiniciarMedia()" class="clickable">
-                  <a-circle id="btn-restart" radius="0.25" color="#0055ff"></a-circle>
-                  <a-text value="RESTART" align="center" position="0 0 0.1" scale="0.6 0.6 0.6"></a-text>
-              </a-entity>
-          </a-entity>
-        </a-entity>
+  <div id="cena-conteiner">
+      <a-scene 
+          embedded 
+          arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+          renderer="logarithmicDepthBuffer: true;"
+          vr-mode-ui="enabled: false">
         
-        <a-entity id="vr-modelo" position="2.5 1.5 -2.5" rotation="0 -30 0" visible="false"
-                  animation="property: rotation; to: 0 330 0; loop: true; dur: 10000">
-            <a-gltf-model src=""></a-gltf-model>
+        <a-assets>
+           <video id="video-player" loop="true" crossorigin="anonymous" playsinline webkit-playsinline></video>
+        </a-assets>
+
+        <a-marker preset="hiro" id="marcador-hiro" visible="false">
+            <a-entity
+              position="0 0 0"
+              scale="0.05 0.05 0.05"
+              gltf-model="https://raw.githack.com/AR-js-org/AR.js/master/aframe/examples/image-tracking/nft/trex/scene.gltf"
+              animation="property: rotation; to: 0 360 0; loop: true; dur: 10000"
+            ></a-entity>
+        </a-marker>
+
+        <a-sky id="ceu" color="#333" visible="false"></a-sky>
+
+        <a-entity id="grupo-vr" visible="false">
+            <a-entity position="0 1.6 -3">
+              <a-plane color="#111" opacity="0.95" width="3.5" height="2" border="color: white; width: 0.05"></a-plane>
+              
+              <a-text id="vr-titulo" value="TITULO" align="center" position="0 0.8 0.1" color="#FFD700" width="6"></a-text>
+              <a-text id="vr-texto" value="Texto..." align="center" position="0 -0.2 0.1" width="3.2" wrap-count="32"></a-text>
+              
+              <a-video id="vr-video" src="#video-player" width="3" height="1.5" position="0 -0.1 0.05" visible="false"></a-video>
+              <a-image id="vr-imagem-painel" width="2" height="1.4" position="0 -0.1 0.06" visible="false"></a-image>
+
+              <a-entity id="controles-media" position="0 -1.3 0" visible="false">
+                  <a-entity position="-0.5 0 0" onclick="togglePlay()" class="clickable">
+                      <a-circle id="btn-play" radius="0.25" color="green"></a-circle>
+                      <a-text id="txt-btn-play" value="PLAY" align="center" position="0 0 0.1" scale="0.8 0.8 0.8"></a-text>
+                  </a-entity>
+                  <a-entity position="0.5 0 0" onclick="reiniciarMedia()" class="clickable">
+                      <a-circle id="btn-restart" radius="0.25" color="#0055ff"></a-circle>
+                      <a-text value="RESTART" align="center" position="0 0 0.1" scale="0.6 0.6 0.6"></a-text>
+                  </a-entity>
+              </a-entity>
+            </a-entity>
         </a-entity>
-    </a-entity>
 
-    <a-entity camera>
-        <a-cursor color="yellow" fuse="false" scale="0.5 0.5 0.5"></a-cursor>
-    </a-entity>
+        <a-entity camera>
+            <a-cursor color="yellow" fuse="false" scale="0.5 0.5 0.5"></a-cursor>
+        </a-entity>
 
-  </a-scene>
+      </a-scene>
+  </div>
 
 </body>
 </html>

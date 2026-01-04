@@ -2,76 +2,43 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Explora AP - TCC (Visual Premium)</title>
-  
-  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Explora AP - TCC (Versão Final AR+VR)</title>
+
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
   
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
-  
   <style>
-    /* --- DESIGN GERAL (SEU ESTILO ORIGINAL) --- */
-    body { margin: 0; overflow: hidden; font-family: 'Montserrat', sans-serif; background-color: #000; }
-
-    /* O MindAR gerencia o vídeo de fundo automaticamente, removemos o #webcam manual */
-
-    .tela { 
-      position: absolute; width: 100%; height: 100%; 
-      background: radial-gradient(circle at center, #004d40 0%, #00251a 70%, #000000 100%); 
-      display: flex; flex-direction: column; align-items: center; justify-content: center; 
-      z-index: 999; transition: opacity 0.5s; color: white;
-    }
+    /* --- DESIGN (Seu CSS Original Mantido) --- */
+    body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #000; }
+    
+    /* O MindAR gerencia o vídeo de fundo, removemos o CSS do #webcam manual */
+    
+    .tela { position: absolute; width: 100%; height: 100%; background: linear-gradient(135deg, #004d40, #00695c, #80cbc4); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; transition: opacity 0.5s; pointer-events: auto; }
     .escondido { display: none !important; }
-    
-    .conteudo-scroll { width: 100%; height: 70%; overflow-y: auto; display: flex; flex-direction: column; align-items: center; scrollbar-width: thin; scrollbar-color: #FFD700 #00251a; }
-
-    h1 { 
-      font-size: 2.8rem; margin-bottom: 5px; font-weight: 900; letter-spacing: 2px; text-align: center; text-transform: uppercase;
-      background: linear-gradient(to right, #FFD700, #FFA500); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.5));
-    }
-    .subtitulo { color: #b2dfdb; margin-bottom: 25px; text-align: center; max-width: 90%; font-size: 1rem; font-style: italic; font-weight: 400; }
-    h2 { color: #FFD700; margin-bottom: 20px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+    .conteudo-scroll { width: 100%; height: 70%; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
+    h1 { font-size: 2.5rem; color: white; margin-bottom: 5px; text-shadow: 0 3px 6px rgba(0,0,0,0.4); text-transform: uppercase; letter-spacing: 2px; font-weight: 800; text-align: center; }
+    .subtitulo { color: #b2dfdb; margin-bottom: 20px; text-align: center; max-width: 90%; font-size: 0.9rem; font-style: italic; }
+    h2 { color: #FFD700; margin-bottom: 20px; text-shadow: 1px 1px 2px black; }
     p { color: #eee; margin-bottom: 30px; text-align: center; max-width: 80%; }
-
-    .btn { 
-      width: 280px; padding: 18px; margin: 10px; border: none; border-radius: 15px; 
-      font-size: 1rem; font-weight: 700; cursor: pointer; font-family: 'Montserrat', sans-serif; text-transform: uppercase;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.4); transition: all 0.2s ease; 
-    }
-    .btn:active { transform: scale(0.97); }
-    
-    .btn-ra { background: linear-gradient(135deg, #ffffff, #e0e0e0); color: #004d40; }
-    .btn-vr { background: rgba(0,0,0,0.6); color: #FFD700; border: 2px solid #FFD700; backdrop-filter: blur(5px); }
-    
-    .grid-cidades { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding-bottom: 50px; }
-    .btn-cidade { 
-      width: 145px; padding: 15px; margin: 0; border-radius: 12px;
-      background: linear-gradient(135deg, #FFD700 0%, #FFA000 100%); 
-      color: #3e2723; font-size: 0.8rem; font-weight: 800; border: none;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-    }
-
+    .btn { width: 280px; padding: 15px; margin: 8px; border: none; border-radius: 50px; font-size: 1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: transform 0.2s; }
+    .btn:hover { transform: scale(1.02); }
+    .btn-ra { background-color: #fff; color: #004d40; }
+    .btn-vr { background-color: #222; color: #FFD700; border: 2px solid #FFD700; }
+    .grid-cidades { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-bottom: 50px; }
+    .btn-cidade { width: 140px; padding: 12px; margin: 0; background: linear-gradient(90deg, #FFD700 0%, #FFA000 100%); color: #3e2723; font-size: 0.85rem; border-radius: 10px; }
     .grid-botoes { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    .btn-cat { 
-      width: 130px; padding: 15px; border-radius: 12px; font-size: 0.9rem; 
-      background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); cursor: pointer; backdrop-filter: blur(4px);
-    }
-    
-    .btn-voltar-fixo { 
-      position: absolute; top: 20px; left: 20px; 
-      background: rgba(0,0,0,0.6); color: white; padding: 10px 25px; border-radius: 30px; 
-      text-decoration: none; font-weight: bold; font-size: 0.9rem; z-index: 500; cursor: pointer; border: 1px solid rgba(255,255,255,0.2);
-    }
-    
-    /* Overlay simples para orientar na RA */
+    .btn-cat { width: 130px; padding: 15px; border-radius: 15px; font-size: 0.95rem; background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.4); cursor: pointer; }
+    .btn-voltar-fixo { position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.6); color: white; padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 0.9rem; z-index: 1000; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); }
+    footer { position: absolute; bottom: 5px; width: 100%; text-align: center; color: rgba(255,255,255,0.4); font-size: 0.7rem; }
+
+    /* Novo Overlay para avisar sobre o Marcador */
     #aviso-ra {
         position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-        padding: 20px; background: rgba(0,0,0,0.7); color: #FFD700; border: 2px solid #FFD700;
-        border-radius: 10px; text-align: center; pointer-events: none; z-index: 800;
+        padding: 20px; border: 2px dashed #FFD700; border-radius: 15px;
+        color: #FFD700; background: rgba(0,0,0,0.6); text-align: center;
+        pointer-events: none; z-index: 800; font-weight: bold;
     }
-
-    footer { position: absolute; bottom: 10px; width: 100%; text-align: center; color: rgba(255,255,255,0.3); font-size: 0.7rem; letter-spacing: 1px; }
   </style>
 
   <script>
@@ -86,18 +53,17 @@
     const db = {
       'vitoria': {
         nome: 'Vitória do Jari',
-        somAmbiente: '', 
         conteudos: {
-          'historia': { t: 'VÍDEO DA CIDADE', txt: 'Use os controles abaixo.', video: './assets/videos/vitoria.mp4', tipo: 'video', narra: '' },
-          'culinaria': { t: 'HINO MUNICIPAL', txt: 'Use os controles para ouvir.', video: '', tipo: 'audio', narra: './assets/audios/vitoria.mp3' },
-          'mapa': { t: 'BANDEIRA', txt: 'Visualizando a bandeira.', imagemPainel: './assets/imagens/vitoria.png', tipo: 'imagem', narra: '' }
+          'historia': { t: 'VÍDEO DA CIDADE', txt: 'Use os controles.', video: './assets/videos/vitoria.mp4', tipo: 'video', narra: '' },
+          'culinaria': { t: 'HINO MUNICIPAL', txt: 'Ouvindo hino.', video: '', tipo: 'audio', narra: './assets/audios/vitoria.mp3' },
+          'mapa': { t: 'BANDEIRA', txt: 'Bandeira no painel.', imagemPainel: './assets/imagens/vitoria.png', tipo: 'imagem', narra: '' }
         }
       },
-      // ... (Outras cidades mantidas iguais, omitidas para economizar espaço)
-      'macapa': { nome: 'Macapá', somAmbiente: '', conteudos: { 'historia': {t:'Teste',txt:'Em breve',cor:'#444'} } }
+      // ... Outras cidades ...
+      'macapa': { nome: 'Macapá', conteudos: { 'historia': {t:'Macapá',txt:'Em breve'} } }
     };
 
-    // --- CONTROLES (Mantidos iguais) ---
+    // --- CONTROLES DE MÍDIA ---
     function togglePlay() {
       const videoEl = document.getElementById('video-player');
       const btnTexto = document.getElementById('txt-btn-play');
@@ -130,31 +96,10 @@
 
     function reiniciarMedia() {
       const videoEl = document.getElementById('video-player');
-      if (videoEl && videoEl.getAttribute('src')) {
-        videoEl.currentTime = 0; videoEl.play();
-      }
-      if (audioNarracao) {
-        audioNarracao.currentTime = 0; audioNarracao.play();
-      }
+      if (videoEl && videoEl.getAttribute('src')) { videoEl.currentTime = 0; videoEl.play(); }
+      if (audioNarracao) { audioNarracao.currentTime = 0; audioNarracao.play(); }
       document.getElementById('txt-btn-play').setAttribute('value', 'PAUSE');
       document.getElementById('btn-play').setAttribute('color', 'red');
-    }
-
-    function tocarFundo(url) {
-      if(audioFundo) { audioFundo.pause(); audioFundo = null; }
-      if(url && url.length > 5) {
-        audioFundo = new Audio(url);
-        audioFundo.volume = 0.2; audioFundo.loop = true;
-        audioFundo.play().catch(e => console.log("Interaja"));
-      }
-    }
-
-    function prepararAudioPrincipal(url) {
-      if(audioNarracao) { audioNarracao.pause(); audioNarracao = null; }
-      if(url && url.length > 5) {
-        audioNarracao = new Audio(url);
-        audioNarracao.volume = 1.0;
-      }
     }
 
     function pararTudo() {
@@ -169,149 +114,137 @@
       if(telaId !== 'cenario') document.getElementById(telaId).classList.remove('escondido');
     }
 
-    // --- NOVA LÓGICA DE REALIDADE AUMENTADA (MindAR) ---
-    // Apenas esta parte foi drasticamente alterada para funcionar
+    // --- INTEGRAÇÃO COM MINDAR (Aqui está a mágica) ---
     function iniciarRA() {
-       // 1. Acessa a cena e o sistema MindAR
-       const sceneEl = document.querySelector('a-scene');
-       const arSystem = sceneEl.systems["mindar-image-system"];
-       
-       // 2. Inicia o MindAR (Câmera)
-       arSystem.start();
-       
-       // 3. Oculta elementos do VR (Céu, Luzes extras)
-       document.getElementById('ceu').setAttribute('visible', 'false');
-       document.getElementById('luz-ambiente').setAttribute('visible', 'false');
-       document.getElementById('luz-sol').setAttribute('visible', 'false');
-       
-       // 4. Esconde o "Painel VR" para ele não flutuar na frente da câmera sem marcador
-       document.getElementById('painel-vr-grupo').setAttribute('visible', 'false');
+      const sceneEl = document.querySelector('a-scene');
+      const arSystem = sceneEl.systems["mindar-image-system"];
+      
+      // 1. Liga o sistema de AR
+      arSystem.start();
 
-       // 5. Ajusta controles da câmera (Trava look-controls para AR)
-       document.getElementById('camera-principal').setAttribute('look-controls', 'enabled: false');
+      // 2. Esconde o ambiente de VR (Céu e Painel Flutuante)
+      document.getElementById('ceu').setAttribute('visible', 'false');
+      document.getElementById('grupo-vr').setAttribute('visible', 'false');
 
-       // 6. UI
-       irPara('cenario');
-       document.getElementById('btn-voltar-ra').classList.remove('escondido');
-       document.getElementById('btn-voltar-vr').classList.add('escondido');
-       document.getElementById('aviso-ra').classList.remove('escondido');
+      // 3. Trava a câmera (Para AR funcionar, não podemos ter look-controls)
+      document.getElementById('camera-principal').setAttribute('look-controls', 'enabled: false');
+
+      // 4. Mostra interface de AR
+      irPara('cenario');
+      document.getElementById('aviso-ra').classList.remove('escondido');
+      document.getElementById('btn-voltar-ra').classList.remove('escondido');
+      document.getElementById('btn-voltar-vr').classList.add('escondido');
     }
 
     function sairRA() {
-       // 1. Para o MindAR
-       const sceneEl = document.querySelector('a-scene');
-       const arSystem = sceneEl.systems["mindar-image-system"];
-       arSystem.stop();
-       
-       // 2. Restaura elementos VR
-       document.getElementById('ceu').setAttribute('visible', 'true');
-       document.getElementById('luz-ambiente').setAttribute('visible', 'true');
-       document.getElementById('luz-sol').setAttribute('visible', 'true');
-       document.getElementById('painel-vr-grupo').setAttribute('visible', 'true');
+      const sceneEl = document.querySelector('a-scene');
+      const arSystem = sceneEl.systems["mindar-image-system"];
+      
+      // 1. Desliga o sistema de AR
+      arSystem.stop();
 
-       // 3. Destrava controles da câmera
-       document.getElementById('camera-principal').setAttribute('look-controls', 'enabled: true');
+      // 2. Restaura o ambiente VR
+      document.getElementById('ceu').setAttribute('visible', 'true');
+      document.getElementById('grupo-vr').setAttribute('visible', 'true');
 
-       pararTudo();
-       document.getElementById('btn-voltar-ra').classList.add('escondido');
-       document.getElementById('aviso-ra').classList.add('escondido');
-       irPara('tela-inicio');
+      // 3. Libera a câmera (Para VR funcionar o look-controls deve ser true)
+      document.getElementById('camera-principal').setAttribute('look-controls', 'enabled: true');
+
+      // 4. Volta para o menu
+      pararTudo();
+      document.getElementById('aviso-ra').classList.add('escondido');
+      document.getElementById('btn-voltar-ra').classList.add('escondido');
+      irPara('tela-inicio');
     }
 
     function iniciarFluxoVR() { 
-      // Garante que o céu está visível
-      document.getElementById('ceu').setAttribute('visible', 'true');
-      document.getElementById('painel-vr-grupo').setAttribute('visible', 'true');
-      irPara('tela-cidades'); 
+        // Garante que o VR está visível
+        document.getElementById('ceu').setAttribute('visible', 'true');
+        document.getElementById('grupo-vr').setAttribute('visible', 'true');
+        irPara('tela-cidades'); 
     }
 
     function selecionarCidade(chave) {
       cidadeAtual = chave;
       document.getElementById('nome-cidade-escolhida').innerText = db[chave].nome;
-      tocarFundo(db[chave].somAmbiente);
+      // tocarFundo(db[chave].somAmbiente); // Opcional
       irPara('tela-categorias');
     }
 
-    // Essa função foi ajustada para atualizar AMBOS: o painel VR e o alvo AR
     function verConteudoVR(tipo) {
       if (db[cidadeAtual] && db[cidadeAtual].conteudos[tipo]) {
-          const dados = db[cidadeAtual].conteudos[tipo];
-          
-          // Limpa mídias
-          const videoEl = document.getElementById('video-player');
-          videoEl.pause(); videoEl.removeAttribute('src');
+         const dados = db[cidadeAtual].conteudos[tipo];
+         
+         const videoEl = document.getElementById('video-player');
+         videoEl.pause(); videoEl.removeAttribute('src'); 
 
-          // --- ATUALIZAÇÃO DO PAINEL VR (ORIGINAL) ---
-          document.getElementById('vr-titulo').setAttribute('value', dados.t);
-          document.getElementById('vr-texto').setAttribute('value', dados.txt);
-          const telaVideoVR = document.getElementById('vr-video');
-          const imagemPainelVR = document.getElementById('vr-imagem-painel');
-          const controles = document.getElementById('controles-media');
+         // --- ATUALIZAÇÃO DO PAINEL VR ---
+         document.getElementById('vr-titulo').setAttribute('value', dados.t);
+         document.getElementById('vr-texto').setAttribute('value', dados.txt);
+         
+         const telaVideo = document.getElementById('vr-video');
+         const imagemPainel = document.getElementById('vr-imagem-painel');
+         const controles = document.getElementById('controles-media');
 
-          telaVideoVR.setAttribute('visible', 'false');
-          imagemPainelVR.setAttribute('visible', 'false');
-          controles.setAttribute('visible', 'false');
+         // Reset
+         telaVideo.setAttribute('visible', 'false');
+         imagemPainel.setAttribute('visible', 'false');
+         controles.setAttribute('visible', 'false');
 
-          // --- ATUALIZAÇÃO DO PAINEL AR (NOVO) ---
-          const telaVideoAR = document.getElementById('ar-video');
-          const imagemPainelAR = document.getElementById('ar-imagem-painel');
-          
-          telaVideoAR.setAttribute('visible', 'false');
-          imagemPainelAR.setAttribute('visible', 'false');
+         // --- ATUALIZAÇÃO DO PAINEL AR (Para aparecer no alvo também) ---
+         const arVideo = document.getElementById('ar-video');
+         const arImagem = document.getElementById('ar-imagem');
+         arVideo.setAttribute('visible', 'false');
+         arImagem.setAttribute('visible', 'false');
 
-          // 1. É VÍDEO?
-          if (dados.video && dados.video.length > 5) {
-             videoEl.setAttribute('src', dados.video);
-             
-             // Ativa no VR
-             telaVideoVR.setAttribute('visible', 'true');
-             controles.setAttribute('visible', 'true');
-             document.getElementById('vr-texto').setAttribute('visible', 'false');
-             
-             // Ativa no AR
-             telaVideoAR.setAttribute('visible', 'true');
-             
-             // Botões
-             document.getElementById('txt-btn-play').setAttribute('value', 'PLAY');
-             document.getElementById('btn-play').setAttribute('color', 'green');
-          } 
-          // 2. É IMAGEM?
-          else if (dados.imagemPainel && dados.imagemPainel.length > 5) {
-             // VR
-             imagemPainelVR.setAttribute('src', dados.imagemPainel);
-             imagemPainelVR.setAttribute('visible', 'true');
-             document.getElementById('vr-texto').setAttribute('visible', 'false');
-             
-             // AR
-             imagemPainelAR.setAttribute('src', dados.imagemPainel);
-             imagemPainelAR.setAttribute('visible', 'true');
-          }
-          // 3. É ÁUDIO?
-          else if (dados.tipo === 'audio' && dados.narra) {
-             prepararAudioPrincipal(dados.narra);
-             controles.setAttribute('visible', 'true');
-             document.getElementById('vr-texto').setAttribute('visible', 'true');
-             document.getElementById('txt-btn-play').setAttribute('value', 'PLAY');
-             document.getElementById('btn-play').setAttribute('color', 'green');
-          }
+         // Lógica de Mídia
+         if (dados.video && dados.video.length > 5) {
+           videoEl.setAttribute('src', dados.video);
+           
+           // VR
+           telaVideo.setAttribute('visible', 'true');
+           controles.setAttribute('visible', 'true');
+           document.getElementById('vr-texto').setAttribute('visible', 'false');
+           
+           // AR
+           arVideo.setAttribute('visible', 'true');
+           
+           document.getElementById('txt-btn-play').setAttribute('value', 'PLAY');
+           document.getElementById('btn-play').setAttribute('color', 'green');
+         } 
+         else if (dados.imagemPainel) {
+           // VR
+           imagemPainel.setAttribute('src', dados.imagemPainel);
+           imagemPainel.setAttribute('visible', 'true');
+           
+           // AR
+           arImagem.setAttribute('src', dados.imagemPainel);
+           arImagem.setAttribute('visible', 'true');
+           
+           document.getElementById('vr-texto').setAttribute('visible', 'false');
+         }
+         else if (dados.narra) {
+            prepararAudioPrincipal(dados.narra);
+            controles.setAttribute('visible', 'true');
+            document.getElementById('vr-texto').setAttribute('visible', 'true');
+         }
 
-          // Move para a cena 3D
-          irPara('cenario');
-          
-          // Se estivermos em RA, escondemos o botão de voltar VR
-          if(document.getElementById('btn-voltar-ra').classList.contains('escondido') === false){
-             // Estamos em RA
-             document.getElementById('btn-voltar-vr').classList.add('escondido');
-          } else {
-             // Estamos em VR
+         irPara('cenario');
+         
+         // Se estivermos em AR, mantemos o botão de voltar RA, senão VR
+         if(document.getElementById('aviso-ra').classList.contains('escondido')) {
              document.getElementById('btn-voltar-vr').classList.remove('escondido');
-          }
+         }
       }
+    }
+
+    function prepararAudioPrincipal(url) {
+        if(audioNarracao) { audioNarracao.pause(); audioNarracao = null; }
+        audioNarracao = new Audio(url);
     }
 
     function voltarParaCategorias() {
       pararTudo();
-      if(audioFundo) audioFundo.volume = 0.3;
       document.getElementById('btn-voltar-vr').classList.add('escondido');
       irPara('tela-categorias');
     }
@@ -351,63 +284,59 @@
 
   <div id="btn-voltar-vr" class="btn-voltar-fixo escondido" onclick="voltarParaCategorias()">⬅ Voltar ao Menu</div>
   <div id="btn-voltar-ra" class="btn-voltar-fixo escondido" onclick="sairRA()">⬅ Sair da RA</div>
-  <div id="aviso-ra" class="escondido">Aponte a câmera<br>para o marcador</div>
+  
+  <div id="aviso-ra" class="escondido">
+      APONTE PARA O MARCADOR<br>(Imagem)
+  </div>
 
   <a-scene 
-    mindar-image="imageTargetSrc: ./assets/targets.mind; autoStart: false; uiLoading: no; uiScanning: no;" 
-    renderer="antialias: true; colorManagement: true; physicallyCorrectLights: true;" 
-    vr-mode-ui="enabled: false"
+    mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; uiLoading: no; uiScanning: no;" 
+    color-space="sRGB" 
+    renderer="colorManagement: true, physicallyCorrectLights" 
+    vr-mode-ui="enabled: false" 
     device-orientation-permission-ui="enabled: false">
     
-    <a-sky id="ceu" src="https://cdn.aframe.io/360-image-gallery-boilerplate/img/sechelt.jpg" rotation="0 -130 0"></a-sky>
-
-    <a-light id="luz-ambiente" type="ambient" color="#d0eaff" intensity="0.5"></a-light>
-    <a-light id="luz-sol" type="directional" position="-1 2 1" intensity="0.8" color="#xffeaa"></a-light>
-
     <a-assets>
        <video id="video-player" loop="true" crossorigin="anonymous" playsinline webkit-playsinline></video>
-       <a-mixin id="vidro-painel" material="color: #1a1a1a; opacity: 0.85; metalness: 0.6; roughness: 0.2; transparent: true; side: double" geometry="primitive: plane"></a-mixin>
     </a-assets>
 
     <a-camera id="camera-principal" position="0 0 0" look-controls="enabled: true" cursor="rayOrigin: mouse"></a-camera>
 
-    <a-entity id="painel-vr-grupo" position="0 1.6 -3">
-      <a-entity mixin="vidro-painel" geometry="width: 4.2; height: 3.2" position="0 0 -0.01"></a-entity>
-      <a-plane color="#FFD700" width="4.25" height="3.25" position="0 0 -0.02" opacity="0.3"></a-plane>
-      
-      <a-text id="vr-titulo" value="TITULO" align="center" position="0 0.8 0.1" color="#FFD700" width="6" shader="msdf" font="https://cdn.aframe.io/fonts/Roboto-msdf.json"></a-text>
-      <a-text id="vr-texto" value="Texto..." align="center" position="0 -0.2 0.1" width="3.2" wrap-count="32"></a-text>
-      
-      <a-video id="vr-video" src="#video-player" width="3" height="1.5" position="0 -0.1 0.05" visible="false"></a-video>
-      <a-image id="vr-imagem-painel" width="2" height="1.4" position="0 -0.1 0.06" visible="false"></a-image>
+    <a-entity id="grupo-vr">
+        <a-sky id="ceu" color="#333"></a-sky>
 
-      <a-entity id="controles-media" position="0 -1.3 0" visible="false">
-          <a-entity position="-0.5 0 0" onclick="togglePlay()" class="clickable">
-             <a-circle id="btn-play" radius="0.25" color="green"></a-circle>
-             <a-text id="txt-btn-play" value="PLAY" align="center" position="0 0 0.1" scale="0.8 0.8 0.8"></a-text>
-          </a-entity>
-          <a-entity position="0.5 0 0" onclick="reiniciarMedia()" class="clickable">
-             <a-circle id="btn-restart" radius="0.25" color="#0055ff"></a-circle>
-             <a-text value="RESTART" align="center" position="0 0 0.1" scale="0.6 0.6 0.6"></a-text>
-          </a-entity>
-      </a-entity>
-    </a-entity>
+        <a-entity position="0 1.6 -3">
+          <a-plane color="#111" opacity="0.95" width="3.5" height="2" border="color: white; width: 0.05"></a-plane>
+          
+          <a-text id="vr-titulo" value="TITULO" align="center" position="0 0.8 0.1" color="#FFD700" width="6"></a-text>
+          <a-text id="vr-texto" value="Texto..." align="center" position="0 -0.2 0.1" width="3.2" wrap-count="32"></a-text>
+          
+          <a-video id="vr-video" src="#video-player" width="3" height="1.5" position="0 -0.1 0.05" visible="false"></a-video>
+          <a-image id="vr-imagem-painel" width="2" height="1.4" position="0 -0.1 0.06" visible="false"></a-image>
 
-    <a-entity mindar-image-target="targetIndex: 0">
-        <a-entity position="0 0 0">
-            <a-plane color="#000" opacity="0.7" width="1.1" height="0.8"></a-plane>
-            
-            <a-video id="ar-video" src="#video-player" width="1" height="0.6" position="0 0 0.02" visible="false"></a-video>
-            
-            <a-image id="ar-imagem-painel" width="1" height="0.6" position="0 0 0.03" visible="false"></a-image>
-            
-            <a-entity position="0 -0.5 0" onclick="togglePlay()">
-               <a-plane color="red" width="0.3" height="0.15"></a-plane>
-               <a-text value="PLAY" align="center" width="2" position="0 0 0.01"></a-text>
-            </a-entity>
+          <a-entity id="controles-media" position="0 -1.3 0" visible="false">
+              <a-entity position="-0.5 0 0" onclick="togglePlay()" class="clickable">
+                  <a-circle id="btn-play" radius="0.25" color="green"></a-circle>
+                  <a-text id="txt-btn-play" value="PLAY" align="center" position="0 0 0.1" scale="0.8 0.8 0.8"></a-text>
+              </a-entity>
+              <a-entity position="0.5 0 0" onclick="reiniciarMedia()" class="clickable">
+                  <a-circle id="btn-restart" radius="0.25" color="#0055ff"></a-circle>
+                  <a-text value="RESTART" align="center" position="0 0 0.1" scale="0.6 0.6 0.6"></a-text>
+              </a-entity>
+          </a-entity>
         </a-entity>
     </a-entity>
 
+    <a-entity mindar-image-target="targetIndex: 0">
+        <a-plane color="blue" opacity="0.5" position="0 0 0" height="0.552" width="1" rotation="0 0 0">
+             <a-video id="ar-video" src="#video-player" width="1" height="0.55" position="0 0 0.01" visible="false"></a-video>
+             <a-image id="ar-imagem" width="1" height="0.55" position="0 0 0.02" visible="false"></a-image>
+             
+             <a-text value="RA DETECTADA" align="center" position="0 0.3 0.1" scale="0.5 0.5 0.5"></a-text>
+        </a-plane>
+    </a-entity>
+
   </a-scene>
+
 </body>
 </html>

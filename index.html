@@ -9,13 +9,14 @@
     /* --- LÓGICA DO SISTEMA --- */
     
     // Banco de Dados (Mesmo formato que funcionava)
-    const db = {
+       const db = {
       'vitoria': {
         nome: 'Vitória do Jari',
+        somAmbiente: '', 
         conteudos: {
-          'historia': { t: 'VIDEO DA CIDADE', txt: 'Olhe para o PLAY', video: './assets/videos/vitoria.mp4', tipo: 'video' },
-          'culinaria': { t: 'HINO MUNICIPAL', txt: 'Olhe para o PLAY', narra: './assets/audios/vitoria.mp3', tipo: 'audio' },
-          'mapa': { t: 'BANDEIRA', txt: 'Visualizando bandeira', imagemPainel: './assets/imagens/vitoria.png', tipo: 'imagem' }
+          'historia': { t: 'VÍDEO DA CIDADE', txt: 'Olhe fixamente para o PLAY', video: './assets/videos/vitoria.mp4', tipo: 'video', imagemPainel: '', modelo3d: '', cor: '#5D4037', narra: '' },
+          'culinaria': { t: 'HINO MUNICIPAL', txt: 'Olhe fixamente para o PLAY', video: '', tipo: 'audio', imagemPainel: '', modelo3d: '', cor: '#E64A19', narra: './assets/audios/vitoria.mp3' },
+          'mapa': { t: 'BANDEIRA', txt: 'Visualizando a bandeira.', modelo3d: '', imagemPainel: './assets/imagens/vitoria.png', tipo: 'imagem', video: '', cor: '#388E3C', narra: '' }
         }
       },
       'macapa': { nome: 'Macapá', conteudos: { 'historia': {t:'EM BREVE', txt:'Indisponivel'} } },
@@ -314,3 +315,4 @@
   </a-scene>
 </body>
 </html>
+

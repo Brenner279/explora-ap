@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <title>Explora AP - TCC</title>
-  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-  
+
+  <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/dist/mindar-image.prod.js"></script>
+<script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
   <style>
     /* --- DESIGN (Mantido) --- */
     body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -170,34 +173,27 @@
       if(telaId !== 'cenario') document.getElementById(telaId).classList.remove('escondido');
     }
 
-    function iniciarRA() {
-      const video = document.getElementById('webcam');
-      video.style.display = 'block';
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(s => { video.srcObject = s; video.play(); });
-      }
-      document.getElementById('ceu').setAttribute('visible', 'false');
-      document.getElementById('vr-titulo').setAttribute('value', 'MODO AR ATIVADO');
-      document.getElementById('vr-texto').setAttribute('value', 'Aponte o dispositivo para o marcador');
-      // Esconde tudo da cena VR
-      document.getElementById('vr-video').setAttribute('visible', 'false');
-      document.getElementById('vr-imagem-painel').setAttribute('visible', 'false');
-      document.getElementById('controles-media').setAttribute('visible', 'false');
-      
-      irPara('cenario');
-      document.getElementById('btn-voltar-ra').classList.remove('escondido');
-      document.getElementById('btn-voltar-vr').classList.add('escondido');
-    }
+
+function iniciarRA() {
+  pararTudo();
+
+  // Esconde telas HTML
+  document.querySelectorAll('.tela').forEach(t => t.classList.add('escondido'));
+
+  // Mostra a cena A-Frame
+  document.querySelector('a-scene').style.display = 'block';
+
+  document.getElementById('btn-voltar-ra').classList.remove('escondido');
+  document.getElementById('btn-voltar-vr').classList.add('escondido');
+}
 
     function sairRA() {
-      pararTudo();
-      const video = document.getElementById('webcam');
-      video.style.display = 'none';
-      if(video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
-      document.getElementById('btn-voltar-ra').classList.add('escondido');
-      irPara('tela-inicio');
-    }
-
+  pararTudo();
+  document.querySelector('a-scene').style.display = 'none';
+  document.getElementById('btn-voltar-ra').classList.add('escondido');
+  irPara('tela-inicio');
+}
+ 
     function iniciarFluxoVR() { irPara('tela-cidades'); }
 
     function selecionarCidade(chave) {
@@ -344,8 +340,36 @@
   <div id="btn-voltar-vr" class="btn-voltar-fixo escondido" onclick="voltarParaCategorias()">⬅ Voltar ao Menu</div>
   <div id="btn-voltar-ra" class="btn-voltar-fixo escondido" onclick="sairRA()">⬅ Sair da RA</div>
 
-  <a-scene cursor="rayOrigin: mouse">
-    <a-sky id="ceu" color="#333"></a-sky>
+  <a-scene
+  mindar-image="imageTargetSrc: ./targets.mind;"
+  vr-mode-ui="enabled: false"
+  device-orientation-permission-ui="enabled: false"
+  embedded
+>
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+<a-entity mindar-image-target="targetIndex: 0">
+  
+  <!-- Painel que aparece sobre o marcador -->
+  <a-plane
+    id="ra-painel"
+    color="#004d40"
+    opacity="0.9"
+    position="0 0 0"
+    height="0.6"
+    width="1"
+  ></a-plane>
+
+  <!-- Texto RA -->
+  <a-text
+    value="Vitória do Jari"
+    align="center"
+    position="0 0.3 0.01"
+    width="1.8"
+    color="#FFD700"
+  ></a-text>
+
+</a-entity>
 
     <a-assets>
        <video id="video-player" loop="true" crossorigin="anonymous" playsinline webkit-playsinline></video>
@@ -388,3 +412,4 @@
 
 </body>
 </html>
+

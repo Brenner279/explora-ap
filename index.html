@@ -2,116 +2,65 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Explora AP - TCC Realidade Aumentada</title>
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <title>Explora AP - AR.js Teste</title>
   
-  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 
   <style>
-    body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, sans-serif; }
-
-    /* Interface 2D sobreposta */
-    #interface-overlay {
-        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-        z-index: 999; pointer-events: none;
-        display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
-        padding-bottom: 40px;
+    body { margin: 0; overflow: hidden; font-family: sans-serif; }
+    
+    /* Interface Flutuante para instruções */
+    #info {
+      position: absolute;
+      top: 10px;
+      width: 100%;
+      text-align: center;
+      z-index: 100;
+      display: block;
+      pointer-events: none; /* Permite clicar na cena através do texto */
+    }
+    
+    .msg-box {
+      background: rgba(0, 0, 0, 0.7);
+      color: #FFD700;
+      padding: 10px 20px;
+      border-radius: 20px;
+      display: inline-block;
+      font-weight: bold;
+      border: 1px solid white;
     }
 
-    .card-instrucao {
-        background: rgba(0, 77, 64, 0.9); /* Verde escuro institucional */
-        color: white; padding: 20px; border-radius: 15px;
-        text-align: center; max-width: 85%;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        border: 1px solid rgba(255,255,255,0.2);
-        transition: all 0.3s ease;
-    }
-
-    h1 { margin: 0 0 5px 0; font-size: 1.1rem; color: #FFD700; text-transform: uppercase; letter-spacing: 1px; }
-    p { margin: 0; font-size: 0.9rem; }
-
-    /* Tela de Carregamento */
-    #loading {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: #004d40; z-index: 1000;
-        display: flex; flex-direction: column; justify-content: center; align-items: center;
-        color: white;
-    }
-    .spinner {
-        width: 40px; height: 40px; border: 4px solid #fff; border-top: 4px solid #FFD700;
-        border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px;
-    }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    .escondido { display: none !important; }
+    /* Correção de Z-Index para garantir que a câmera fique no fundo */
+    .a-canvas { z-index: 1 !important; }
+    video { z-index: -1 !important; }
   </style>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const sceneEl = document.querySelector('a-scene');
-      const loading = document.getElementById('loading');
-      const statusTexto = document.getElementById('status-texto');
-      const card = document.querySelector('.card-instrucao');
-
-      // 1. Quando o sistema AR estiver pronto
-      sceneEl.addEventListener("arReady", (event) => {
-        loading.classList.add('escondido');
-      });
-
-      // 2. Quando a imagem alvo for detectada
-      const target = document.querySelector('#target-cidade');
-      target.addEventListener("targetFound", event => {
-        statusTexto.innerHTML = "📍 <b>LOCALIZAÇÃO IDENTIFICADA!</b>";
-        card.style.background = "rgba(0, 100, 0, 0.9)"; // Fica verde mais claro
-      });
-
-      // 3. Quando a imagem for perdida
-      target.addEventListener("targetLost", event => {
-        statusTexto.innerHTML = "🔎 Aponte para a imagem do alvo...";
-        card.style.background = "rgba(0, 77, 64, 0.9)"; // Volta ao original
-      });
-    });
-  </script>
 </head>
-<body>
 
-  <div id="loading">
-      <div class="spinner"></div>
-      <div>Carregando Sistema...</div>
-  </div>
+<body style="margin: 0px; overflow: hidden;">
 
-  <div id="interface-overlay">
-      <div class="card-instrucao">
-          <h1>Explora AP</h1>
-          <p id="status-texto">🔎 Aponte para a imagem do alvo...</p>
-      </div>
+  <div id="info">
+    <div class="msg-box">Aponte para o Marcador HIRO</div>
   </div>
 
   <a-scene 
-      mindar-image="imageTargetSrc: https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/examples/image-tracking/assets/card-example/card.mind; filterMinCF:0.0001; filterBeta: 0.001;" 
-      color-space="sRGB" 
-      renderer="colorManagement: true, physicallyCorrectLights" 
-      vr-mode-ui="enabled: false" 
-      device-orientation-permission-ui="enabled: false">
+    embedded 
+    arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+    vr-mode-ui="enabled: false">
 
-      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+    <a-marker preset="hiro">
+        
+        <a-box position="0 0.5 0" material="color: red; opacity: 0.8;"
+               animation="property: rotation; to: 0 360 0; loop: true; dur: 3000">
+        </a-box>
 
-      <a-entity id="target-cidade" mindar-image-target="targetIndex: 0">
-          
-          <a-plane color="#212121" opacity="0.9" height="1.2" width="1" position="0 0 0" rotation="0 0 0"></a-plane>
+        <a-text value="FUNCIONOU!" color="white" align="center" position="0 1.5 0" scale="2 2 2" rotation="-90 0 0"></a-text>
 
-          <a-text value="VITORIA DO JARI" color="#FFD700" align="center" position="0 0.4 0.05" width="2.5"></a-text>
-          
-          <a-text value="A Veneza do Amapa" color="#CCC" align="center" position="0 0.25 0.05" width="1.5"></a-text>
+    </a-marker>
 
-          <a-box color="#009688" position="0 -0.1 0.1" depth="0.3" height="0.3" width="0.3"
-                 animation="property: rotation; to: 0 360 0; loop: true; dur: 4000"></a-box>
-                 
-          <a-plane color="#E64A19" height="0.15" width="0.6" position="0 -0.4 0.05" class="clickable">
-              <a-text value="VER DETALHES" align="center" width="2"></a-text>
-          </a-plane>
+    <a-entity camera></a-entity>
 
-      </a-entity>
   </a-scene>
 
 </body>

@@ -28,6 +28,7 @@
 
     let cidadeAtual = '';
     let audioNarracao = null; // Para MP3
+    let playTimeout = null; // Para o timeout de iniciar vídeo ao olhar
 
     // --- INICIALIZAÇÃO ---
     window.onload = function() {
@@ -154,6 +155,23 @@
       irPara('grupo-player');
     }
 
+    // Função para iniciar vídeo automaticamente ao olhar para o botão (imersivo)
+    function iniciarVideoAoOlhar() {
+      const videoEl = document.getElementById('video-player');
+      const btnCor = document.getElementById('btn-play-cor');
+      const btnTxt = document.getElementById('btn-play-txt');
+
+      if (videoEl.getAttribute('src') && videoEl.readyState >= 2) {
+        videoEl.play().then(() => {
+          console.log('Vídeo iniciado automaticamente ao olhar');
+          btnCor.setAttribute('color', 'red');
+          btnTxt.setAttribute('value', 'PAUSE');
+        }).catch(e => {
+          console.error('Erro ao iniciar vídeo automaticamente:', e);
+        });
+      }
+    }
+
     function togglePlay() {
       const videoEl = document.getElementById('video-player');
       const btnCor = document.getElementById('btn-play-cor');
@@ -161,26 +179,20 @@
 
       // Lógica Vídeo
       if (videoEl.getAttribute('src')) {
-        console.log('Estado do vídeo:', videoEl.readyState, videoEl.paused);
-        if (videoEl.readyState >= 2) { // HAVE_CURRENT_DATA ou superior
-          if (videoEl.paused) {
-            videoEl.play().then(() => {
-              console.log('Vídeo reproduzindo');
-              btnCor.setAttribute('color', 'red');
-              btnTxt.setAttribute('value', 'PAUSE');
-            }).catch(e => {
-              console.error('Erro ao reproduzir vídeo:', e);
-              alert('Erro ao reproduzir vídeo. Verifique o console para detalhes.');
-            });
-          } else {
-            videoEl.pause();
-            console.log('Vídeo pausado');
-            btnCor.setAttribute('color', 'green');
-            btnTxt.setAttribute('value', 'PLAY');
-          }
+        if (videoEl.paused) {
+          videoEl.play().then(() => {
+            console.log('Vídeo reproduzindo');
+            btnCor.setAttribute('color', 'red');
+            btnTxt.setAttribute('value', 'PAUSE');
+          }).catch(e => {
+            console.error('Erro ao reproduzir vídeo:', e);
+            alert('Erro ao reproduzir vídeo. Verifique o console para detalhes.');
+          });
         } else {
-          console.log('Vídeo ainda não carregado o suficiente');
-          alert('Vídeo ainda carregando. Tente novamente em alguns segundos.');
+          videoEl.pause();
+          console.log('Vídeo pausado');
+          btnCor.setAttribute('color', 'green');
+          btnTxt.setAttribute('value', 'PLAY');
         }
       }
       
@@ -230,6 +242,12 @@
         audioNarracao.pause();
         audioNarracao = null;
       }
+
+      // Limpar timeout se existir
+      if (playTimeout) {
+        clearTimeout(playTimeout);
+        playTimeout = null;
+      }
     }
 
   </script>
@@ -239,7 +257,7 @@
   <a-scene background="color: #111">
     
     <a-assets>
-       <video id="video-player" loop="true" crossorigin="anonymous" playsinline webkit-playsinline></video>
+       <video id="video-player" crossorigin="anonymous" playsinline webkit-playsinline></video>
     </a-assets>
 
     <a-camera position="0 1.6 0">
@@ -303,7 +321,7 @@
         <a-plane position="0 1.6 -3" width="3.5" height="2.5" color="#111" opacity="0.95"></a-plane>
         
         <a-text id="vr-titulo" value="TITULO" align="center" position="0 2.6 -2.9" color="#FFD700" width="6"></a-text>
-        <a-text id="vr-texto" value="Olhe para o Play..." align="center" position="0 0.6 -2.9" width="3.5"></a-text>
+        <a-text id="vr-texto" value="Olhe para o PLAY para iniciar automaticamente" align="center" position="0 0.6 -2.9" width="3.5"></a-text>
 
         <a-video id="vr-video-screen" src="#video-player" width="3" height="1.6" position="0 1.6 -2.9" visible="false"></a-video>
         
@@ -311,7 +329,10 @@
 
         <a-entity id="controles-media" position="0 0 -2.9" visible="false">
             
-            <a-entity position="-0.5 0 0" class="interativo" onclick="togglePlay()">
+            <a-entity position="-0.5 0 0" class="interativo" 
+              onmouseenter="playTimeout = setTimeout(iniciarVideoAoOlhar, 1000);" 
+              onmouseleave="if(playTimeout) { clearTimeout(playTimeout); playTimeout = null; }" 
+              onclick="togglePlay()">
                <a-circle id="btn-play-cor" radius="0.25" color="green"
                  animation__sc="property: scale; to: 1.2 1.2 1.2; dur: 200; startEvents: mouseenter"
                  animation__out="property: scale; to: 1 1 1; dur: 200; startEvents: mouseleave">

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Explora AP - TCC (AR + VR)</title>
+  <title>Explora AP - TCC (AR + VR Completo)</title>
   
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
@@ -11,10 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
   
   <style>
-    /* --- DESIGN GERAL --- */
     body { margin: 0; overflow: hidden; font-family: 'Montserrat', sans-serif; background-color: #000; }
-
-    /* O MindAR cria seu próprio vídeo, não precisamos de CSS para webcam manual */
 
     .tela { 
       position: absolute; width: 100%; height: 100%; 
@@ -24,9 +21,6 @@
     }
     .escondido { display: none !important; }
     
-    /* Quando estamos em modo AR/VR, a tela de UI deve permitir cliques na cena se necessário, 
-       mas aqui usamos sobreposição total, então ok. */
-
     .conteudo-scroll { width: 100%; height: 70%; overflow-y: auto; display: flex; flex-direction: column; align-items: center; scrollbar-width: thin; scrollbar-color: #FFD700 #00251a; }
 
     h1 { 
@@ -68,7 +62,6 @@
       text-decoration: none; font-weight: bold; font-size: 0.9rem; z-index: 1000; cursor: pointer; border: 1px solid rgba(255,255,255,0.2);
     }
     
-    /* Overlay de Escaneamento para RA */
     #overlay-scan {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
       width: 300px; height: 300px; border: 2px dashed #FFD700; border-radius: 20px;
@@ -84,59 +77,33 @@
     let cidadeAtual = '';
     let audioFundo = null;
     let audioNarracao = null; 
-    let estadoPlay = false;   
-    let modoAtual = 'VR'; // VR ou AR
+    let modoAtual = 'VR'; 
 
-    // Simulação do banco de dados (Mantido igual)
     const db = {
       'vitoria': {
         nome: 'Vitória do Jari',
-        somAmbiente: '', 
         conteudos: {
-          'historia': { t: 'VÍDEO DA CIDADE', txt: 'Use os controles abaixo.', video: './assets/videos/vitoria.mp4', tipo: 'video', narra: '' },
+          'historia': { t: 'VÍDEO DA CIDADE', txt: 'Assista ao vídeo.', video: './assets/videos/vitoria.mp4', tipo: 'video', narra: '' },
           'culinaria': { t: 'HINO MUNICIPAL', txt: 'Ouvindo hino.', video: '', tipo: 'audio', narra: './assets/audios/vitoria.mp3' },
-          'mapa': { t: 'BANDEIRA', txt: 'Bandeira no painel.', imagemPainel: './assets/imagens/vitoria.png', tipo: 'imagem', narra: '' }
+          'mapa': { t: 'BANDEIRA', txt: 'Bandeira Oficial.', imagemPainel: './assets/imagens/vitoria.png', tipo: 'imagem', narra: '' }
         }
       },
-      'macapa': { nome: 'Macapá', somAmbiente: '', conteudos: { 'historia': {t:'Macapá',txt:'Capital do Meio do Mundo',cor:'#444'} } }
-      // ... adicione as outras cidades aqui ...
+      'macapa': { nome: 'Macapá', conteudos: { 'historia': {t:'Macapá',txt:'Capital do Meio do Mundo',cor:'#444'} } }
     };
 
-    // --- FUNÇÕES DE ÁUDIO/VÍDEO (Mantidas) ---
     function togglePlay() {
       const videoEl = document.getElementById('video-player');
-      const btnTexto = document.getElementById('txt-btn-play');
-      const btnCor = document.getElementById('btn-play');
-
+      // Controle do Vídeo
       if (videoEl && !videoEl.paused) {
         videoEl.pause();
-        btnTexto.setAttribute('value', 'PLAY');
-        btnCor.setAttribute('color', 'green');
       } else if (videoEl && videoEl.paused && videoEl.getAttribute('src')) {
         videoEl.play();
-        btnTexto.setAttribute('value', 'PAUSE');
-        btnCor.setAttribute('color', 'red');
       }
-
+      // Controle do Áudio
       if (audioNarracao) {
-        if (!audioNarracao.paused) {
-          audioNarracao.pause();
-          btnTexto.setAttribute('value', 'PLAY');
-          btnCor.setAttribute('color', 'green');
-        } else {
-          audioNarracao.play();
-          btnTexto.setAttribute('value', 'PAUSE');
-          btnCor.setAttribute('color', 'red');
-        }
+        if (!audioNarracao.paused) audioNarracao.pause();
+        else audioNarracao.play();
       }
-    }
-
-    function reiniciarMedia() {
-      const videoEl = document.getElementById('video-player');
-      if (videoEl && videoEl.getAttribute('src')) { videoEl.currentTime = 0; videoEl.play(); }
-      if (audioNarracao) { audioNarracao.currentTime = 0; audioNarracao.play(); }
-      document.getElementById('txt-btn-play').setAttribute('value', 'PAUSE');
-      document.getElementById('btn-play').setAttribute('color', 'red');
     }
 
     function pararTudo() {
@@ -151,37 +118,27 @@
       if(telaId !== 'cenario') document.getElementById(telaId).classList.remove('escondido');
     }
 
-    // --- LÓGICA DE REALIDADE AUMENTADA (MindAR) ---
     function iniciarRA() {
       modoAtual = 'AR';
       const sceneEl = document.querySelector('a-scene');
       const arSystem = sceneEl.systems["mindar-image-system"];
-      
-      // 1. Iniciar câmera e tracking
       arSystem.start(); 
 
-      // 2. Ajustes Visuais para AR
-      document.getElementById('ceu').setAttribute('visible', 'false'); // Some com o céu 360
-      
-      // Trava a câmera para não rodar com o giroscópio (quem mexe é o usuário andando)
+      // Ajustes Visuais AR
+      document.getElementById('ceu').setAttribute('visible', 'false');
       document.getElementById('camera-principal').setAttribute('look-controls', 'enabled: false');
+      document.getElementById('painel-vr').setAttribute('visible', 'false'); // Esconde painel VR
       
-      // Mostra overlay de ajuda
       document.getElementById('overlay-scan').classList.remove('escondido');
       document.getElementById('btn-voltar-ra').classList.remove('escondido');
-      
-      // Vai para a "cena" (esconde menus)
       irPara('cenario');
     }
 
     function sairRA() {
       const sceneEl = document.querySelector('a-scene');
       const arSystem = sceneEl.systems["mindar-image-system"];
-      
-      // 1. Para a câmera
       arSystem.stop();
       
-      // 2. Restaura Visuais para VR/Menu
       document.getElementById('ceu').setAttribute('visible', 'true');
       document.getElementById('camera-principal').setAttribute('look-controls', 'enabled: true');
       document.getElementById('overlay-scan').classList.add('escondido');
@@ -191,17 +148,16 @@
       irPara('tela-inicio');
     }
 
-    // --- LÓGICA DE REALIDADE VIRTUAL ---
     function iniciarFluxoVR() { 
       modoAtual = 'VR';
       document.getElementById('ceu').setAttribute('visible', 'true');
+      document.getElementById('painel-vr').setAttribute('visible', 'true');
       irPara('tela-cidades'); 
     }
 
     function selecionarCidade(chave) {
       cidadeAtual = chave;
       document.getElementById('nome-cidade-escolhida').innerText = db[chave].nome;
-      // if(db[chave].somAmbiente) tocarFundo(db[chave].somAmbiente); // Opcional
       irPara('tela-categorias');
     }
 
@@ -209,55 +165,71 @@
       if (db[cidadeAtual] && db[cidadeAtual].conteudos[tipo]) {
          const dados = db[cidadeAtual].conteudos[tipo];
          
-         // Configuração de Título e Texto (Para VR)
-         document.getElementById('vr-titulo').setAttribute('value', dados.t);
-         document.getElementById('vr-texto').setAttribute('value', dados.txt);
-         
          const videoEl = document.getElementById('video-player');
-         const telaVideo = document.getElementById('vr-video');
-         const imagemPainel = document.getElementById('vr-imagem-painel');
-         const controles = document.getElementById('controles-media');
+         videoEl.pause(); videoEl.removeAttribute('src'); // Reset vídeo
 
-         // Reset
-         telaVideo.setAttribute('visible', 'false');
-         imagemPainel.setAttribute('visible', 'false');
-         controles.setAttribute('visible', 'false');
-         videoEl.pause(); videoEl.removeAttribute('src');
+         // --- ATUALIZA ELEMENTOS VR ---
+         const vrTitulo = document.getElementById('vr-titulo');
+         const vrTexto = document.getElementById('vr-texto');
+         const vrVideo = document.getElementById('vr-video');
+         const vrImagem = document.getElementById('vr-imagem-painel');
+         
+         vrTitulo.setAttribute('value', dados.t);
+         vrTexto.setAttribute('value', dados.txt);
+         vrVideo.setAttribute('visible', 'false');
+         vrImagem.setAttribute('visible', 'false');
 
-         // Lógica de Mídia
+         // --- ATUALIZA ELEMENTOS AR (O NOVO PASSO) ---
+         const arTitulo = document.getElementById('ar-titulo');
+         const arTexto = document.getElementById('ar-texto');
+         const arVideoTela = document.getElementById('ar-video-tela');
+         const arImagem = document.getElementById('ar-imagem-painel');
+
+         arTitulo.setAttribute('value', dados.t);
+         arTexto.setAttribute('value', dados.txt);
+         arVideoTela.setAttribute('visible', 'false');
+         arImagem.setAttribute('visible', 'false');
+
+         // --- LOGICA DE MIDIA PARA AMBOS ---
          if (dados.video) {
            videoEl.setAttribute('src', dados.video);
-           telaVideo.setAttribute('visible', 'true');
-           controles.setAttribute('visible', 'true');
-           document.getElementById('vr-texto').setAttribute('visible', 'false');
+           // Ativa telas de vídeo
+           vrVideo.setAttribute('visible', 'true');
+           arVideoTela.setAttribute('visible', 'true');
+           
+           // Some textos explicativos para focar no vídeo
+           vrTexto.setAttribute('visible', 'false');
+           arTexto.setAttribute('visible', 'false');
+           
+           // Se estiver em AR, avisa para dar play
+           if(modoAtual === 'AR') alert("Toque na tela para iniciar o vídeo (Limitação de navegadores)");
+
          } else if (dados.imagemPainel) {
-           imagemPainel.setAttribute('src', dados.imagemPainel);
-           imagemPainel.setAttribute('visible', 'true');
-           document.getElementById('vr-texto').setAttribute('visible', 'false');
+           // Imagem (Bandeira/Mapa)
+           vrImagem.setAttribute('src', dados.imagemPainel);
+           vrImagem.setAttribute('visible', 'true');
+           
+           arImagem.setAttribute('src', dados.imagemPainel);
+           arImagem.setAttribute('visible', 'true');
+           
+           vrTexto.setAttribute('visible', 'false');
+           arTexto.setAttribute('visible', 'false');
+
          } else if (dados.narra) {
+           // Audio
            if(audioNarracao) audioNarracao.pause();
            audioNarracao = new Audio(dados.narra);
-           controles.setAttribute('visible', 'true');
+           audioNarracao.play();
+           
+           vrTexto.setAttribute('visible', 'true');
+           arTexto.setAttribute('visible', 'true');
          }
 
-         // Decide se vai para AR ou VR
-         if (modoAtual === 'VR') {
-             // Configura posição do painel para VR (na frente do usuário)
-             const painel = document.getElementById('painel-principal');
-             painel.setAttribute('position', '0 1.6 -3');
-             painel.setAttribute('scale', '1 1 1');
-             painel.setAttribute('visible', 'true');
-
-             // Esconde o target de AR
-             document.getElementById('alvo-ar').setAttribute('visible', 'false');
-             
-             irPara('cenario');
-             document.getElementById('btn-voltar-vr').classList.remove('escondido');
-         } else {
-             // Modo AR: O conteúdo só aparece quando a imagem for detectada
-             // Mas podemos atualizar o conteúdo dentro do target agora
-             alert("Aponte para a imagem alvo para ver: " + dados.t);
-         }
+         // Vai para a cena
+         irPara('cenario');
+         
+         // Botão de voltar correto
+         if(modoAtual === 'VR') document.getElementById('btn-voltar-vr').classList.remove('escondido');
       }
     }
 
@@ -272,7 +244,7 @@
 
   <div id="tela-inicio" class="tela">
     <h1>Explora AP</h1>
-    <p class="subtitulo">Tecnologias Imersivas e Patrimônio do Amapá</p>
+    <p class="subtitulo">RA e RV: Patrimônio Cultural do Amapá</p>
     <button class="btn btn-ra" onclick="iniciarRA()">📷 Realidade Aumentada</button>
     <button class="btn btn-vr" onclick="iniciarFluxoVR()">🥽 Realidade Virtual</button>
     <footer>TCC - Inovação e Tecnologias Educacionais • 2026</footer>
@@ -284,14 +256,14 @@
       <div class="grid-cidades">
         <button class="btn btn-cidade" onclick="selecionarCidade('vitoria')">Vitória do Jari</button>
         <button class="btn btn-cidade" onclick="selecionarCidade('macapa')">Macapá</button>
-      </div>
+        </div>
     </div>
     <button class="btn" style="background:transparent; border:1px solid #aaa; color:#ddd; margin-top:15px" onclick="pararTudo(); irPara('tela-inicio')">⬅ Voltar</button>
   </div>
 
   <div id="tela-categorias" class="tela escondido">
     <h2 id="nome-cidade-escolhida">Cidade</h2>
-    <p>O que deseja explorar?</p>
+    <p>Escolha o conteúdo:</p>
     <div class="grid-botoes">
       <button class="btn-cat" onclick="verConteudo('historia')">📜 Vídeo</button>
       <button class="btn-cat" onclick="verConteudo('culinaria')">🥘 Hino</button>
@@ -304,7 +276,7 @@
   <div id="btn-voltar-ra" class="btn-voltar-fixo escondido" onclick="sairRA()">⬅ Sair RA</div>
   
   <div id="overlay-scan" class="escondido">
-    <p>Aponte a câmera para<br>o MARCADOR (Imagem)</p>
+    <p>Aponte para o MARCADOR</p>
   </div>
 
   <a-scene 
@@ -316,42 +288,46 @@
 
     <a-assets>
        <video id="video-player" loop="true" crossorigin="anonymous" playsinline webkit-playsinline></video>
-       <a-mixin id="vidro-painel" material="color: #1a1a1a; opacity: 0.85; metalness: 0.6; roughness: 0.2; transparent: true; side: double" geometry="primitive: plane"></a-mixin>
+       <a-mixin id="vidro" material="color: #000; opacity: 0.7; transparent: true"></a-mixin>
     </a-assets>
 
     <a-camera id="camera-principal" position="0 0 0" look-controls="enabled: true" cursor="rayOrigin: mouse"></a-camera>
-
     <a-sky id="ceu" src="https://cdn.aframe.io/360-image-gallery-boilerplate/img/sechelt.jpg" rotation="0 -130 0"></a-sky>
 
-    <a-light type="ambient" color="#fff" intensity="1"></a-light>
-    <a-light type="directional" position="-1 2 1" intensity="0.8"></a-light>
-
-    <a-entity id="painel-principal" position="0 1.6 -3" visible="false">
-      <a-entity mixin="vidro-painel" geometry="width: 4.2; height: 3.2" position="0 0 -0.01"></a-entity>
-      <a-plane color="#FFD700" width="4.25" height="3.25" position="0 0 -0.02" opacity="0.3"></a-plane>
+    <a-entity id="painel-vr" position="0 1.6 -3" visible="true">
+      <a-plane mixin="vidro" width="4" height="3"></a-plane>
+      <a-plane color="#FFD700" width="4.1" height="3.1" position="0 0 -0.01" opacity="0.3"></a-plane>
       
-      <a-text id="vr-titulo" value="TITULO" align="center" position="0 0.8 0.1" color="#FFD700" width="6" shader="msdf" font="https://cdn.aframe.io/fonts/Roboto-msdf.json"></a-text>
-      <a-text id="vr-texto" value="Texto..." align="center" position="0 -0.2 0.1" width="3.2" wrap-count="32"></a-text>
+      <a-text id="vr-titulo" value="BEM-VINDO" align="center" position="0 1 0.1" color="#FFD700" width="6"></a-text>
+      <a-text id="vr-texto" value="Escolha uma opção no menu" align="center" position="0 0 0.1" width="4"></a-text>
+      <a-video id="vr-video" src="#video-player" width="3.5" height="2" position="0 -0.2 0.1" visible="false"></a-video>
+      <a-image id="vr-imagem-painel" width="2" height="1.4" position="0 -0.2 0.2" visible="false"></a-image>
       
-      <a-video id="vr-video" src="#video-player" width="3" height="1.5" position="0 -0.1 0.05" visible="false"></a-video>
-      <a-image id="vr-imagem-painel" width="2" height="1.4" position="0 -0.1 0.06" visible="false"></a-image>
-
-      <a-entity id="controles-media" position="0 -1.3 0" visible="false">
-          <a-entity position="-0.5 0 0" onclick="togglePlay()" class="clickable">
-             <a-circle id="btn-play" radius="0.25" color="green"></a-circle>
-             <a-text id="txt-btn-play" value="PLAY" align="center" position="0 0 0.1" scale="0.8 0.8 0.8"></a-text>
-          </a-entity>
-          <a-entity position="0.5 0 0" onclick="reiniciarMedia()" class="clickable">
-             <a-circle id="btn-restart" radius="0.25" color="#0055ff"></a-circle>
-             <a-text value="RESTART" align="center" position="0 0 0.1" scale="0.6 0.6 0.6"></a-text>
-          </a-entity>
+      <a-entity position="0 -1.2 0.1" onclick="togglePlay()" class="clickable">
+         <a-circle radius="0.2" color="white"></a-circle>
+         <a-text value="PLAY/PAUSE" align="center" color="black" scale="0.5 0.5 0.5" position="0 0 0.01"></a-text>
       </a-entity>
     </a-entity>
 
-    <a-entity id="alvo-ar" mindar-image-target="targetIndex: 0">
-        <a-plane color="#004d40" opacity="0.9" height="1" width="1.5" position="0 0 0" rotation="0 0 0">
-            <a-text value="Modo AR Ativo" align="center" color="yellow"></a-text>
-            </a-plane>
+    <a-entity mindar-image-target="targetIndex: 0">
+        
+        <a-entity id="painel-ar" rotation="0 0 0"> <a-plane mixin="vidro" width="1.5" height="1" position="0 0 0"></a-plane>
+            <a-plane color="#FFD700" width="1.55" height="1.05" position="0 0 -0.01" opacity="0.5"></a-plane>
+
+            <a-text id="ar-titulo" value="Modo AR" align="center" position="0 0.6 0.1" color="#FFD700" width="3"></a-text>
+            
+            <a-text id="ar-texto" value="Aguardando..." align="center" position="0 0 0.1" width="2"></a-text>
+
+            <a-video id="ar-video-tela" src="#video-player" width="1.4" height="0.8" position="0 0 0.05" visible="false"></a-video>
+            
+            <a-image id="ar-imagem-painel" width="1" height="0.7" position="0 0 0.06" visible="false"></a-image>
+
+            <a-entity position="0 -0.7 0" onclick="togglePlay()">
+               <a-plane color="red" width="0.5" height="0.2"></a-plane>
+               <a-text value="PLAY" align="center" position="0 0 0.01" width="4"></a-text>
+            </a-entity>
+
+        </a-entity>
     </a-entity>
 
   </a-scene>

@@ -129,7 +129,7 @@
       // 1. É VIDEO?
       if (dados.tipo === 'video' && dados.video) {
          videoEl.setAttribute('src', dados.video);
-         videoEl.load(); // Adicionado para garantir que o vídeo carregue após mudar o src
+         videoEl.load(); // Força o carregamento
          telaVideo.setAttribute('visible', 'true');
          controles.setAttribute('visible', 'true');
          
@@ -161,25 +161,42 @@
 
       // Lógica Vídeo
       if (videoEl.getAttribute('src')) {
-        if (videoEl.paused) {
-          videoEl.play();
-          btnCor.setAttribute('color', 'red');
-          btnTxt.setAttribute('value', 'PAUSE');
+        console.log('Estado do vídeo:', videoEl.readyState, videoEl.paused);
+        if (videoEl.readyState >= 2) { // HAVE_CURRENT_DATA ou superior
+          if (videoEl.paused) {
+            videoEl.play().then(() => {
+              console.log('Vídeo reproduzindo');
+              btnCor.setAttribute('color', 'red');
+              btnTxt.setAttribute('value', 'PAUSE');
+            }).catch(e => {
+              console.error('Erro ao reproduzir vídeo:', e);
+              alert('Erro ao reproduzir vídeo. Verifique o console para detalhes.');
+            });
+          } else {
+            videoEl.pause();
+            console.log('Vídeo pausado');
+            btnCor.setAttribute('color', 'green');
+            btnTxt.setAttribute('value', 'PLAY');
+          }
         } else {
-          videoEl.pause();
-          btnCor.setAttribute('color', 'green');
-          btnTxt.setAttribute('value', 'PLAY');
+          console.log('Vídeo ainda não carregado o suficiente');
+          alert('Vídeo ainda carregando. Tente novamente em alguns segundos.');
         }
       }
       
       // Lógica Áudio
       if (audioNarracao) {
         if (audioNarracao.paused) {
-          audioNarracao.play();
-          btnCor.setAttribute('color', 'red');
-          btnTxt.setAttribute('value', 'PAUSE');
+          audioNarracao.play().then(() => {
+            console.log('Áudio reproduzindo');
+            btnCor.setAttribute('color', 'red');
+            btnTxt.setAttribute('value', 'PAUSE');
+          }).catch(e => {
+            console.error('Erro ao reproduzir áudio:', e);
+          });
         } else {
           audioNarracao.pause();
+          console.log('Áudio pausado');
           btnCor.setAttribute('color', 'green');
           btnTxt.setAttribute('value', 'PLAY');
         }
@@ -190,11 +207,15 @@
       const videoEl = document.getElementById('video-player');
       if (videoEl.getAttribute('src')) {
         videoEl.currentTime = 0;
-        videoEl.play();
+        videoEl.play().then(() => {
+          console.log('Vídeo reiniciado');
+        }).catch(e => console.error('Erro ao reiniciar vídeo:', e));
       }
       if (audioNarracao) {
         audioNarracao.currentTime = 0;
-        audioNarracao.play();
+        audioNarracao.play().then(() => {
+          console.log('Áudio reiniciado');
+        }).catch(e => console.error('Erro ao reiniciar áudio:', e));
       }
       document.getElementById('btn-play-cor').setAttribute('color', 'red');
       document.getElementById('btn-play-txt').setAttribute('value', 'PAUSE');

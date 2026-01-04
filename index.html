@@ -2,283 +2,237 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Explora AP - VR Final</title>
+  <title>Explora AP - Full VR</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-  
+
   <script>
-    /* --- LÓGICA DO SISTEMA --- */
-    
-    // Banco de Dados
+    /* ================= BANCO DE DADOS ================= */
+
     const db = {
-      'vitoria': {
+      vitoria: {
         nome: 'Vitória do Jari',
         conteudos: {
-          'historia': { t: 'VIDEO DA CIDADE', txt: 'Olhe para o PLAY', video: './assets/videos/vitoria.mp4', tipo: 'video' },
-          'culinaria': { t: 'HINO MUNICIPAL', txt: 'Olhe para o PLAY', narra: './assets/audios/vitoria.mp3', tipo: 'audio' },
-          'mapa': { t: 'BANDEIRA', txt: 'Visualizando bandeira', imagemPainel: './assets/imagens/vitoria.png', tipo: 'imagem' }
+          historia: {
+            t: 'VÍDEO',
+            txt: 'Assista ao vídeo.',
+            tipo: 'video',
+            video: './assets/videos/vitoria.mp4'
+          },
+          culinaria: {
+            t: 'HINO',
+            txt: 'Ouça o hino.',
+            tipo: 'audio',
+            audio: './assets/audios/vitoria.mp3'
+          },
+          mapa: {
+            t: 'BANDEIRA',
+            txt: 'Veja a bandeira.',
+            tipo: 'imagem',
+            imagem: './assets/imagens/vitoria.png'
+          }
         }
-      },
-      'macapa': { nome: 'Macapá', conteudos: { 'historia': {t:'EM BREVE', txt:'Indisponivel'} } },
-      'santana': { nome: 'Santana', conteudos: { 'historia': {t:'EM BREVE', txt:'Indisponivel'} } },
-      'amapa': { nome: 'Amapá', conteudos: { 'historia': {t:'EM BREVE', txt:'Indisponivel'} } },
-      'mazagao': { nome: 'Mazagão', conteudos: { 'historia': {t:'EM BREVE', txt:'Indisponivel'} } },
-      'oiapoque': { nome: 'Oiapoque', conteudos: { 'historia': {t:'EM BREVE', txt:'Indisponivel'} } },
+      }
     };
 
-    let cidadeAtual = '';
-    let audioNarracao = null;
+    let cidadeAtual = null;
+    let audio = null;
+    let video = null;
 
-    // --- INICIALIZAÇÃO ---
-    document.addEventListener('DOMContentLoaded', function() {
-      // Aguarda o A-Frame carregar completamente
-      const scene = document.querySelector('a-scene');
-      if (scene.hasLoaded) {
-        gerarMenuCidades();
-      } else {
-        scene.addEventListener('loaded', gerarMenuCidades);
-      }
-    });
+    window.onload = () => gerarMenuCidades();
+
+    /* ================= MENU DE CIDADES ================= */
 
     function gerarMenuCidades() {
       const container = document.getElementById('grade-cidades');
-      if (!container) return;
-      
-      const chaves = Object.keys(db);
-      
-      let col = 0; let row = 0;
-      const chavesPorLinha = 3;
+      let x = -1.2;
 
-      chaves.forEach((chave) => {
-        const cidade = db[chave];
-        const x = (col * 1.1) - 1.1;
-        const y = 1.5 - (row * 0.6);
-        
-        const el = document.createElement('a-entity');
-        el.setAttribute('position', `${x} ${y} 0`);
-        
-        const plane = document.createElement('a-plane');
-        plane.setAttribute('color', '#FFD700');
-        plane.setAttribute('width', '1');
-        plane.setAttribute('height', '0.4');
-        plane.classList.add('clickable', 'interativo');
-        plane.setAttribute('data-cidade', chave);
-        plane.addEventListener('click', function() {
-          selecionarCidade(chave);
-        });
-        
-        const text = document.createElement('a-text');
-        text.setAttribute('value', cidade.nome);
-        text.setAttribute('align', 'center');
-        text.setAttribute('color', '#333');
-        text.setAttribute('width', '2.8');
-        text.setAttribute('z-offset', '0.01');
-        
-        plane.appendChild(text);
-        el.appendChild(plane);
+      Object.keys(db).forEach(chave => {
+        const el = document.createElement('a-plane');
+        el.setAttribute('position', `${x} 0 -3`);
+        el.setAttribute('width', '1');
+        el.setAttribute('height', '0.4');
+        el.setAttribute('color', '#FFF');
+        el.setAttribute('class', 'clickable interativo');
+        el.setAttribute('onclick', `selecionarCidade('${chave}')`);
+
+        el.innerHTML = `<a-text value="${db[chave].nome}" align="center" color="#000"></a-text>`;
         container.appendChild(el);
 
-        col++;
-        if (col >= chavesPorLinha) { col = 0; row++; }
+        x += 1.3;
       });
     }
 
-    // --- NAVEGAÇÃO ---
-    function irPara(idGrupo) {
-      const grupos = ['grupo-inicio', 'grupo-cidades', 'grupo-categorias', 'grupo-player'];
-      
-      grupos.forEach(g => {
-        const el = document.getElementById(g);
-        if (!el) return;
-        
-        if (g === idGrupo) {
-          el.setAttribute('visible', 'true');
-          const interativos = el.querySelectorAll('.interativo');
-          interativos.forEach(b => b.classList.add('clickable'));
-        } else {
-          el.setAttribute('visible', 'false');
-          const interativos = el.querySelectorAll('.interativo');
-          interativos.forEach(b => b.classList.remove('clickable'));
-        }
-      });
+    /* ================= NAVEGAÇÃO ================= */
 
-      if(idGrupo !== 'grupo-player') {
-        pararTudo();
-      }
+    function navegar(id) {
+      ['inicio', 'cidades', 'categorias', 'painel'].forEach(t =>
+        document.getElementById(`grupo-${t}`).setAttribute('visible', 'false')
+      );
+
+      document.getElementById(id).setAttribute('visible', 'true');
+      pararMidia();
     }
 
     function selecionarCidade(chave) {
       cidadeAtual = chave;
-      const titulo = document.getElementById('titulo-cidade-cat');
-      if (titulo && db[chave]) {
-        titulo.setAttribute('value', db[chave].nome);
-      }
-      irPara('grupo-categorias');
+      document.getElementById('titulo-cidade')
+        .setAttribute('value', db[chave].nome);
+      navegar('grupo-categorias');
     }
 
-    // --- MÍDIA ---
+    /* ================= CONTEÚDO ================= */
+
     function verConteudo(tipo) {
-      if(!db[cidadeAtual] || !db[cidadeAtual].conteudos[tipo]) return;
-
       const dados = db[cidadeAtual].conteudos[tipo];
-      const videoEl = document.getElementById('video-player');
-      const telaVideo = document.getElementById('vr-video-screen');
-      const imgPainel = document.getElementById('vr-imagem-screen');
-      const controles = document.getElementById('controles-media');
-      const titulo = document.getElementById('vr-titulo');
-      const texto = document.getElementById('vr-texto');
 
-      // Reset
-      pararTudo();
-      telaVideo.setAttribute('visible', 'false');
-      imgPainel.setAttribute('visible', 'false');
-      controles.setAttribute('visible', 'false');
-      
-      titulo.setAttribute('value', dados.t);
-      texto.setAttribute('value', dados.txt || '');
+      document.getElementById('painel-titulo').setAttribute('value', dados.t);
+      document.getElementById('painel-texto').setAttribute('value', dados.txt || '');
 
-      // VIDEO
-      if (dados.tipo === 'video' && dados.video) {
-         videoEl.src = dados.video;
-         videoEl.load();
-         telaVideo.setAttribute('visible', 'true');
-         controles.setAttribute('visible', 'true');
-         
-         document.getElementById('btn-play-cor').setAttribute('color', 'green');
-         document.getElementById('btn-play-txt').setAttribute('value', 'PLAY');
-      }
-      // AUDIO
-      else if (dados.tipo === 'audio' && dados.narra) {
-         audioNarracao = new Audio(dados.narra);
-         controles.setAttribute('visible', 'true');
-         
-         document.getElementById('btn-play-cor').setAttribute('color', 'green');
-         document.getElementById('btn-play-txt').setAttribute('value', 'PLAY');
-      }
-      // IMAGEM
-      else if (dados.tipo === 'imagem' && dados.imagemPainel) {
-         imgPainel.setAttribute('src', dados.imagemPainel);
-         imgPainel.setAttribute('visible', 'true');
-      }
+      document.getElementById('painel-video').setAttribute('visible', 'false');
+      document.getElementById('painel-img').setAttribute('visible', 'false');
+      document.getElementById('btn-play').setAttribute('visible', 'false');
 
-      irPara('grupo-player');
+      if (dados.tipo === 'video') prepararVideo(dados.video);
+      if (dados.tipo === 'audio') prepararAudio(dados.audio);
+      if (dados.tipo === 'imagem') prepararImagem(dados.imagem);
+
+      navegar('grupo-painel');
+    }
+
+    /* ================= MÍDIA ================= */
+
+    function prepararVideo(src) {
+      video = document.getElementById('video-player');
+      video.pause();
+      video.src = src;
+      video.load();
+      video.muted = true;
+
+      document.getElementById('painel-video')
+        .setAttribute('src', '#video-player');
+      document.getElementById('painel-video')
+        .setAttribute('visible', 'true');
+
+      document.getElementById('btn-play').setAttribute('visible', 'true');
+    }
+
+    function prepararAudio(src) {
+      if (audio) audio.pause();
+      audio = new Audio(src);
+      document.getElementById('btn-play').setAttribute('visible', 'true');
+    }
+
+    function prepararImagem(src) {
+      document.getElementById('painel-img')
+        .setAttribute('src', src);
+      document.getElementById('painel-img')
+        .setAttribute('visible', 'true');
     }
 
     function togglePlay() {
-      const videoEl = document.getElementById('video-player');
-      const btnCor = document.getElementById('btn-play-cor');
-      const btnTxt = document.getElementById('btn-play-txt');
+      const txt = document.getElementById('txt-play');
 
-      // Vídeo
-      if (videoEl && videoEl.src && videoEl.src !== window.location.href) {
-        if (videoEl.paused) {
-          videoEl.play();
-          btnCor.setAttribute('color', 'red');
-          btnTxt.setAttribute('value', 'PAUSE');
+      if (video) {
+        if (video.paused) {
+          video.muted = false;
+          video.play();
+          txt.setAttribute('value', 'PAUSE');
         } else {
-          videoEl.pause();
-          btnCor.setAttribute('color', 'green');
-          btnTxt.setAttribute('value', 'PLAY');
+          video.pause();
+          txt.setAttribute('value', 'PLAY');
         }
       }
-      
-      // Áudio
-      if (audioNarracao) {
-        if (audioNarracao.paused) {
-          audioNarracao.play();
-          btnCor.setAttribute('color', 'red');
-          btnTxt.setAttribute('value', 'PAUSE');
+
+      if (audio) {
+        if (audio.paused) {
+          audio.play();
+          txt.setAttribute('value', 'PAUSE');
         } else {
-          audioNarracao.pause();
-          btnCor.setAttribute('color', 'green');
-          btnTxt.setAttribute('value', 'PLAY');
+          audio.pause();
+          txt.setAttribute('value', 'PLAY');
         }
       }
     }
 
-    function restartMedia() {
-      const videoEl = document.getElementById('video-player');
-      if (videoEl && videoEl.src && videoEl.src !== window.location.href) {
-        videoEl.currentTime = 0;
-        videoEl.play();
-      }
-      if (audioNarracao) {
-        audioNarracao.currentTime = 0;
-        audioNarracao.play();
-      }
-      document.getElementById('btn-play-cor').setAttribute('color', 'red');
-      document.getElementById('btn-play-txt').setAttribute('value', 'PAUSE');
+    function pararMidia() {
+      if (video) video.pause();
+      if (audio) audio.pause();
+      document.getElementById('txt-play').setAttribute('value', 'PLAY');
     }
-
-    function pararTudo() {
-      const v = document.getElementById('video-player');
-      if (v) {
-        v.pause();
-        v.src = '';
-        v.load();
-      }
-      
-      if(audioNarracao) {
-        audioNarracao.pause();
-        audioNarracao = null;
-      }
-    }
-
   </script>
 </head>
+
 <body>
+<a-scene background="color: #111">
 
-  <a-scene background="color: #111">
-    
-    <a-assets>
-       <video id="video-player" loop="true" crossorigin="anonymous" playsinline webkit-playsinline></video>
-    </a-assets>
+  <a-assets>
+    <video id="video-player" playsinline webkit-playsinline crossorigin="anonymous"></video>
+  </a-assets>
 
-    <a-camera position="0 1.6 0">
-        <a-cursor 
-          id="cursor"
-          color="#FFD700"
-          fuse="true" 
-          fuse-timeout="1500"
-          geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
-          raycaster="objects: .clickable; far: 20"
-          animation__fusing="property: scale; startEvents: fusing; easing: easeInCubic; dur: 1500; from: 1 1 1; to: 0.1 0.1 0.1"
-          animation__leave="property: scale; startEvents: mouseleave; to: 1 1 1; dur: 200">
-        </a-cursor>
-    </a-camera>
+  <a-camera position="0 1.6 0">
+    <a-cursor
+      fuse="true"
+      fuse-timeout="1200"
+      raycaster="objects: .clickable">
+    </a-cursor>
+  </a-camera>
 
+  <!-- INÍCIO -->
+  <a-entity id="grupo-inicio">
+    <a-text value="EXPLORA AP" position="0 2 -3" align="center"></a-text>
+    <a-plane position="0 1 -3" width="1.2" height="0.5"
+      class="clickable interativo"
+      onclick="navegar('grupo-cidades')">
+      <a-text value="INICIAR" align="center"></a-text>
+    </a-plane>
+  </a-entity>
 
-    <a-entity id="grupo-inicio" visible="true">
-        <a-text value="EXPLORA AP" align="center" position="0 2.5 -3" width="10" color="#FFD700"></a-text>
-        <a-text value="Patrimonio Cultural em VR" align="center" position="0 2 -3" width="5"></a-text>
-        
-        <a-plane position="0 1 -3" width="1.5" height="0.6" color="#004d40" class="clickable interativo">
-            <a-text value="INICIAR" align="center" width="6"></a-text>
-        </a-plane>
+  <!-- CIDADES -->
+  <a-entity id="grupo-cidades" visible="false">
+    <a-text value="ESCOLHA O DESTINO" position="0 2 -3" align="center"></a-text>
+    <a-entity id="grade-cidades"></a-entity>
+  </a-entity>
+
+  <!-- CATEGORIAS -->
+  <a-entity id="grupo-categorias" visible="false">
+    <a-text id="titulo-cidade" position="0 2.2 -3" align="center"></a-text>
+
+    <a-plane position="-1 1 -3" class="clickable" onclick="verConteudo('historia')">
+      <a-text value="VÍDEO"></a-text>
+    </a-plane>
+
+    <a-plane position="0 1 -3" class="clickable" onclick="verConteudo('culinaria')">
+      <a-text value="HINO"></a-text>
+    </a-plane>
+
+    <a-plane position="1 1 -3" class="clickable" onclick="verConteudo('mapa')">
+      <a-text value="BANDEIRA"></a-text>
+    </a-plane>
+  </a-entity>
+
+  <!-- PAINEL -->
+  <a-entity id="grupo-painel" visible="false">
+    <a-text id="painel-titulo" position="0 2.4 -2.5" align="center"></a-text>
+
+    <a-video id="painel-video" width="2.8" height="1.5"
+      position="0 1.5 -2.5" visible="false"></a-video>
+
+    <a-image id="painel-img" width="2"
+      position="0 1.5 -2.5" visible="false"></a-image>
+
+    <a-entity id="btn-play" position="0 0.4 -2.5" visible="false">
+      <a-circle radius="0.2" color="green"
+        class="clickable"
+        onclick="togglePlay()">
+        <a-text id="txt-play" value="PLAY" align="center"></a-text>
+      </a-circle>
     </a-entity>
 
+    <a-text id="painel-texto" position="0 0.1 -2.5" align="center"></a-text>
+  </a-entity>
 
-    <a-entity id="grupo-cidades" visible="false">
-        <a-text value="ESCOLHA O DESTINO" align="center" position="0 2.8 -3" width="8" color="#FFD700"></a-text>
-        
-        <a-entity id="grade-cidades" position="0 0.5 -3"></a-entity>
-
-        <a-plane position="0 -1.2 -3" width="1" height="0.4" color="#444" class="clickable interativo">
-            <a-text value="VOLTAR" align="center"></a-text>
-        </a-plane>
-    </a-entity>
-
-
-    <a-entity id="grupo-categorias" visible="false">
-        <a-text id="titulo-cidade-cat" value="CIDADE" align="center" position="0 2.5 -3" width="10" color="#FFD700"></a-text>
-
-        <a-plane position="-1.2 1 -3" width="1" height="1" color="#004d40" class="clickable interativo" data-tipo="historia">
-            <a-text value="VIDEO" align="center" width="6"></a-text>
-        </a-plane>
-
-        <a-plane position="0 1 -3" width="1" height="1" color="#E64A19" class="clickable interativo" data-tipo="culinaria">
-            <a-text value="HINO" align="center" width="6"></a-text>
-        </a-plane>
-
-        <a-plane position="1.2 1 -3" width="1" height="1" color="#388E3C" class="clickable interativo" data-tipo="mapa">
-            <a-text value="BANDEIRA" align="center" width="6"></a-text>
-        </a-plane>
+</a-scene>
+</body>
+</html>

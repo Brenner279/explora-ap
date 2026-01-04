@@ -129,6 +129,7 @@
       // 1. É VIDEO?
       if (dados.tipo === 'video' && dados.video) {
          videoEl.setAttribute('src', dados.video);
+         videoEl.load(); // Adicionado para garantir que o vídeo carregue após mudar o src
          telaVideo.setAttribute('visible', 'true');
          controles.setAttribute('visible', 'true');
          

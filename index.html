@@ -381,10 +381,20 @@
           <a-gltf-model src=""></a-gltf-model>
     </a-entity>
 
-    <a-camera>
-        <a-cursor color="yellow" fuse="false"></a-cursor>
+    <a-camera position="0 1.6 0">
+        <a-cursor 
+          id="cursor"
+          color="#FFD700"
+          fuse="true" 
+          fuse-timeout="1500"
+          geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+          raycaster="objects: .clickable; far: 20"
+          animation__fusing="property: scale; startEvents: fusing; easing: easeInCubic; dur: 1500; from: 1 1 1; to: 0.1 0.1 0.1"
+          animation__leave="property: scale; startEvents: mouseleave; to: 1 1 1; dur: 200">
+        </a-cursor>
     </a-camera>
   </a-scene>
 
 </body>
 </html>
+

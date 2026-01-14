@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Amapa Interativo: Final</title>
+  <title>Amapá Interativo: Acentos Corrigidos</title>
   
   <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
   <script src="https://unpkg.com/aframe-environment-component@1.5.x/dist/aframe-environment-component.min.js"></script>
@@ -10,36 +10,36 @@
   <script>
     /* --- CONFIGURAÇÃO E DADOS --- */
     
-    // FONTE CORRIGIDA (Hospedada em CDN confiável com suporte PT-BR)
-    const FONTE_PTBR = "https://cdn.jsdelivr.net/gh/etiennepinchon/aframe-fonts/fonts/roboto/Roboto-Bold.json";
+    // FONTE COM SUPORTE COMPLETO A ACENTOS (DejaVu)
+    const FONTE_PTBR = "https://cdn.jsdelivr.net/gh/etiennepinchon/aframe-fonts@master/fonts/dejavu/DejaVu-sdf.json";
 
     const db = {
       'vitoria': {
-        nome: 'Vitória do Jari', // Acento
+        nome: 'Vitória do Jari',
         bandeira: './assets/bandeiras/vitoria.png',
         hino: './assets/audios/hino_vitoria.mp3', 
         conteudos: {
-          'Historia': { t: 'História', video: './assets/videos/vitoria.mp4', tipo: 'video360' }, // Acento
+          'Historia': { t: 'História', video: './assets/videos/vitoria.mp4', tipo: 'video360' },
           'Cultura': { 
               t: 'Galeria Cultural', type: 'galeria', itens: [
-                  { img: './assets/imagens/cultura1.png', txt: 'Dança Tradicional' }, // ç e ~
+                  { img: './assets/imagens/cultura1.png', txt: 'Dança Tradicional' },
                   { img: './assets/imagens/cultura2.png', txt: 'Artesanato' },
-                  { img: './assets/imagens/cultura3.png', txt: 'Culinária' }, // Acento
+                  { img: './assets/imagens/cultura3.png', txt: 'Culinária' },
                   { img: './assets/imagens/cultura4.png', txt: 'Festividades' }
               ]
           },
           'Turismo': { 
-              t: 'Pontos Turísticos', type: 'galeriaVideo', itens: [ // Acento
+              t: 'Pontos Turísticos', type: 'galeriaVideo', itens: [
                   { video: './assets/videos/turismo1.mp4', txt: 'Cachoeira do Jari' },
                   { video: './assets/videos/turismo2.mp4', txt: 'Passeio de Barco' },
                   { video: './assets/videos/turismo3.mp4', txt: 'Trilha na Mata' },
-                  { video: './assets/videos/turismo4.mp4', txt: 'Centro Histórico' } // Acento
+                  { video: './assets/videos/turismo4.mp4', txt: 'Centro Histórico' }
               ]
           }
         }
       },
       'macapa': { 
-          nome: 'Macapá', // Acento
+          nome: 'Macapá',
           bandeira: './assets/bandeiras/macapa.png', 
           hino: './assets/audios/hino_macapa.mp3', 
           conteudos: {
@@ -66,7 +66,7 @@
       'oiapoque': { nome: 'Oiapoque', bandeira: './assets/bandeiras/oiapoque.png', conteudos: {} },
       'serra do navio': { nome: 'Serra do Navio', bandeira: './assets/bandeiras/serra.png', conteudos: {} },
       'santana': { nome: 'Santana', bandeira: './assets/bandeiras/santana.jpg', conteudos: {} },
-      'amapa': { nome: 'Amapá', bandeira: './assets/bandeiras/amapa.jpg', conteudos: {} }, // Acento
+      'amapa': { nome: 'Amapá', bandeira: './assets/bandeiras/amapa.jpg', conteudos: {} },
     };
 
     let cidadeAtual = '';
@@ -113,7 +113,11 @@
           <a-text value="${cidade.nome}" 
                   font="${FONTE_PTBR}"
                   shader="msdf"
-                  align="center" position="0 -0.6 0" width="4" color="#FFFFFF">
+                  negate="false"
+                  align="center" 
+                  position="0 -0.6 0" 
+                  width="4" 
+                  color="#FFFFFF">
              <a-plane position="0 0 -0.01" width="2" height="0.3" color="black" opacity="0.6"></a-plane>
           </a-text>
         `;
@@ -177,16 +181,35 @@
       pararHino(); pararMidiasConteudo();
 
       if (dados.tipo === 'video360') { ativarModo360(dados.video); return; }
-      if (dados.type === 'galeria') { document.getElementById('titulo-galeria').setAttribute('value', dados.t); montarGaleria(dados.itens); irPara('grupo-cultura-galeria'); return; }
-      if (dados.type === 'galeriaVideo') { document.getElementById('titulo-turismo').setAttribute('value', dados.t); montarGaleriaVideo(dados.itens); irPara('grupo-turismo-galeria'); return; }
+      if (dados.type === 'galeria') { 
+          document.getElementById('titulo-galeria').setAttribute('value', dados.t); 
+          montarGaleria(dados.itens); 
+          irPara('grupo-cultura-galeria'); 
+          return; 
+      }
+      if (dados.type === 'galeriaVideo') { 
+          document.getElementById('titulo-turismo').setAttribute('value', dados.t); 
+          montarGaleriaVideo(dados.itens); 
+          irPara('grupo-turismo-galeria'); 
+          return; 
+      }
 
       const controles = document.getElementById('controles-media');
       const tela = document.getElementById('vr-video-screen');
       const img = document.getElementById('vr-imagem-screen');
-      tela.setAttribute('visible', 'false'); img.setAttribute('visible', 'false'); controles.setAttribute('visible', 'false');
+      tela.setAttribute('visible', 'false'); 
+      img.setAttribute('visible', 'false'); 
+      controles.setAttribute('visible', 'false');
       document.getElementById('vr-titulo').setAttribute('value', dados.t);
-      if (dados.tipo === 'audio' && dados.narra) { audioNarracao = new Audio(dados.narra); controles.setAttribute('visible', 'true'); controles.querySelectorAll('.interativo').forEach(b => b.classList.add('clicavel')); } 
-      else if (dados.tipo === 'imagem') { img.setAttribute('src', dados.imagemPainel); img.setAttribute('visible', 'true'); }
+      if (dados.tipo === 'audio' && dados.narra) { 
+          audioNarracao = new Audio(dados.narra); 
+          controles.setAttribute('visible', 'true'); 
+          controles.querySelectorAll('.interativo').forEach(b => b.classList.add('clicavel')); 
+      } 
+      else if (dados.tipo === 'imagem') { 
+          img.setAttribute('src', dados.imagemPainel); 
+          img.setAttribute('visible', 'true'); 
+      }
       irPara('grupo-player');
     }
 
@@ -194,13 +217,19 @@
     function montarGaleria(itens) {
         const container = document.getElementById('container-molduras-cultura');
         container.innerHTML = ''; 
-        const posicoes = [ { pos: '-2.2 1.6 -2.5', rot: '0 30 0' }, { pos: '-0.8 1.6 -3', rot: '0 10 0' }, { pos: '0.8 1.6 -3', rot: '0 -10 0' }, { pos: '2.2 1.6 -2.5', rot: '0 -30 0' } ];
+        const posicoes = [ 
+            { pos: '-2.2 1.6 -2.5', rot: '0 30 0' }, 
+            { pos: '-0.8 1.6 -3', rot: '0 10 0' }, 
+            { pos: '0.8 1.6 -3', rot: '0 -10 0' }, 
+            { pos: '2.2 1.6 -2.5', rot: '0 -30 0' } 
+        ];
         itens.forEach((item, index) => {
             if(index >= 4) return;
             const p = posicoes[index];
             const idTexto = `txt-galeria-${index}`;
             const el = document.createElement('a-entity');
-            el.setAttribute('position', p.pos); el.setAttribute('rotation', p.rot);
+            el.setAttribute('position', p.pos); 
+            el.setAttribute('rotation', p.rot);
             const srcAttr = item.img ? `src="${item.img}"` : 'color="#555"';
             
             el.innerHTML = `
@@ -210,7 +239,11 @@
                         visible="false" 
                         font="${FONTE_PTBR}"
                         shader="msdf"
-                        align="center" position="0 -0.6 0" width="2.5" color="#FFD700">
+                        negate="false"
+                        align="center" 
+                        position="0 -0.6 0" 
+                        width="2.5" 
+                        color="#FFD700">
                     <a-plane position="0 0 -0.01" width="2.6" height="0.4" color="black" opacity="0.7"></a-plane>
                 </a-text>`;
             container.appendChild(el);
@@ -221,35 +254,64 @@
     function montarGaleriaVideo(itens) {
         const container = document.getElementById('container-molduras-turismo');
         container.innerHTML = ''; 
-        const posicoes = [ { pos: '-2.2 1.6 -2.5', rot: '0 30 0' }, { pos: '-0.8 1.6 -3', rot: '0 10 0' }, { pos: '0.8 1.6 -3', rot: '0 -10 0' }, { pos: '2.2 1.6 -2.5', rot: '0 -30 0' } ];
+        const posicoes = [ 
+            { pos: '-2.2 1.6 -2.5', rot: '0 30 0' }, 
+            { pos: '-0.8 1.6 -3', rot: '0 10 0' }, 
+            { pos: '0.8 1.6 -3', rot: '0 -10 0' }, 
+            { pos: '2.2 1.6 -2.5', rot: '0 -30 0' } 
+        ];
         itens.forEach((item, index) => {
             if(index >= 4) return;
             const p = posicoes[index];
             const videoID = `vid-turismo-${index}`;
             const videoEl = document.getElementById(videoID);
-            if(videoEl && item.video) { videoEl.setAttribute('src', item.video); videoEl.pause(); videoEl.currentTime = 0; }
+            if(videoEl && item.video) { 
+                videoEl.setAttribute('src', item.video); 
+                videoEl.pause(); 
+                videoEl.currentTime = 0; 
+            }
             const el = document.createElement('a-entity');
-            el.setAttribute('position', p.pos); el.setAttribute('rotation', p.rot);
+            el.setAttribute('position', p.pos); 
+            el.setAttribute('rotation', p.rot);
             
             el.innerHTML = `
-                <a-plane src="#${videoID}" width="1.2" height="0.9" class="clicavel interativo video-moldura" data-vid-id="${videoID}" material="shader: flat; side: double" animation__scale="property: scale; to: 1.1 1.1 1.1; dur: 200; startEvents: mouseenter" animation__out="property: scale; to: 1 1 1; dur: 200; startEvents: mouseleave"></a-plane>
+                <a-plane src="#${videoID}" width="1.2" height="0.9" class="clicavel interativo video-moldura" data-vid-id="${videoID}" material="shader: flat; side: double" 
+                  animation__scale="property: scale; to: 1.1 1.1 1.1; dur: 200; startEvents: mouseenter" 
+                  animation__out="property: scale; to: 1 1 1; dur: 200; startEvents: mouseleave">
+                </a-plane>
                 <a-text value="${item.txt}" 
                         font="${FONTE_PTBR}"
                         shader="msdf"
-                        align="center" position="0 -0.6 0" width="3" color="#FFF">
+                        negate="false"
+                        align="center" 
+                        position="0 -0.6 0" 
+                        width="3" 
+                        color="#FFF">
                 </a-text>`;
             container.appendChild(el);
         });
         document.querySelectorAll('.video-moldura').forEach(m => {
-            m.addEventListener('mouseenter', function() { const v = document.getElementById(this.getAttribute('data-vid-id')); if(v) v.play(); });
-            m.addEventListener('mouseleave', function() { const v = document.getElementById(this.getAttribute('data-vid-id')); if(v) v.pause(); });
+            m.addEventListener('mouseenter', function() { 
+                const v = document.getElementById(this.getAttribute('data-vid-id')); 
+                if(v) v.play(); 
+            });
+            m.addEventListener('mouseleave', function() { 
+                const v = document.getElementById(this.getAttribute('data-vid-id')); 
+                if(v) v.pause(); 
+            });
         });
     }
 
     function setupHoverEvents(selector, dataAttr) {
         document.querySelectorAll(selector).forEach(el => {
-            el.addEventListener('mouseenter', function() { document.getElementById(this.getAttribute(dataAttr)).setAttribute('visible', 'true'); this.setAttribute('scale', '1.1 1.1 1.1'); });
-            el.addEventListener('mouseleave', function() { document.getElementById(this.getAttribute(dataAttr)).setAttribute('visible', 'false'); this.setAttribute('scale', '1 1 1'); });
+            el.addEventListener('mouseenter', function() { 
+                document.getElementById(this.getAttribute(dataAttr)).setAttribute('visible', 'true'); 
+                this.setAttribute('scale', '1.1 1.1 1.1'); 
+            });
+            el.addEventListener('mouseleave', function() { 
+                document.getElementById(this.getAttribute(dataAttr)).setAttribute('visible', 'false'); 
+                this.setAttribute('scale', '1 1 1'); 
+            });
         });
     }
 
@@ -259,9 +321,24 @@
         const controles = document.getElementById('controle-360-gaze');
         const botao = document.getElementById('btnPlay360');
         const texto = document.getElementById('btnText360');
-        botao.addEventListener('click', () => { if(video.paused){ video.play(); botao.setAttribute('color','#333'); texto.setAttribute('value','PAUSE'); } else { video.pause(); botao.setAttribute('color','#EF2D5E'); texto.setAttribute('value','PLAY'); } });
-        video.addEventListener('playing', () => { loader.setAttribute('visible', 'false'); controles.setAttribute('visible', 'true'); });
-        video.addEventListener('waiting', () => { loader.setAttribute('visible', 'true'); });
+        botao.addEventListener('click', () => { 
+            if(video.paused){ 
+                video.play(); 
+                botao.setAttribute('color','#333'); 
+                texto.setAttribute('value','PAUSE'); 
+            } else { 
+                video.pause(); 
+                botao.setAttribute('color','#EF2D5E'); 
+                texto.setAttribute('value','PLAY'); 
+            } 
+        });
+        video.addEventListener('playing', () => { 
+            loader.setAttribute('visible', 'false'); 
+            controles.setAttribute('visible', 'true'); 
+        });
+        video.addEventListener('waiting', () => { 
+            loader.setAttribute('visible', 'true'); 
+        });
     }
 
     function ativarModo360(videoSrc) {
@@ -314,12 +391,26 @@
     }
 
     function pararMidiasConteudo() {
-      const v = document.getElementById('video-player'); v.pause();
-      if(audioNarracao) { audioNarracao.pause(); }
-      for(let i=0; i<4; i++) { const vid = document.getElementById(`vid-turismo-${i}`); if(vid) vid.pause(); }
+      const v = document.getElementById('video-player'); 
+      v.pause();
+      if(audioNarracao) { 
+          audioNarracao.pause(); 
+      }
+      for(let i=0; i<4; i++) { 
+          const vid = document.getElementById(`vid-turismo-${i}`); 
+          if(vid) vid.pause(); 
+      }
     }
     
-    function togglePlay2D() { if(audioNarracao) { if(audioNarracao.paused) audioNarracao.play(); else audioNarracao.pause(); } }
+    function togglePlay2D() { 
+        if(audioNarracao) { 
+            if(audioNarracao.paused) {
+                audioNarracao.play(); 
+            } else {
+                audioNarracao.pause(); 
+            }
+        } 
+    }
   </script>
 </head>
 <body>
@@ -345,82 +436,216 @@
          animation__mouseleave="property: scale; startEvents: mouseleave; to: 1 1 1; dur: 500">
        </a-cursor>
        <a-entity id="loader-360" visible="false" position="0 0 -2">
-            <a-text value="CARREGANDO..." font="https://cdn.jsdelivr.net/gh/etiennepinchon/aframe-fonts/fonts/roboto/Roboto-Bold.json" shader="msdf" color="yellow" align="center" width="5" animation="property: opacity; from: 1; to: 0.5; dir: alternate; loop: true; dur: 800"></a-text>
+            <a-text value="CARREGANDO..." 
+                    font="${FONTE_PTBR}" 
+                    shader="msdf"
+                    negate="false"
+                    color="yellow" 
+                    align="center" 
+                    width="5" 
+                    animation="property: opacity; from: 1; to: 0.5; dir: alternate; loop: true; dur: 800">
+            </a-text>
             <a-plane color="black" opacity="0.7" width="2.5" height="0.5" position="0 0 -0.01"></a-plane>
        </a-entity>
     </a-camera>
 
     <a-entity id="controle-360-gaze" visible="false" position="0 1.6 -2">
         <a-plane id="btnPlay360" color="#EF2D5E" width="1.5" height="0.5" opacity="0.9">
-           <a-text id="btnText360" value="OLHE PARA TOCAR" font="https://cdn.jsdelivr.net/gh/etiennepinchon/aframe-fonts/fonts/roboto/Roboto-Bold.json" shader="msdf" align="center" width="4"></a-text>
+           <a-text id="btnText360" 
+                   value="OLHE PARA TOCAR" 
+                   font="${FONTE_PTBR}"
+                   shader="msdf"
+                   negate="false"
+                   align="center" 
+                   width="4">
+           </a-text>
         </a-plane>
         <a-plane id="btnVoltar360" position="0 -0.6 0" width="0.8" height="0.3" color="#444" class="clicavel" onclick="sairDo360()">
-            <a-text value="SAIR" font="https://cdn.jsdelivr.net/gh/etiennepinchon/aframe-fonts/fonts/roboto/Roboto-Bold.json" shader="msdf" align="center" width="4"></a-text>
+            <a-text value="SAIR" 
+                    font="${FONTE_PTBR}"
+                    shader="msdf"
+                    negate="false"
+                    align="center" 
+                    width="4">
+            </a-text>
         </a-plane>
     </a-entity>
 
     <a-entity id="grupo-inicio" visible="true">
-        <a-text value="Amapá Interativo" font="https://cdn.jsdelivr.net/gh/etiennepinchon/aframe-fonts/fonts/roboto/Roboto-Bold.json" shader="msdf" align="center" position="0 3 -3" width="10" color="#000000"></a-text>     
-        <a-text value="Explore, interaja e aprenda sobre cada município." font="https://cdn.jsdelivr.net/gh/etiennepinchon/aframe-fonts/fonts/roboto/Roboto-Bold.json" shader="msdf" align="center" position="0 2.5 -3" width="5" color="#000000" ></a-text>
+        <a-text value="Amapá Interativo" 
+                font="${FONTE_PTBR}"
+                shader="msdf"
+                negate="false"
+                align="center" 
+                position="0 3 -3" 
+                width="10" 
+                color="#000000">
+        </a-text>     
+        <a-text value="Explore, interaja e aprenda sobre cada município." 
+                font="${FONTE_PTBR}"
+                shader="msdf"
+                negate="false"
+                align="center" 
+                position="0 2.5 -3" 
+                width="5" 
+                color="#000000">
+        </a-text>
         
         <a-image src="#img-inicio-esq" position="-3 2 -4" rotation="0 20 0" width="3" height="2"></a-image>
         <a-image src="#img-inicio-dir" position="3 2 -4" rotation="0 -20 0" width="3" height="2"></a-image>
 
         <a-plane position="0 1.6 -3" width="1.5" height="0.6" color="#004d40" class="clicavel interativo" onclick="irPara('grupo-cidades')">
-            <a-text value="INICIAR" font="https://cdn.jsdelivr.net/gh/etiennepinchon/aframe-fonts/fonts/roboto/Roboto-Bold.json" shader="msdf" align="center" width="6"></a-text>
+            <a-text value="INICIAR" 
+                    font="${FONTE_PTBR}"
+                    shader="msdf"
+                    negate="false"
+                    align="center" 
+                    width="6">
+            </a-text>
         </a-plane>
     </a-entity>
 
     <a-entity id="grupo-cidades" visible="false">
-        <a-text value="Escolha o Destino" font="https://cdn.jsdelivr.net/gh/etiennepinchon/aframe-fonts/fonts/roboto/Roboto-Bold.json" shader="msdf" align="center" position="0 2.8 -4" width="8" ></a-text>
+        <a-text value="Escolha o Destino" 
+                font="${FONTE_PTBR}"
+                shader="msdf"
+                negate="false"
+                align="center" 
+                position="0 2.8 -4" 
+                width="8">
+        </a-text>
         <a-entity id="grade-cidades" position="0 0 0"></a-entity>
         <a-plane position="0 0.5 -3" width="1" height="0.4" color="#444" class="interativo" onclick="irPara('grupo-inicio')">
-            <a-text value="VOLTAR" font="https://cdn.jsdelivr.net/gh/etiennepinchon/aframe-fonts/fonts/roboto/Roboto-Bold.json" shader="msdf" align="center"></a-text>
+            <a-text value="VOLTAR" 
+                    font="${FONTE_PTBR}"
+                    shader="msdf"
+                    negate="false"
+                    align="center">
+            </a-text>
         </a-plane>
     </a-entity>
 
     <a-entity id="grupo-categorias" visible="false">
-        <a-text id="titulo-cidade-cat" value="CIDADE" font="https://cdn.jsdelivr.net/gh/etiennepinchon/aframe-fonts/fonts/roboto/Roboto-Bold.json" shader="msdf" align="center" position="0 3 -3" width="10" color="#FFFFFF" ></a-text>
+        <a-text id="titulo-cidade-cat" 
+                value="CIDADE" 
+                font="${FONTE_PTBR}"
+                shader="msdf"
+                negate="false"
+                align="center" 
+                position="0 3 -3" 
+                width="10" 
+                color="#FFFFFF">
+        </a-text>
         <a-plane position="-1.5 2 -3" width="1.2" height="0.8" color="#004d40" class="interativo" onclick="verConteudo('Historia')">
-            <a-text value="História" font="https://cdn.jsdelivr.net/gh/etiennepinchon/aframe-fonts/fonts/roboto/Roboto-Bold.json" shader="msdf" align="center" width="5"></a-text>
+            <a-text value="História" 
+                    font="${FONTE_PTBR}"
+                    shader="msdf"
+                    negate="false"
+                    align="center" 
+                    width="5">
+            </a-text>
         </a-plane>
         <a-plane position="0 2 -3" width="1.2" height="0.8" color="#E64A19" class="interativo" onclick="verConteudo('Cultura')">
-            <a-text value="Cultura" font="https://cdn.jsdelivr.net/gh/etiennepinchon/aframe-fonts/fonts/roboto/Roboto-Bold.json" shader="msdf" align="center" width="5"></a-text>
+            <a-text value="Cultura" 
+                    font="${FONTE_PTBR}"
+                    shader="msdf"
+                    negate="false"
+                    align="center" 
+                    width="5">
+            </a-text>
         </a-plane>
         <a-plane position="1.5 2 -3" width="1.2" height="0.8" color="#388E3C" class="interativo" onclick="verConteudo('Turismo')">
-            <a-text value="Turismo" font="https://cdn.jsdelivr.net/gh/etiennepinchon/aframe-fonts/fonts/roboto/Roboto-Bold.json" shader="msdf" align="center" width="5"></a-text>
+            <a-text value="Turismo" 
+                    font="${FONTE_PTBR}"
+                    shader="msdf"
+                    negate="false"
+                    align="center" 
+                    width="5">
+            </a-text>
         </a-plane>
         <a-plane position="0 1 -3" width="1" height="0.3" color="#444" class="interativo" onclick="irPara('grupo-cidades')">
-            <a-text value="VOLTAR" font="https://cdn.jsdelivr.net/gh/etiennepinchon/aframe-fonts/fonts/roboto/Roboto-Bold.json" shader="msdf" align="center"></a-text>
+            <a-text value="VOLTAR" 
+                    font="${FONTE_PTBR}"
+                    shader="msdf"
+                    negate="false"
+                    align="center">
+            </a-text>
         </a-plane>
     </a-entity>
 
     <a-entity id="grupo-cultura-galeria" visible="false">
-        <a-text id="titulo-galeria" value="Galeria" font="https://cdn.jsdelivr.net/gh/etiennepinchon/aframe-fonts/fonts/roboto/Roboto-Bold.json" shader="msdf" align="center" position="0 3 -3" width="8" color="#FFD700"></a-text>
+        <a-text id="titulo-galeria" 
+                value="Galeria" 
+                font="${FONTE_PTBR}"
+                shader="msdf"
+                negate="false"
+                align="center" 
+                position="0 3 -3" 
+                width="8" 
+                color="#FFD700">
+        </a-text>
         <a-entity id="container-molduras-cultura"></a-entity>
         <a-plane position="0 0.5 -3" width="1" height="0.3" color="#444" class="interativo" onclick="voltarParaCategorias()">
-            <a-text value="VOLTAR" font="https://cdn.jsdelivr.net/gh/etiennepinchon/aframe-fonts/fonts/roboto/Roboto-Bold.json" shader="msdf" align="center"></a-text>
+            <a-text value="VOLTAR" 
+                    font="${FONTE_PTBR}"
+                    shader="msdf"
+                    negate="false"
+                    align="center">
+            </a-text>
         </a-plane>
     </a-entity>
 
     <a-entity id="grupo-turismo-galeria" visible="false">
-        <a-text id="titulo-turismo" value="Turismo" font="https://cdn.jsdelivr.net/gh/etiennepinchon/aframe-fonts/fonts/roboto/Roboto-Bold.json" shader="msdf" align="center" position="0 3 -3" width="8" color="#000000"></a-text>
+        <a-text id="titulo-turismo" 
+                value="Turismo" 
+                font="${FONTE_PTBR}"
+                shader="msdf"
+                negate="false"
+                align="center" 
+                position="0 3 -3" 
+                width="8" 
+                color="#000000">
+        </a-text>
         <a-entity id="container-molduras-turismo"></a-entity>
         <a-plane position="0 0.5 -3" width="1" height="0.3" color="#444" class="interativo" onclick="voltarParaCategorias()">
-            <a-text value="VOLTAR" font="https://cdn.jsdelivr.net/gh/etiennepinchon/aframe-fonts/fonts/roboto/Roboto-Bold.json" shader="msdf" align="center"></a-text>
+            <a-text value="VOLTAR" 
+                    font="${FONTE_PTBR}"
+                    shader="msdf"
+                    negate="false"
+                    align="center">
+            </a-text>
         </a-plane>
     </a-entity>
 
     <a-entity id="grupo-player" visible="false">
         <a-plane position="0 1.5 -3" width="3" height="2.5" color="#111" opacity="0.95"></a-plane>
-        <a-text id="vr-titulo" value="TITULO" font="https://cdn.jsdelivr.net/gh/etiennepinchon/aframe-fonts/fonts/roboto/Roboto-Bold.json" shader="msdf" align="center" position="0 2.5 -2.9" color="#FFD700" width="4"></a-text>
+        <a-text id="vr-titulo" 
+                value="TITULO" 
+                font="${FONTE_PTBR}"
+                shader="msdf"
+                negate="false"
+                align="center" 
+                position="0 2.5 -2.9" 
+                color="#FFD700" 
+                width="4">
+        </a-text>
         <a-image id="vr-imagem-screen" width="2" height="1" position="0 1.8 -2.9" visible="false"></a-image>
         <a-entity id="controles-media" position="0 1 -2.9" visible="false">
              <a-circle radius="0.2" color="green" class="interativo" onclick="togglePlay2D()"></a-circle>
-             <a-text value="PLAY AUDIO" font="https://cdn.jsdelivr.net/gh/etiennepinchon/aframe-fonts/fonts/roboto/Roboto-Bold.json" shader="msdf" position="-0.5 -0.3 0"></a-text>
+             <a-text value="PLAY AUDIO" 
+                     font="${FONTE_PTBR}"
+                     shader="msdf"
+                     negate="false"
+                     position="-0.5 -0.3 0">
+             </a-text>
         </a-entity>
         <a-plane position="0 0.15 -2.9" width="1" height="0.25" color="#444" class="interativo" onclick="voltarParaCategorias()">
-            <a-text value="VOLTAR" font="https://cdn.jsdelivr.net/gh/etiennepinchon/aframe-fonts/fonts/roboto/Roboto-Bold.json" shader="msdf" align="center"></a-text>
+            <a-text value="VOLTAR" 
+                    font="${FONTE_PTBR}"
+                    shader="msdf"
+                    negate="false"
+                    align="center">
+            </a-text>
         </a-plane>
     </a-entity>
 

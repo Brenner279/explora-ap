@@ -2,58 +2,57 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Amapá Interativo: Solução Final de Acentos</title>
+  <title>Amapa Interativo: Inicio com Imagens</title>
   
   <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
   <script src="https://unpkg.com/aframe-environment-component@1.5.x/dist/aframe-environment-component.min.js"></script>
   
-  <script src="https://unpkg.com/aframe-troika-text@0.10.0/dist/aframe-troika-text.min.js"></script>
-  
   <script>
     /* --- CONFIGURAÇÃO E DADOS --- */
+    
     const db = {
       'vitoria': {
-        nome: 'Vitória do Jari',
+        nome: 'Vitoria do Jari',
         bandeira: './assets/bandeiras/vitoria.png',
-        hino: './assets/audios/hino_vitoria.mp3', 
+        hino: './assets/hinos/vitoria.mp3', 
         conteudos: {
-          'Historia': { t: 'História', video: './assets/videos/vitoria.mp4', tipo: 'video360' },
+          'Historia': { t: 'Historia', video: './assets/videos/vitoria.mp4', tipo: 'video360' },
           'Cultura': { 
               t: 'Galeria Cultural', type: 'galeria', itens: [
-                  { img: './assets/imagens/cultura1.png', txt: 'Dança Tradicional' },
+                  { img: './assets/imagens/cultura1.png', txt: 'Danca Tradicional' },
                   { img: './assets/imagens/cultura2.png', txt: 'Artesanato' },
-                  { img: './assets/imagens/cultura3.png', txt: 'Culinária Local' },
+                  { img: './assets/imagens/cultura3.png', txt: 'Culinaria' },
                   { img: './assets/imagens/cultura4.png', txt: 'Festividades' }
               ]
           },
           'Turismo': { 
-              t: 'Pontos Turísticos', type: 'galeriaVideo', itens: [
+              t: 'Pontos Turisticos', type: 'galeriaVideo', itens: [
                   { video: './assets/videos/turismo1.mp4', txt: 'Cachoeira do Jari' },
                   { video: './assets/videos/turismo2.mp4', txt: 'Passeio de Barco' },
                   { video: './assets/videos/turismo3.mp4', txt: 'Trilha na Mata' },
-                  { video: './assets/videos/turismo4.mp4', txt: 'Centro Histórico' }
+                  { video: './assets/videos/turismo4.mp4', txt: 'Centro Historico' }
               ]
           }
         }
       },
       'macapa': { 
-          nome: 'Macapá', 
+          nome: 'Macapa', 
           bandeira: './assets/bandeiras/macapa.png', 
           hino: './assets/audios/hino_macapa.mp3', 
           conteudos: {
-            'Historia': { t: 'História', video: './assets/videos/macapa_historia.mp4', tipo: 'video360' },
+            'Historia': { t: 'Historia', video: './assets/videos/vitoria.mp4', tipo: 'video360' },
             'Cultura': { 
                 t: 'Galeria Cultural', type: 'galeria', itens: [
-                    { img: './assets/imagens/jose.jpg', txt: 'Festividade São José' },
-                    { img: './assets/imagens/manicoba.jpg', txt: 'Maniçoba' },
-                    { img: './assets/imagens/marabaixo.jpg', txt: 'Marabaixo' },
-                    { img: './assets/imagens/tacaca.jpg', txt: 'Tacacá' }
+                    { img: './assets/imagens/jose.jpg', txt: 'Festividade Sao Jose' },
+                    { img: './assets/imagens/manicoba.jpg', txt: 'Manicoba' },
+                    { img: './assets/imagens/marabaixo.jpg', txt: 'Festividade Marabaixo' },
+                    { img: './assets/imagens/tacaca.jpg', txt: 'Tacaca ' }
                 ]
             },
             'Turismo': { 
-                t: 'Pontos Turísticos', type: 'galeriaVideo', itens: [
-                    { video: './assets/videos/balnearo.mp4', txt: 'Balneário' },
-                    { video: './assets/videos/fortaleza.mp4', txt: 'Fortaleza São José' },
+                t: 'Pontos Turisticos', type: 'galeriaVideo', itens: [
+                    { video: './assets/videos/balnearo.mp4', txt: 'Balnearo' },
+                    { video: './assets/videos/fortaleza.mp4', txt: 'Fortaleza de Sao Jose' },
                     { video: './assets/videos/marco.mp4', txt: 'Marco Zero' },
                     { video: './assets/videos/museu.mp4', txt: 'Museu Sacaca' }
                 ]
@@ -64,7 +63,7 @@
       'oiapoque': { nome: 'Oiapoque', bandeira: './assets/bandeiras/oiapoque.png', conteudos: {} },
       'serra do navio': { nome: 'Serra do Navio', bandeira: './assets/bandeiras/serra.png', conteudos: {} },
       'santana': { nome: 'Santana', bandeira: './assets/bandeiras/santana.jpg', conteudos: {} },
-      'amapa': { nome: 'Amapá', bandeira: './assets/bandeiras/amapa.jpg', conteudos: {} }
+      'amapa': { nome: 'Amapa', bandeira: './assets/bandeiras/amapa.jpg', conteudos: {} },
     };
 
     let cidadeAtual = '';
@@ -79,10 +78,14 @@
     function gerarMenuCidades() {
       const container = document.getElementById('grade-cidades');
       const chaves = Object.keys(db);
+      
       const posicoes = [
-          { pos: '-3.5 1.6 -1.5', rot: '0 60 0' }, { pos: '-2.4 1.6 -2.5', rot: '0 40 0' },
-          { pos: '-1.2 1.6 -3.2', rot: '0 20 0' }, { pos: '0 1.6 -3.5',    rot: '0 0 0' },   
-          { pos: '1.2 1.6 -3.2',  rot: '0 -20 0' }, { pos: '2.4 1.6 -2.5',  rot: '0 -40 0' },
+          { pos: '-3.5 1.6 -1.5', rot: '0 60 0' }, 
+          { pos: '-2.4 1.6 -2.5', rot: '0 40 0' },
+          { pos: '-1.2 1.6 -3.2', rot: '0 20 0' },
+          { pos: '0 1.6 -3.5',    rot: '0 0 0' },   
+          { pos: '1.2 1.6 -3.2',  rot: '0 -20 0' },
+          { pos: '2.4 1.6 -2.5',  rot: '0 -40 0' },
           { pos: '3.5 1.6 -1.5',  rot: '0 -60 0' }  
       ];
 
@@ -93,15 +96,18 @@
         const el = document.createElement('a-entity');
         el.setAttribute('position', p.pos);
         el.setAttribute('rotation', p.rot);
+        
         const imagemSrc = cidade.bandeira ? `src="${cidade.bandeira}"` : 'color="#555"';
 
-        // TROCADO A-TEXT POR A-TROIKA-TEXT
         el.innerHTML = `
-          <a-plane ${imagemSrc} width="1" height="0.7" class="clicavel interativo" onclick="selecionarCidade('${chave}')" material="shader: flat; side: double">
+          <a-plane ${imagemSrc} width="1" height="0.7" class="clicavel interativo" onclick="selecionarCidade('${chave}')"
+            material="shader: flat; side: double"
+            animation__scale="property: scale; to: 1.2 1.2 1.2; dur: 200; startEvents: mouseenter"
+            animation__out="property: scale; to: 1 1 1; dur: 200; startEvents: mouseleave">
              <a-plane position="0 0 -0.01" width="1.05" height="0.75" color="#FFD700" material="shader: flat"></a-plane>
           </a-plane>
-          <a-troika-text value="${cidade.nome}" align="center" position="0 -0.6 0" width="4" color="#FFFFFF" outline-width="0.02" outline-color="#000">
-          </a-troika-text>
+          <a-text value="${cidade.nome}" font="https://cdn.aframe.io/fonts/Roboto-msdf.json" align="center" position="0 -0.6 0" width="4" color="#FFFFFF" shader="msdf">
+                       </a-text>
         `;
         container.appendChild(el);
       });
@@ -116,7 +122,7 @@
             hinoEl.src = cidade.hino;
             hinoEl.volume = 0.2; 
             hinoEl.loop = true;
-            hinoEl.play().catch(e => console.log("Aguardando interação..."));
+            hinoEl.play().catch(error => { console.log("Interação necessária para áudio."); });
         }
     }
 
@@ -130,20 +136,21 @@
       const grupos = ['grupo-inicio', 'grupo-cidades', 'grupo-categorias', 'grupo-player', 'grupo-cultura-galeria', 'grupo-turismo-galeria'];
       grupos.forEach(g => {
         const el = document.getElementById(g);
-        if(el) {
-            el.setAttribute('visible', 'false');
-            el.querySelectorAll('.interativo').forEach(b => b.classList.remove('clicavel'));
-        }
+        el.setAttribute('visible', 'false');
+        el.querySelectorAll('.interativo').forEach(b => b.classList.remove('clicavel'));
       });
+
       desativarModo360();
-      if (idGrupo === 'grupo-inicio' || idGrupo === 'grupo-cidades') pararHino();
+
+      if (idGrupo === 'grupo-inicio' || idGrupo === 'grupo-cidades') { pararHino(); }
+
       const destino = document.getElementById(idGrupo);
-      if(destino) {
-          destino.setAttribute('visible', 'true');
-          destino.querySelectorAll('.interativo').forEach(b => b.classList.add('clicavel'));
-          atualizarAmbiente(idGrupo);
-      }
-      if(idGrupo !== 'grupo-categorias') pararMidiasConteudo();
+      destino.setAttribute('visible', 'true');
+      destino.querySelectorAll('.interativo').forEach(b => b.classList.add('clicavel'));
+      
+      atualizarAmbiente(idGrupo);
+      
+      if(idGrupo !== 'grupo-categorias') { pararMidiasConteudo(); }
     }
 
     function selecionarCidade(chave) {
@@ -159,24 +166,20 @@
       pararHino(); pararMidiasConteudo();
 
       if (dados.tipo === 'video360') { ativarModo360(dados.video); return; }
-      if (dados.type === 'galeria') { 
-          document.getElementById('titulo-galeria').setAttribute('value', dados.t); 
-          montarGaleria(dados.itens); 
-          irPara('grupo-cultura-galeria'); 
-          return; 
-      }
-      if (dados.type === 'galeriaVideo') { 
-          document.getElementById('titulo-turismo').setAttribute('value', dados.t); 
-          montarGaleriaVideo(dados.itens); 
-          irPara('grupo-turismo-galeria'); 
-          return; 
-      }
+      if (dados.type === 'galeria') { document.getElementById('titulo-galeria').setAttribute('value', dados.t); montarGaleria(dados.itens); irPara('grupo-cultura-galeria'); return; }
+      if (dados.type === 'galeriaVideo') { document.getElementById('titulo-turismo').setAttribute('value', dados.t); montarGaleriaVideo(dados.itens); irPara('grupo-turismo-galeria'); return; }
 
+      const controles = document.getElementById('controles-media');
+      const tela = document.getElementById('vr-video-screen');
+      const img = document.getElementById('vr-imagem-screen');
+      tela.setAttribute('visible', 'false'); img.setAttribute('visible', 'false'); controles.setAttribute('visible', 'false');
       document.getElementById('vr-titulo').setAttribute('value', dados.t);
+      if (dados.tipo === 'audio' && dados.narra) { audioNarracao = new Audio(dados.narra); controles.setAttribute('visible', 'true'); controles.querySelectorAll('.interativo').forEach(b => b.classList.add('clicavel')); } 
+      else if (dados.tipo === 'imagem') { img.setAttribute('src', dados.imagemPainel); img.setAttribute('visible', 'true'); }
       irPara('grupo-player');
     }
 
-    /* --- GALERIAS (IMAGEM E VÍDEO) --- */
+    /* --- AUXILIARES (Video, Galeria, etc) --- */
     function montarGaleria(itens) {
         const container = document.getElementById('container-molduras-cultura');
         container.innerHTML = ''; 
@@ -188,61 +191,82 @@
             const el = document.createElement('a-entity');
             el.setAttribute('position', p.pos); el.setAttribute('rotation', p.rot);
             const srcAttr = item.img ? `src="${item.img}"` : 'color="#555"';
-            el.innerHTML = `
-                <a-plane ${srcAttr} width="1.2" height="0.9" class="clicavel interativo moldura-galeria" data-texto-id="${idTexto}" material="shader: flat; side: double"></a-plane>
-                <a-troika-text id="${idTexto}" value="${item.txt}" visible="false" align="center" position="0 -0.6 0.1" width="2.5" color="#FFD700" outline-width="0.02">
-                </a-troika-text>`;
+            el.innerHTML = `<a-plane ${srcAttr} width="1.2" height="0.9" class="clicavel interativo moldura-galeria" data-texto-id="${idTexto}" material="shader: flat; side: double"></a-plane><a-text id="${idTexto}" value="${item.txt}" visible="false" font="https://cdn.aframe.io/fonts/Roboto-msdf.json" align="center" position="0 -0.6 0" width="2.5" color="#FFD700" shader="msdf"><a-plane position="0 0 -0.01" width="2.6" height="0.4" color="black" opacity="0.7"></a-plane></a-text>`;
             container.appendChild(el);
         });
-        document.querySelectorAll('.moldura-galeria').forEach(m => {
-            m.addEventListener('mouseenter', function() { document.getElementById(this.getAttribute('data-texto-id')).setAttribute('visible', 'true'); });
-            m.addEventListener('mouseleave', function() { document.getElementById(this.getAttribute('data-texto-id')).setAttribute('visible', 'false'); });
-        });
+        setupHoverEvents('.moldura-galeria', 'data-texto-id');
     }
 
     function montarGaleriaVideo(itens) {
         const container = document.getElementById('container-molduras-turismo');
         container.innerHTML = ''; 
         const posicoes = [ { pos: '-2.2 1.6 -2.5', rot: '0 30 0' }, { pos: '-0.8 1.6 -3', rot: '0 10 0' }, { pos: '0.8 1.6 -3', rot: '0 -10 0' }, { pos: '2.2 1.6 -2.5', rot: '0 -30 0' } ];
+        const loader = document.getElementById('loader-360');
+
         itens.forEach((item, index) => {
             if(index >= 4) return;
             const p = posicoes[index];
             const videoID = `vid-turismo-${index}`;
             const videoEl = document.getElementById(videoID);
-            if(videoEl && item.video) { videoEl.setAttribute('src', item.video); videoEl.pause(); }
+            if(videoEl && item.video) { 
+                videoEl.setAttribute('src', item.video); 
+                videoEl.pause(); 
+                videoEl.currentTime = 0; 
+                
+                // Eventos de carregamento para cada vídeo do turismo
+                videoEl.onplaying = () => { loader.setAttribute('visible', 'false'); };
+                videoEl.onwaiting = () => { loader.setAttribute('visible', 'true'); };
+            }
             const el = document.createElement('a-entity');
             el.setAttribute('position', p.pos); el.setAttribute('rotation', p.rot);
-            el.innerHTML = `
-                <a-plane src="#${videoID}" width="1.2" height="0.9" class="clicavel interativo video-moldura" data-vid-id="${videoID}" material="shader: flat; side: double"></a-plane>
-                <a-troika-text value="${item.txt}" align="center" position="0 -0.6 0.1" width="3" color="#FFF"></a-troika-text>`;
+            el.innerHTML = `<a-plane src="#${videoID}" width="1.2" height="0.9" class="clicavel interativo video-moldura" data-vid-id="${videoID}" material="shader: flat; side: double" animation__scale="property: scale; to: 1.1 1.1 1.1; dur: 200; startEvents: mouseenter" animation__out="property: scale; to: 1 1 1; dur: 200; startEvents: mouseleave"></a-plane><a-text value="${item.txt}" font="https://cdn.aframe.io/fonts/Roboto-msdf.json" align="center" position="0 -0.6 0" width="3" color="#FFF" shader="msdf"></a-text>`;
             container.appendChild(el);
         });
+        
         document.querySelectorAll('.video-moldura').forEach(m => {
-            m.addEventListener('mouseenter', function() { document.getElementById(this.getAttribute('data-vid-id')).play(); });
-            m.addEventListener('mouseleave', function() { document.getElementById(this.getAttribute('data-vid-id')).pause(); });
+            m.addEventListener('mouseenter', function() { 
+                const v = document.getElementById(this.getAttribute('data-vid-id')); 
+                if(v) {
+                    loader.setAttribute('visible', 'true'); // Mostra carregando ao olhar
+                    v.play(); 
+                }
+            });
+            m.addEventListener('mouseleave', function() { 
+                const v = document.getElementById(this.getAttribute('data-vid-id')); 
+                if(v) {
+                    v.pause(); 
+                    loader.setAttribute('visible', 'false'); // Esconde ao tirar o cursor
+                }
+            });
         });
     }
 
-    /* --- VÍDEO 360 --- */
+    function setupHoverEvents(selector, dataAttr) {
+        document.querySelectorAll(selector).forEach(el => {
+            el.addEventListener('mouseenter', function() { document.getElementById(this.getAttribute(dataAttr)).setAttribute('visible', 'true'); this.setAttribute('scale', '1.1 1.1 1.1'); });
+            el.addEventListener('mouseleave', function() { document.getElementById(this.getAttribute(dataAttr)).setAttribute('visible', 'false'); this.setAttribute('scale', '1 1 1'); });
+        });
+    }
+
     function setupVideoEvents() {
         const video = document.getElementById('video-player');
         const loader = document.getElementById('loader-360');
         const controles = document.getElementById('controle-360-gaze');
         const botao = document.getElementById('btnPlay360');
         const texto = document.getElementById('btnText360');
-        botao.addEventListener('click', () => { if(video.paused){ video.play(); texto.setAttribute('value','PAUSAR'); } else { video.pause(); texto.setAttribute('value','TOCAR'); } });
+        botao.addEventListener('click', () => { if(video.paused){ video.play(); botao.setAttribute('color','#333'); texto.setAttribute('value','PAUSE'); } else { video.pause(); botao.setAttribute('color','#EF2D5E'); texto.setAttribute('value','PLAY'); } });
         video.addEventListener('playing', () => { loader.setAttribute('visible', 'false'); controles.setAttribute('visible', 'true'); });
+        video.addEventListener('waiting', () => { loader.setAttribute('visible', 'true'); });
     }
 
     function ativarModo360(videoSrc) {
-        ['grupo-inicio', 'grupo-cidades', 'grupo-categorias', 'grupo-player', 'grupo-cultura-galeria', 'grupo-turismo-galeria'].forEach(id => {
-            const el = document.getElementById(id); if(el) el.setAttribute('visible', 'false');
-        });
+        ['grupo-inicio', 'grupo-cidades', 'grupo-categorias', 'grupo-player', 'grupo-cultura-galeria', 'grupo-turismo-galeria'].forEach(id => document.getElementById(id).setAttribute('visible', 'false'));
         document.getElementById('ambiente-3d').removeAttribute('environment');
         const videoEl = document.getElementById('video-player');
         videoEl.setAttribute('src', videoSrc);
         document.getElementById('videosphere').setAttribute('visible', 'true');
         document.getElementById('loader-360').setAttribute('visible', 'true');
+        document.getElementById('controle-360-gaze').setAttribute('visible', 'false');
         document.getElementById('btnPlay360').classList.add('clicavel');
         document.getElementById('btnVoltar360').classList.add('clicavel');
         videoEl.play().catch(e => console.log("Buffering..."));
@@ -255,27 +279,39 @@
         esfera.setAttribute('visible', 'false');
         document.getElementById('controle-360-gaze').setAttribute('visible', 'false');
         document.getElementById('loader-360').setAttribute('visible', 'false');
+        document.getElementById('btnPlay360').classList.remove('clicavel');
+        document.getElementById('btnVoltar360').classList.remove('clicavel');
     }
     
-    function sairDo360() { desativarModo360(); irPara('grupo-categorias'); tocarHino(cidadeAtual); }
-    function voltarParaCategorias() { irPara('grupo-categorias'); tocarHino(cidadeAtual); }
+    function sairDo360() { 
+        desativarModo360(); 
+        irPara('grupo-categorias');
+        tocarHino(cidadeAtual);
+    }
+
+    function voltarParaCategorias() {
+        irPara('grupo-categorias');
+        tocarHino(cidadeAtual);
+    }
 
     function atualizarAmbiente(idGrupo) {
         if(document.getElementById('videosphere').getAttribute('visible') == true) return;
         const el = document.getElementById('ambiente-3d');
-        let p = 'forest';
-        if(idGrupo === 'grupo-cidades') p = 'arches'; 
-        if(idGrupo === 'grupo-cultura-galeria') p = 'egypt'; 
-        if(idGrupo === 'grupo-turismo-galeria') p = 'yavapai'; 
-        if(idGrupo === 'grupo-player') p = 'starry';
-        el.setAttribute('environment', { preset: p, grid: 'cross' });
+        let preset = 'forest';
+        if(idGrupo === 'grupo-cidades') preset = 'arches'; 
+        if(idGrupo === 'grupo-cultura-galeria') preset = 'egypt'; 
+        if(idGrupo === 'grupo-turismo-galeria') preset = 'yavapai'; 
+        if(idGrupo === 'grupo-player') preset = 'starry';
+        el.setAttribute('environment', { preset: preset, grid: 'cross', playArea: 1 });
     }
 
     function pararMidiasConteudo() {
-      document.getElementById('video-player').pause();
-      if(audioNarracao) audioNarracao.pause();
-      for(let i=0; i<4; i++) { if(document.getElementById(`vid-turismo-${i}`)) document.getElementById(`vid-turismo-${i}`).pause(); }
+      const v = document.getElementById('video-player'); v.pause();
+      if(audioNarracao) { audioNarracao.pause(); }
+      for(let i=0; i<4; i++) { const vid = document.getElementById(`vid-turismo-${i}`); if(vid) vid.pause(); }
     }
+    
+    function togglePlay2D() { if(audioNarracao) { if(audioNarracao.paused) audioNarracao.play(); else audioNarracao.pause(); } }
   </script>
 </head>
 <body>
@@ -288,76 +324,98 @@
        <video id="vid-turismo-2" loop crossorigin="anonymous" playsinline></video>
        <video id="vid-turismo-3" loop crossorigin="anonymous" playsinline></video>
        <audio id="audio-hino" loop></audio>
+       <img id="img-inicio-esq" src="./assets/imagens/amapa.png">
+       <img id="img-inicio-dir" src="./assets/imagens/mapa.png">
     </a-assets>
 
-    <a-entity id="ambiente-3d" environment="preset: forest"></a-entity>
+    <a-entity id="ambiente-3d" environment="preset: forest; groundColor: #445; grid: cross"></a-entity>
     <a-videosphere id="videosphere" src="#video-player" visible="false" rotation="0 -90 0"></a-videosphere>
 
     <a-camera>
-       <a-cursor id="cursor" color="yellow" fuse="true" fuse-timeout="1500" raycaster="objects: .clicavel"></a-cursor>
+       <a-cursor id="cursor" color="yellow" fuse="true" fuse-timeout="1500" raycaster="objects: .clicavel" 
+         animation__fusing="property: scale; startEvents: fusing; from: 1 1 1; to: 0.1 0.1 0.1; dur: 1500"
+         animation__mouseleave="property: scale; startEvents: mouseleave; to: 1 1 1; dur: 500">
+       </a-cursor>
        <a-entity id="loader-360" visible="false" position="0 0 -2">
-            <a-troika-text value="CARREGANDO..." color="yellow" align="center" width="5"></a-troika-text>
+            <a-text value="CARREGANDO..." color="yellow" align="center" width="5" animation="property: opacity; from: 1; to: 0.5; dir: alternate; loop: true; dur: 800"></a-text>
+            <a-plane color="black" opacity="0.7" width="2.5" height="0.5" position="0 0 -0.01"></a-plane>
        </a-entity>
     </a-camera>
 
     <a-entity id="controle-360-gaze" visible="false" position="0 1.6 -2">
-        <a-plane id="btnPlay360" color="#EF2D5E" width="1.5" height="0.5">
-           <a-troika-text id="btnText360" value="TOCAR/PAUSAR" align="center" width="4"></a-troika-text>
+        <a-plane id="btnPlay360" color="#EF2D5E" width="1.5" height="0.5" opacity="0.9">
+           <a-text id="btnText360" value="OLHE PARA TOCAR" align="center" width="4"></a-text>
         </a-plane>
         <a-plane id="btnVoltar360" position="0 -0.6 0" width="0.8" height="0.3" color="#444" class="clicavel" onclick="sairDo360()">
-            <a-troika-text value="SAIR" align="center" width="4"></a-troika-text>
+            <a-text value="SAIR" align="center" width="4"></a-text>
         </a-plane>
     </a-entity>
 
     <a-entity id="grupo-inicio" visible="true">
-        <a-troika-text value="Amapá Interativo" align="center" position="0 3 -3" width="10" color="#000"></a-troika-text>     
-        <a-troika-text value="Explore e aprenda sobre cada município." align="center" position="0 2.4 -3" width="6" color="#000"></a-troika-text>
+        <a-text value="Amapa Interativo" font="https://cdn.aframe.io/fonts/Exo2Bold.fnt" align="center" position="0 3 -3" width="10" color="#000000"></a-text>     
+        <a-text value="Explore, interaja e aprenda sobre cada município." font="https://cdn.aframe.io/fonts/Exo2Bold.fnt" align="center" position="0 2.5 -3" width="5" color="#000000" ></a-text>
+        
+        <a-image src="#img-inicio-esq" position="-3 1.5 -4" rotation="0 20 0" width="2" height="1"></a-image>
+        <a-image src="#img-inicio-dir" position="3 1.5 -4" rotation="0 -20 0" width="2" height="1.5"></a-image>
+
         <a-plane position="0 1.6 -3" width="1.5" height="0.6" color="#004d40" class="clicavel interativo" onclick="irPara('grupo-cidades')">
-            <a-troika-text value="INICIAR" align="center" width="6"></a-troika-text>
+            <a-text value="INICIAR" font="https://cdn.aframe.io/fonts/Exo2Bold.fnt" align="center" width="6"></a-text>
         </a-plane>
     </a-entity>
 
     <a-entity id="grupo-cidades" visible="false">
-        <a-troika-text value="Escolha o Destino" align="center" position="0 3 -4" width="8"></a-troika-text>
+        <a-text value="Escolha o Destino" font="https://cdn.aframe.io/fonts/Exo2Bold.fnt" align="center" position="0 2.8 -4" width="8" ></a-text>
         <a-entity id="grade-cidades" position="0 0 0"></a-entity>
         <a-plane position="0 0.5 -3" width="1" height="0.4" color="#444" class="interativo" onclick="irPara('grupo-inicio')">
-            <a-troika-text value="VOLTAR" align="center"></a-troika-text>
+            <a-text value="VOLTAR" font="https://cdn.aframe.io/fonts/Exo2Bold.fnt" align="center"></a-text>
         </a-plane>
     </a-entity>
 
     <a-entity id="grupo-categorias" visible="false">
-        <a-troika-text id="titulo-cidade-cat" value="CIDADE" align="center" position="0 3 -3" width="10"></a-troika-text>
+        <a-text id="titulo-cidade-cat" value="CIDADE" font="https://cdn.aframe.io/fonts/Exo2Bold.fnt" align="center" position="0 3 -3" width="10" color="#FFFFFF" ></a-text>
         <a-plane position="-1.5 2 -3" width="1.2" height="0.8" color="#004d40" class="interativo" onclick="verConteudo('Historia')">
-            <a-troika-text value="História" align="center" width="5"></a-troika-text>
+            <a-text value="Historia" font="https://cdn.aframe.io/fonts/Exo2Bold.fnt" align="center" width="5"></a-text>
         </a-plane>
         <a-plane position="0 2 -3" width="1.2" height="0.8" color="#E64A19" class="interativo" onclick="verConteudo('Cultura')">
-            <a-troika-text value="Cultura" align="center" width="5"></a-troika-text>
+            <a-text value="Cultura" font="https://cdn.aframe.io/fonts/Exo2Bold.fnt" align="center" width="5"></a-text>
         </a-plane>
         <a-plane position="1.5 2 -3" width="1.2" height="0.8" color="#388E3C" class="interativo" onclick="verConteudo('Turismo')">
-            <a-troika-text value="Turismo" align="center" width="5"></a-troika-text>
+            <a-text value="Turismo" font="https://cdn.aframe.io/fonts/Exo2Bold.fnt" align="center" width="5"></a-text>
         </a-plane>
-        <a-plane position="0 1 -3" width="1" height="0.3" color="#444" class="interativo" onclick="irPara('grupo-cidades')">
-            <a-troika-text value="VOLTAR" align="center"></a-troika-text>
+        <a-plane position="0 1.2 -3" width="1" height="0.3" color="#444" class="interativo" onclick="irPara('grupo-cidades')">
+            <a-text value="VOLTAR" font="https://cdn.aframe.io/fonts/Exo2Bold.fnt" align="center"></a-text>
         </a-plane>
     </a-entity>
 
     <a-entity id="grupo-cultura-galeria" visible="false">
-        <a-troika-text id="titulo-galeria" value="Cultura" align="center" position="0 3 -3" width="8"></a-troika-text>
+        <a-text id="titulo-galeria" value="Galeria" font="https://cdn.aframe.io/fonts/Exo2Bold.fnt" align="center" position="0 3 -3" width="8" color="#FFD700"></a-text>
         <a-entity id="container-molduras-cultura"></a-entity>
         <a-plane position="0 0.5 -3" width="1" height="0.3" color="#444" class="interativo" onclick="voltarParaCategorias()">
-            <a-troika-text value="VOLTAR" align="center"></a-troika-text>
+            <a-text value="VOLTAR" font="https://cdn.aframe.io/fonts/Exo2Bold.fnt" align="center"></a-text>
         </a-plane>
     </a-entity>
 
     <a-entity id="grupo-turismo-galeria" visible="false">
-        <a-troika-text id="titulo-turismo" value="Turismo" align="center" position="0 3 -3" width="8"></a-troika-text>
+        <a-text id="titulo-turismo" value="Turismo" font="https://cdn.aframe.io/fonts/Exo2Bold.fnt" align="center" position="0 3 -3" width="8" color="#000000"></a-text>
         <a-entity id="container-molduras-turismo"></a-entity>
         <a-plane position="0 0.5 -3" width="1" height="0.3" color="#444" class="interativo" onclick="voltarParaCategorias()">
-            <a-troika-text value="VOLTAR" align="center"></a-troika-text>
+            <a-text value="VOLTAR" font="https://cdn.aframe.io/fonts/Exo2Bold.fnt" align="center"></a-text>
+        </a-plane>
+    </a-entity>
+
+    <a-entity id="grupo-player" visible="false">
+        <a-plane position="0 1.5 -3" width="3" height="2.5" color="#111" opacity="0.95"></a-plane>
+        <a-text id="vr-titulo" value="TITULO" font="https://cdn.aframe.io/fonts/Exo2Bold.fnt" align="center" position="0 2.5 -2.9" color="#FFD700" width="4"></a-text>
+        <a-image id="vr-imagem-screen" width="2" height="1" position="0 1.8 -2.9" visible="false"></a-image>
+        <a-entity id="controles-media" position="0 1 -2.9" visible="false">
+             <a-circle radius="0.2" color="green" class="interativo" onclick="togglePlay2D()"></a-circle>
+             <a-text value="PLAY AUDIO" position="-0.5 -0.3 0"></a-text>
+        </a-entity>
+        <a-plane position="0 0.15 -2.9" width="1" height="0.25" color="#444" class="interativo" onclick="voltarParaCategorias()">
+            <a-text value="VOLTAR" font="https://cdn.aframe.io/fonts/Exo2Bold.fnt" align="center"></a-text>
         </a-plane>
     </a-entity>
 
   </a-scene>
-
-  </body>
+</body>
 </html>

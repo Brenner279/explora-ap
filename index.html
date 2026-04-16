@@ -161,25 +161,54 @@
     }
 
     function verConteudo(tipo) {
-      if(!db[cidadeAtual].conteudos[tipo]) return;
-      const dados = db[cidadeAtual].conteudos[tipo];
-      pararHino(); pararMidiasConteudo();
+  if(!db[cidadeAtual].conteudos[tipo]) return;
+  const dados = db[cidadeAtual].conteudos[tipo];
+  pararHino(); 
+  pararMidiasConteudo();
 
-      if (dados.tipo === 'video360') { ativarModo360(dados.video); return; }
-      if (dados.type === 'galeria') { document.getElementById('titulo-galeria').setAttribute('value', dados.t); montarGaleria(dados.itens); irPara('grupo-cultura-galeria'); return; }
-      if (dados.type === 'galeriaVideo') { document.getElementById('titulo-turismo').setAttribute('value', dados.t); montarGaleriaVideo(dados.itens); irPara('grupo-turismo-galeria'); return; }
+  // ADICIONE ESTE BLOCO: Verifica se é imagem 360
+  if (dados.tipo === 'imagem360') { 
+      ativarImagem360(dados.arquivo); 
+      return; 
+  }
 
-      const controles = document.getElementById('controles-media');
-      const tela = document.getElementById('vr-video-screen');
-      const img = document.getElementById('vr-imagem-screen');
-      tela.setAttribute('visible', 'false'); img.setAttribute('visible', 'false'); controles.setAttribute('visible', 'false');
-      document.getElementById('vr-titulo').setAttribute('value', dados.t);
-      if (dados.tipo === 'audio' && dados.narra) { audioNarracao = new Audio(dados.narra); controles.setAttribute('visible', 'true'); controles.querySelectorAll('.interativo').forEach(b => b.classList.add('clicavel')); } 
-      else if (dados.tipo === 'imagem') { img.setAttribute('src', dados.imagemPainel); img.setAttribute('visible', 'true'); }
-      irPara('grupo-player');
-    }
+  // Lógica original para os outros tipos
+  if (dados.tipo === 'video360') { ativarModo360(dados.video); return; }
+  if (dados.type === 'galeria') { 
+      document.getElementById('titulo-galeria').setAttribute('value', dados.t); 
+      montarGaleria(dados.itens); 
+      irPara('grupo-cultura-galeria'); 
+      return; 
+  }
+  if (dados.type === 'galeriaVideo') { 
+      document.getElementById('titulo-turismo').setAttribute('value', dados.t); 
+      montarGaleriaVideo(dados.itens); 
+      irPara('grupo-turismo-galeria'); 
+      return; 
+  }
 
-    /* --- AUXILIARES (Video, Galeria, etc) --- */
+  const controles = document.getElementById('controles-media');
+  const tela = document.getElementById('vr-video-screen');
+  const img = document.getElementById('vr-imagem-screen');
+  tela.setAttribute('visible', 'false'); 
+  img.setAttribute('visible', 'false'); 
+  controles.setAttribute('visible', 'false');
+  document.getElementById('vr-titulo').setAttribute('value', dados.t);
+  
+  if (dados.tipo === 'audio' && dados.narra) { 
+      audioNarracao = new Audio(dados.narra); 
+      controles.setAttribute('visible', 'true'); 
+      controles.querySelectorAll('.interativo').forEach(b => b.classList.add('clicavel')); 
+  } 
+  else if (dados.tipo === 'imagem') { 
+      img.setAttribute('src', dados.imagemPainel); 
+      img.setAttribute('visible', 'true'); 
+  }
+  irPara('grupo-player');
+}
+    
+    
+        /* --- AUXILIARES (Video, Galeria, etc) --- */
     function montarGaleria(itens) {
         const container = document.getElementById('container-molduras-cultura');
         container.innerHTML = ''; 

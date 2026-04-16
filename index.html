@@ -1,4 +1,4 @@
-fiz a alteração porém o botão iniciar não funcionou:  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
@@ -18,14 +18,21 @@ fiz a alteração porém o botão iniciar não funcionou:  <!DOCTYPE html>
         hino: './assets/hinos/vitoria.mp3', 
         conteudos: {
           'Historia': { t: 'História', video: './assets/videos/vit360.mp4', tipo: 'video360' },
-          'Cultura': { 
-              t: 'Galeria Cultural', type: 'galeria', itens: [
-                  { img: './assets/imagens/vj01.jpg', txt: 'Peça Teatral' },
-                  { img: './assets/imagens/vj02.jpg', txt: 'Forrovija' },
-                  { img: './assets/imagens/vj03.jpg', txt: 'Artesanato Local' },
-                  { img: './assets/imagens/vj04.jpeg', txt: 'Festividade de São Sebastião' }
-              ]
-          },
+        'Cultura': { 
+              type: 'quiz', 
+              perguntas: [
+                  { 
+                      p: 'Qual é uma das principais festividades de Vitória do Jari?', 
+                      opcoes: ['Círio de Nazaré', 'Forrovija', 'Festa do Divino'], 
+                      correta: 1 // O índice da resposta certa (0, 1 ou 2)
+                  },
+                  { 
+                      p: 'Qual é um famoso balneário da região?', 
+                      opcoes: ['Fazendinha', 'Araxá', 'Belas Águas'], 
+                      correta: 2 
+                  }
+              ]
+          },
           'Turismo': { 
               t: 'Pontos Turísticos', type: 'galeriaVideo', itens: [
                   { video: './assets/videos/vj1.mp4', txt: 'Serra do Parente' },

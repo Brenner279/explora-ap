@@ -13,18 +13,19 @@
     const db = {
       'vitoria': {
         nome: 'Vitória do Jari',
-        fundo360: './assets/3d/praca.jpg',
+        fundo360: './assets/3d/praca.jpg', // Fundo principal da cidade
         bandeira: './assets/bandeiras/vitoria.png',
         hino: './assets/hinos/vitoria.mp3', 
         conteudos: {
           'Historia': { t: 'História', video: './assets/videos/vit360.mp4', tipo: 'video360' },
           'Cultura': { 
               type: 'quiz', 
+              fundo360: './assets/3d/fundo_cultura_vitoria.jpg', // Fundo específico da cultura
               perguntas: [
                   { 
                       p: 'Qual é uma das principais festividades de Vitória do Jari?', 
                       opcoes: ['Círio de Nazaré', 'Forrovija', 'Festa do Divino'], 
-                      correta: 1 // O índice da resposta certa (0, 1 ou 2)
+                      correta: 1
                   },
                   { 
                       p: 'Qual é um famoso balneário da região?', 
@@ -34,7 +35,9 @@
               ]
           },
           'Turismo': { 
-              t: 'Pontos Turísticos', type: 'galeriaVideo', itens: [
+              t: 'Pontos Turísticos', type: 'galeriaVideo', 
+              fundo360: './assets/3d/fundo_turismo_vitoria.jpg', // Fundo específico do turismo
+              itens: [
                   { video: './assets/videos/vj1.mp4', txt: 'Serra do Parente' },
                   { video: './assets/videos/vj2.mp4', txt: 'Orla Vitória do Jari' },
                   { video: './assets/videos/vj3.mp4', txt: 'Baln. Belas Águas' },
@@ -67,9 +70,8 @@
             }
           }
       },
-      'laranjal do jari': { nome: 'Laranjal do Jari', bandeira: './assets/bandeiras/laranjal.png', 
-                            hino: './assets/hinos/laranjal.mp3', 
-                           conteudos: {
+      'laranjal do jari': { nome: 'Laranjal do Jari', bandeira: './assets/bandeiras/laranjal.png', hino: './assets/hinos/laranjal.mp3', 
+          conteudos: {
             'Historia': { t: 'História', video: './assets/videos/lj360.mp4', tipo: 'video360' },
             'Cultura': { 
                 t: 'Galeria Cultural', type: 'galeria', itens: [
@@ -87,8 +89,10 @@
                     { video: './assets/videos/lj4.mp4', txt: 'Praça João da Silva Nery' }
                 ]
             }
-          } },
-      'oiapoque': { nome: 'Oiapoque', bandeira: './assets/bandeiras/oiapoque.png',  hino: './assets/hinos/oiapoque.mp3',  conteudos: {
+          } 
+      },
+      'oiapoque': { nome: 'Oiapoque', bandeira: './assets/bandeiras/oiapoque.png',  hino: './assets/hinos/oiapoque.mp3',  
+          conteudos: {
             'Historia': { t: 'História', video: './assets/videos/oia360.mp4', tipo: 'video360' },
             'Cultura': { 
                 t: 'Galeria Cultural', type: 'galeria', itens: [
@@ -106,8 +110,10 @@
                     { video: './assets/videos/oia4.mp4', txt: 'Igreja Nossa Sra. das Graças' }
                 ]
             }
-          } },
-      'serra do navio': { nome: 'Serra do Navio', bandeira: './assets/bandeiras/serra.png',  hino: './assets/hinos/serra.mp3',  conteudos: {
+          } 
+      },
+      'serra do navio': { nome: 'Serra do Navio', bandeira: './assets/bandeiras/serra.png',  hino: './assets/hinos/serra.mp3',  
+          conteudos: {
             'Historia': { t: 'História', video: './assets/videos/ser360.mp4', tipo: 'video360' },
             'Cultura': { 
                 t: 'Galeria Cultural', type: 'galeria', itens: [
@@ -125,8 +131,10 @@
                     { video: './assets/videos/serr4.mp4', txt: 'Lagoa Azul' }
                 ]
             }
-          } },
-      'santana': { nome: 'Santana', bandeira: './assets/bandeiras/santana.jpg', hino: './assets/hinos/santana.mp3',  conteudos: {
+          } 
+      },
+      'santana': { nome: 'Santana', bandeira: './assets/bandeiras/santana.jpg', hino: './assets/hinos/santana.mp3',  
+          conteudos: {
             'Historia': { t: 'História', video: './assets/videos/sant360.mp4', tipo: 'video360' },
             'Cultura': { 
                 t: 'Galeria Cultural', type: 'galeria', itens: [
@@ -144,8 +152,10 @@
                     { video: './assets/videos/sant4.mp4', txt: 'Paróquia de Santana' }
                 ]
             }
-          } },
-      'amapa': { nome: 'Amapá', bandeira: './assets/bandeiras/amapa.jpg',  hino: './assets/hinos/amapa.mp3',  conteudos: {
+          } 
+      },
+      'amapa': { nome: 'Amapá', bandeira: './assets/bandeiras/amapa.jpg',  hino: './assets/hinos/amapa.mp3',  
+          conteudos: {
             'Historia': { t: 'História', video: './assets/videos/ap360.mp4', tipo: 'video360' },
             'Cultura': { 
                 t: 'Galeria Cultural', type: 'galeria', itens: [
@@ -163,10 +173,12 @@
                     { video: './assets/videos/ap4.mp4', txt: 'Igreja Nossa Senhora de Nazaré' }
                 ]
             }
-          } }
+          } 
+      }
     };
 
     let cidadeAtual = '';
+    let categoriaAtual = ''; // Guarda se estamos na Cultura, Turismo, etc.
     let audioNarracao = null;
 
     window.onload = function() {
@@ -270,7 +282,7 @@
         });
     }
 
-    /* --- VARIÁVEIS E LÓGICA DO QUIZ (AGORA NO ESCOPO CORRETO) --- */
+    /* --- LÓGICA DO QUIZ --- */
     let perguntasQuiz = [];
     let indicePerguntaAtual = 0;
 
@@ -381,6 +393,10 @@
     function verConteudo(tipo) {
       if(!db[cidadeAtual].conteudos[tipo]) return;
       const dados = db[cidadeAtual].conteudos[tipo];
+      
+      // Salva qual categoria foi clicada
+      categoriaAtual = tipo;
+
       document.getElementById('audio-hino').pause(); pararMidiasConteudo();
       
       if (dados.tipo === 'video360') { ativarModo360(dados.video); return; }
@@ -405,16 +421,46 @@
         video.addEventListener('playing', () => { loader.setAttribute('visible', 'false'); controles.setAttribute('visible', 'true'); });
     }
 
+    /* --- LÓGICA CORRIGIDA DO VÍDEO 360 --- */
     function ativarModo360(videoSrc) {
-        irPara('null'); 
+        irPara('null'); // Esconde tudo
         document.getElementById('ambiente-3d').removeAttribute('environment');
         const videoEl = document.getElementById('video-player');
-        videoEl.setAttribute('src', videoSrc);
+        
+        // Força a atualização e recarregamento da fonte do vídeo
+        if (videoEl.getAttribute('src') !== videoSrc) {
+            videoEl.setAttribute('src', videoSrc);
+            videoEl.load(); 
+        }
+
         document.getElementById('videosphere').setAttribute('visible', 'true');
+        
+        // Garante que o usuário consiga ver o botão Play/Pause
         document.getElementById('loader-360').setAttribute('visible', 'true');
+        document.getElementById('controle-360-gaze').setAttribute('visible', 'true');
+        
         document.getElementById('btnPlay360').classList.add('clicavel');
         document.getElementById('btnVoltar360').classList.add('clicavel');
-        videoEl.play();
+        
+        // Tenta iniciar o vídeo. Se o navegador bloquear, permite clicar no botão play
+        const playPromise = videoEl.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                console.log("O autoplay foi bloqueado pelo navegador. O usuário precisa clicar em Play manualmente.");
+                document.getElementById('loader-360').setAttribute('visible', 'false');
+            });
+        }
+    }
+
+    function alternarVideo360() {
+        const video = document.getElementById('video-player');
+        if (video.paused) {
+            video.play();
+            document.getElementById('btnText360').setAttribute('value', 'Pause');
+        } else {
+            video.pause();
+            document.getElementById('btnText360').setAttribute('value', 'Play');
+        }
     }
 
     function desativarModo360() {
@@ -434,13 +480,22 @@
         
         const telasDaCidade = ['grupo-categorias', 'grupo-cultura-galeria', 'grupo-turismo-galeria', 'grupo-quiz'];
         let usarFoto360 = false;
+        let imagemFundo = null;
         
         if (cidadeAtual && telasDaCidade.includes(idGrupo)) {
             const cidade = db[cidadeAtual];
-            if (cidade && cidade.fundo360) {
+
+            if (idGrupo === 'grupo-categorias') {
+                imagemFundo = cidade.fundo360;
+            } else if (categoriaAtual && cidade.conteudos[categoriaAtual]) {
+                const fundoCategoria = cidade.conteudos[categoriaAtual].fundo360;
+                imagemFundo = fundoCategoria ? fundoCategoria : cidade.fundo360;
+            }
+
+            if (imagemFundo) {
                 usarFoto360 = true;
                 el.removeAttribute('environment');
-                sky360.setAttribute('src', cidade.fundo360);
+                sky360.setAttribute('src', imagemFundo);
                 sky360.setAttribute('visible', 'true');
             }
         }
@@ -451,7 +506,7 @@
             
             if(idGrupo === 'grupo-inicio') p = 'forest'; 
             if(idGrupo === 'grupo-cidades') p = 'threetowers'; 
-            if(idGrupo === 'grupo-cultura-galeria') p = 'threetowers'; 
+            if(idGrupo === 'grupo-cultura-galeria' || idGrupo === 'grupo-categorias') p = 'threetowers'; 
             if(idGrupo === 'grupo-turismo-galeria') p = 'contact'; 
             if(idGrupo === 'grupo-player' || idGrupo === 'grupo-quiz') p = 'starry';
             
@@ -494,7 +549,7 @@
     </a-camera>
 
     <a-entity id="controle-360-gaze" visible="false" position="0 1 -2">
-        <a-plane id="btnPlay360" color="#EF2D5E" width="1" height="0.5">
+        <a-plane id="btnPlay360" color="#EF2D5E" width="1" height="0.5" class="clicavel interativo" onclick="alternarVideo360()">
            <a-troika-text id="btnText360" value="Play/Pause" align="center" position="0 0 0.02" width="2"></a-troika-text>
         </a-plane>
         <a-plane id="btnVoltar360" position="0 -0.6 0" width="0.8" height="0.3" color="#444" class="clicavel" onclick="sairDo360()">

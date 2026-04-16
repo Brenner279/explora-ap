@@ -206,6 +206,26 @@
   }
   irPara('grupo-player');
 }
+
+function ativarImagem360(caminhoImagem) {
+    // Esconde todos os menus para focar na imagem
+    const grupos = ['grupo-inicio', 'grupo-cidades', 'grupo-categorias', 'grupo-player', 'grupo-cultura-galeria', 'grupo-turismo-galeria'];
+    grupos.forEach(id => document.getElementById(id).setAttribute('visible', 'false'));
+
+    // Desativa o ambiente 3D de fundo
+    document.getElementById('ambiente-3d').removeAttribute('environment');
+
+    // Usa a esfera existente para exibir a imagem
+    const esfera = document.getElementById('videosphere');
+    esfera.setAttribute('src', caminhoImagem);
+    esfera.setAttribute('visible', 'true');
+
+    // Configura os controles de saída
+    const controles360 = document.getElementById('controle-360-gaze');
+    controles360.setAttribute('visible', 'true');
+    document.getElementById('btnPlay360').setAttribute('visible', 'false'); // Oculta botão Play (é imagem estática)
+    document.getElementById('btnVoltar360').classList.add('clicavel');
+}
     
     
         /* --- AUXILIARES (Video, Galeria, etc) --- */

@@ -13,14 +13,14 @@
     const db = {
       'vitoria': {
         nome: 'Vitória do Jari',
-        fundo360: './assets/3d/praca.jpg', // Fundo principal da cidade
+        fundo360: './assets/3d/praca.jpg', 
         bandeira: './assets/bandeiras/vitoria.png',
         hino: './assets/hinos/vitoria.mp3', 
         conteudos: {
-          'Historia': { t: 'História', video: './assets/videos/vitoria.mp4', tipo: 'video360' },
+          'Historia': { t: 'História', video: './assets/videos/vit360.mp4', tipo: 'video360' },
           'Cultura': { 
               type: 'quiz', 
-              fundo360: './assets/3d/fundo_cultura_vitoria.jpg', // Fundo específico da cultura
+              fundo360: './assets/3d/fundo_cultura_vitoria.jpg', 
               perguntas: [
                   { 
                       p: 'Qual é uma das principais festividades de Vitória do Jari?', 
@@ -36,7 +36,7 @@
           },
           'Turismo': { 
               t: 'Pontos Turísticos', type: 'galeriaVideo', 
-              fundo360: './assets/3d/fundo_turismo_vitoria.jpg', // Fundo específico do turismo
+              fundo360: './assets/3d/fundo_turismo_vitoria.jpg',
               itens: [
                   { video: './assets/videos/vj1.mp4', txt: 'Serra do Parente' },
                   { video: './assets/videos/vj2.mp4', txt: 'Orla Vitória do Jari' },
@@ -178,7 +178,7 @@
     };
 
     let cidadeAtual = '';
-    let categoriaAtual = ''; // Guarda se estamos na Cultura, Turismo, etc.
+    let categoriaAtual = '';
     let audioNarracao = null;
 
     window.onload = function() {
@@ -354,7 +354,6 @@
         }
     }
 
-
     /* --- LÓGICA DE NAVEGAÇÃO E ÁUDIO --- */
     function tocarHino(cidadeKey) {
         const hinoEl = document.getElementById('audio-hino');
@@ -394,7 +393,6 @@
       if(!db[cidadeAtual].conteudos[tipo]) return;
       const dados = db[cidadeAtual].conteudos[tipo];
       
-      // Salva qual categoria foi clicada
       categoriaAtual = tipo;
 
       document.getElementById('audio-hino').pause(); pararMidiasConteudo();
@@ -421,13 +419,17 @@
         video.addEventListener('playing', () => { loader.setAttribute('visible', 'false'); controles.setAttribute('visible', 'true'); });
     }
 
-    /* --- LÓGICA CORRIGIDA DO VÍDEO 360 --- */
+    /* --- LÓGICA CORRIGIDA DO VÍDEO 360 (DESLIGAMENTO FORÇADO DO CÉU) --- */
     function ativarModo360(videoSrc) {
-        irPara('null'); // Esconde tudo
+        // CORREÇÃO: Força o desligamento absoluto da foto de fundo
+        const sky360 = document.getElementById('fundo-360-estatico');
+        sky360.setAttribute('visible', 'false');
+        sky360.removeAttribute('src'); // Arranca a imagem da memória visual temporária
+
+        irPara('null'); 
         document.getElementById('ambiente-3d').removeAttribute('environment');
         const videoEl = document.getElementById('video-player');
         
-        // Força a atualização e recarregamento da fonte do vídeo
         if (videoEl.getAttribute('src') !== videoSrc) {
             videoEl.setAttribute('src', videoSrc);
             videoEl.load(); 
@@ -435,18 +437,16 @@
 
         document.getElementById('videosphere').setAttribute('visible', 'true');
         
-        // Garante que o usuário consiga ver o botão Play/Pause
         document.getElementById('loader-360').setAttribute('visible', 'true');
         document.getElementById('controle-360-gaze').setAttribute('visible', 'true');
         
         document.getElementById('btnPlay360').classList.add('clicavel');
         document.getElementById('btnVoltar360').classList.add('clicavel');
         
-        // Tenta iniciar o vídeo. Se o navegador bloquear, permite clicar no botão play
         const playPromise = videoEl.play();
         if (playPromise !== undefined) {
             playPromise.catch(error => {
-                console.log("O autoplay foi bloqueado pelo navegador. O usuário precisa clicar em Play manualmente.");
+                console.log("Autoplay bloqueado.");
                 document.getElementById('loader-360').setAttribute('visible', 'false');
             });
         }
@@ -473,7 +473,7 @@
     }
 
     function atualizarAmbiente(idGrupo) {
-        if(document.getElementById('videosphere').getAttribute('visible') == true) return;
+        if(document.getElementById('videosphere').getAttribute('visible') == true || document.getElementById('videosphere').getAttribute('visible') === 'true') return;
         
         const el = document.getElementById('ambiente-3d');
         const sky360 = document.getElementById('fundo-360-estatico');
@@ -539,7 +539,8 @@
 
     <a-entity id="ambiente-3d" environment="preset: forest"></a-entity>
     <a-sky id="fundo-360-estatico" visible="false"></a-sky>
-    <a-videosphere id="videosphere" src="#video-player" visible="false" rotation="0 -90 0"></a-videosphere>
+    
+    <a-videosphere id="videosphere" src="#video-player" radius="4900" visible="false" rotation="0 -90 0"></a-videosphere>
 
     <a-camera>
        <a-cursor id="cursor" color="yellow" fuse="true" fuse-timeout="1500" raycaster="objects: .clicavel"></a-cursor>

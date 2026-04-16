@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Amapá Interativo</title>
-  
-  <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
-  <script src="https://unpkg.com/aframe-environment-component@1.5.x/dist/aframe-environment-component.min.js"></script>
-  <script src="https://unpkg.com/aframe-troika-text@0.10.0/dist/aframe-troika-text.min.js"></script>
-  
-  <script>
-    /* --- CONFIGURAÇÃO E DADOS --- */
-    const db = {
-      'vitoria': {
-        nome: 'Vitória do Jari',
-        fundo360: './assets/3d/praca.jpg',
-        bandeira: './assets/bandeiras/vitoria.png',
-        hino: './assets/hinos/vitoria.mp3', 
-        conteudos: {
-          'Historia': { t: 'História', video: './assets/videos/vit360.mp4', tipo: 'video360' },
-        'Cultura': { 
+  <meta charset="UTF-8">
+  <title>Amapá Interativo</title>
+  
+  <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+  <script src="https://unpkg.com/aframe-environment-component@1.5.x/dist/aframe-environment-component.min.js"></script>
+  <script src="https://unpkg.com/aframe-troika-text@0.10.0/dist/aframe-troika-text.min.js"></script>
+  
+  <script>
+    /* --- CONFIGURAÇÃO E DADOS --- */
+    const db = {
+      'vitoria': {
+        nome: 'Vitória do Jari',
+        fundo360: './assets/3d/praca.jpg',
+        bandeira: './assets/bandeiras/vitoria.png',
+        hino: './assets/hinos/vitoria.mp3', 
+        conteudos: {
+          'Historia': { t: 'História', video: './assets/videos/vit360.mp4', tipo: 'video360' },
+          'Cultura': { 
               type: 'quiz', 
               perguntas: [
                   { 
@@ -33,287 +33,247 @@
                   }
               ]
           },
-          'Turismo': { 
-              t: 'Pontos Turísticos', type: 'galeriaVideo', itens: [
-                  { video: './assets/videos/vj1.mp4', txt: 'Serra do Parente' },
-                  { video: './assets/videos/vj2.mp4', txt: 'Orla Vitória do Jari' },
-                  { video: './assets/videos/vj3.mp4', txt: 'Baln. Belas Águas' },
-                  { video: './assets/videos/vj4.mp4', txt: 'Baln. Recanto do Cupu' }
-              ]
-          }
-        }
-      },
-      'macapa': { 
-          nome: 'Macapá', 
-          bandeira: './assets/bandeiras/macapa.png', 
-          hino: './assets/hinos/macapa.mp3', 
-          conteudos: {
-            'Historia': { t: 'História', video: './assets/videos/macapa.mp4', tipo: 'video360' },
-            'Cultura': { 
-                t: 'Galeria Cultural', type: 'galeria', itens: [
-                    { img: './assets/imagens/jose.jpg', txt: 'Festividade São José' },
-                    { img: './assets/imagens/manicoba.jpg', txt: 'Maniçoba' },
-                    { img: './assets/imagens/marabaixo.jpg', txt: 'Marabaixo' },
-                    { img: './assets/imagens/tacaca.jpg', txt: 'Tacacá' }
-                ]
-            },
-            'Turismo': { 
-                t: 'Pontos Turísticos', type: 'galeriaVideo', itens: [
-                    { video: './assets/videos/balnearo.mp4', txt: 'Balneário' },
-                    { video: './assets/videos/fortaleza.mp4', txt: 'Fortaleza São José' },
-                    { video: './assets/videos/marco.mp4', txt: 'Marco Zero' },
-                    { video: './assets/videos/museu.mp4', txt: 'Museu Sacaca' }
-                ]
-            }
-          }
-      },
-      'laranjal do jari': { nome: 'Laranjal do Jari', bandeira: './assets/bandeiras/laranjal.png', 
-                            hino: './assets/hinos/laranjal.mp3', 
-                           conteudos: {
-            'Historia': { t: 'História', video: './assets/videos/lj360.mp4', tipo: 'video360' },
-            'Cultura': { 
-                t: 'Galeria Cultural', type: 'galeria', itens: [
-                    { img: './assets/imagens/lj01.jpg', txt: 'Forro Jari' },
-                    { img: './assets/imagens/lj02.jpg', txt: 'Aniversário da Cidade' },
-                    { img: './assets/imagens/lj03.jpg', txt: 'Desfile Cívico' },
-                    { img: './assets/imagens/lj04.jpg', txt: 'Festival Jari de Toada' }
-                ]
-            },
-            'Turismo': { 
-                t: 'Pontos Turísticos', type: 'galeriaVideo', itens: [
-                    { video: './assets/videos/lj1.mp4', txt: 'Cachoeira de Santo Antônio' },
-                    { video: './assets/videos/lj2.mp4', txt: 'Baln. Sombra da Mata e Tio João' },
-                    { video: './assets/videos/lj3.mp4', txt: 'Baln. Pé da Serra e Susent Beach' },
-                    { video: './assets/videos/lj4.mp4', txt: 'Praça João da Silva Nery' }
-                ]
-            }
-          } },
-      'oiapoque': { nome: 'Oiapoque', bandeira: './assets/bandeiras/oiapoque.png',  hino: './assets/hinos/oiapoque.mp3',  conteudos: {
-            'Historia': { t: 'História', video: './assets/videos/oia360.mp4', tipo: 'video360' },
-            'Cultura': { 
-                t: 'Galeria Cultural', type: 'galeria', itens: [
-                    { img: './assets/imagens/oia01.jpg', txt: 'Feira Binacional' },
-                    { img: './assets/imagens/oia02.jpg', txt: 'Turé' },
-                    { img: './assets/imagens/oia03.jpg', txt: 'Laudo Suiço' },
-                    { img: './assets/imagens/oia04.jpg', txt: 'Aniversário da Cidade' }
-                ]
-            },
-            'Turismo': { 
-                t: 'Pontos Turísticos', type: 'galeriaVideo', itens: [
-                    { video: './assets/videos/oia1.mp4', txt: 'Obelisco' },
-                    { video: './assets/videos/oia2.mp4', txt: 'Chácara Du Rona' },
-                    { video: './assets/videos/oia3.mp4', txt: 'Charlets Paradis' },
-                    { video: './assets/videos/oia4.mp4', txt: 'Igreja Nossa Sra. das Graças' }
-                ]
-            }
-          } },
-      'serra do navio': { nome: 'Serra do Navio', bandeira: './assets/bandeiras/serra.png',  hino: './assets/hinos/serra.mp3',  conteudos: {
-            'Historia': { t: 'História', video: './assets/videos/ser360.mp4', tipo: 'video360' },
-            'Cultura': { 
-                t: 'Galeria Cultural', type: 'galeria', itens: [
-                    { img: './assets/imagens/jose.jpg', txt: 'Festividade São José' },
-                    { img: './assets/imagens/manicoba.jpg', txt: 'Maniçoba' },
-                    { img: './assets/imagens/marabaixo.jpg', txt: 'Marabaixo' },
-                    { img: './assets/imagens/tacaca.jpg', txt: 'Tacacá' }
-                ]
-            },
-            'Turismo': { 
-                t: 'Pontos Turísticos', type: 'galeriaVideo', itens: [
-                    { video: './assets/videos/serr1.mp4', txt: 'Mina F12' },
-                    { video: './assets/videos/serr2.mp4', txt: 'Baln. da Pedra Preta' },
-                    { video: './assets/videos/serr3.mp4', txt: 'Cachoeira do Staff' },
-                    { video: './assets/videos/serr4.mp4', txt: 'Lagoa Azul' }
-                ]
-            }
-          } },
-      'santana': { nome: 'Santana', bandeira: './assets/bandeiras/santana.jpg', hino: './assets/hinos/santana.mp3',  conteudos: {
-            'Historia': { t: 'História', video: './assets/videos/sant360.mp4', tipo: 'video360' },
-            'Cultura': { 
-                t: 'Galeria Cultural', type: 'galeria', itens: [
-                    { img: './assets/imagens/sant01.jpg', txt: 'Festival Afrobatuque' },
-                    { img: './assets/imagens/sant02.jpg', txt: 'Trilha da Samaúma' },
-                    { img: './assets/imagens/sant03.jpg', txt: 'Praça do Fórum' },
-                    { img: './assets/imagens/sant04.jpg', txt: 'Aniversário da Cidade' }
-                ]
-            },
-            'Turismo': { 
-                t: 'Pontos Turísticos', type: 'galeriaVideo', itens: [
-                    { video: './assets/videos/sant1.mp4', txt: 'Amazon Beach' },
-                    { video: './assets/videos/sant2.mp4', txt: 'Porto de Santana' },
-                    { video: './assets/videos/sant3.mp4', txt: 'Trilha da Samaúma' },
-                    { video: './assets/videos/sant4.mp4', txt: 'Paróquia de Santana' }
-                ]
-            }
-          } },
-      'amapa': { nome: 'Amapá', bandeira: './assets/bandeiras/amapa.jpg',  hino: './assets/hinos/amapa.mp3',  conteudos: {
-            'Historia': { t: 'História', video: './assets/videos/ap360.mp4', tipo: 'video360' },
-            'Cultura': { 
-                t: 'Galeria Cultural', type: 'galeria', itens: [
-                    { img: './assets/imagens/ap01.jpg', txt: 'Praça de Cabrazinho' },
-                    { img: './assets/imagens/ap02.jpg', txt: 'Aniversário da Cidade' },
-                    { img: './assets/imagens/ap03.jpg', txt: 'Camarão no Bafo' },
-                    { img: './assets/imagens/tacaca.jpg', txt: 'Tacacá' }
-                ]
-            },
-            'Turismo': { 
-                t: 'Pontos Turísticos', type: 'galeriaVideo', itens: [
-                    { video: './assets/videos/ap1.mp4', txt: 'Montanha da Pluma' },
-                    { video: './assets/videos/ap2.mp4', txt: 'Cachoeira Grande' },
-                    { video: './assets/videos/ap3.mp4', txt: 'Praça Cabralzinho' },
-                    { video: './assets/videos/ap4.mp4', txt: 'Igreja Nossa Senhora de Nazaré' }
-                ]
-            }
-          } }
-    };
+          'Turismo': { 
+              t: 'Pontos Turísticos', type: 'galeriaVideo', itens: [
+                  { video: './assets/videos/vj1.mp4', txt: 'Serra do Parente' },
+                  { video: './assets/videos/vj2.mp4', txt: 'Orla Vitória do Jari' },
+                  { video: './assets/videos/vj3.mp4', txt: 'Baln. Belas Águas' },
+                  { video: './assets/videos/vj4.mp4', txt: 'Baln. Recanto do Cupu' }
+              ]
+          }
+        }
+      },
+      'macapa': { 
+          nome: 'Macapá', 
+          bandeira: './assets/bandeiras/macapa.png', 
+          hino: './assets/hinos/macapa.mp3', 
+          conteudos: {
+            'Historia': { t: 'História', video: './assets/videos/macapa.mp4', tipo: 'video360' },
+            'Cultura': { 
+                t: 'Galeria Cultural', type: 'galeria', itens: [
+                    { img: './assets/imagens/jose.jpg', txt: 'Festividade São José' },
+                    { img: './assets/imagens/manicoba.jpg', txt: 'Maniçoba' },
+                    { img: './assets/imagens/marabaixo.jpg', txt: 'Marabaixo' },
+                    { img: './assets/imagens/tacaca.jpg', txt: 'Tacacá' }
+                ]
+            },
+            'Turismo': { 
+                t: 'Pontos Turísticos', type: 'galeriaVideo', itens: [
+                    { video: './assets/videos/balnearo.mp4', txt: 'Balneário' },
+                    { video: './assets/videos/fortaleza.mp4', txt: 'Fortaleza São José' },
+                    { video: './assets/videos/marco.mp4', txt: 'Marco Zero' },
+                    { video: './assets/videos/museu.mp4', txt: 'Museu Sacaca' }
+                ]
+            }
+          }
+      },
+      'laranjal do jari': { nome: 'Laranjal do Jari', bandeira: './assets/bandeiras/laranjal.png', 
+                            hino: './assets/hinos/laranjal.mp3', 
+                           conteudos: {
+            'Historia': { t: 'História', video: './assets/videos/lj360.mp4', tipo: 'video360' },
+            'Cultura': { 
+                t: 'Galeria Cultural', type: 'galeria', itens: [
+                    { img: './assets/imagens/lj01.jpg', txt: 'Forro Jari' },
+                    { img: './assets/imagens/lj02.jpg', txt: 'Aniversário da Cidade' },
+                    { img: './assets/imagens/lj03.jpg', txt: 'Desfile Cívico' },
+                    { img: './assets/imagens/lj04.jpg', txt: 'Festival Jari de Toada' }
+                ]
+            },
+            'Turismo': { 
+                t: 'Pontos Turísticos', type: 'galeriaVideo', itens: [
+                    { video: './assets/videos/lj1.mp4', txt: 'Cachoeira de Santo Antônio' },
+                    { video: './assets/videos/lj2.mp4', txt: 'Baln. Sombra da Mata e Tio João' },
+                    { video: './assets/videos/lj3.mp4', txt: 'Baln. Pé da Serra e Susent Beach' },
+                    { video: './assets/videos/lj4.mp4', txt: 'Praça João da Silva Nery' }
+                ]
+            }
+          } },
+      'oiapoque': { nome: 'Oiapoque', bandeira: './assets/bandeiras/oiapoque.png',  hino: './assets/hinos/oiapoque.mp3',  conteudos: {
+            'Historia': { t: 'História', video: './assets/videos/oia360.mp4', tipo: 'video360' },
+            'Cultura': { 
+                t: 'Galeria Cultural', type: 'galeria', itens: [
+                    { img: './assets/imagens/oia01.jpg', txt: 'Feira Binacional' },
+                    { img: './assets/imagens/oia02.jpg', txt: 'Turé' },
+                    { img: './assets/imagens/oia03.jpg', txt: 'Laudo Suiço' },
+                    { img: './assets/imagens/oia04.jpg', txt: 'Aniversário da Cidade' }
+                ]
+            },
+            'Turismo': { 
+                t: 'Pontos Turísticos', type: 'galeriaVideo', itens: [
+                    { video: './assets/videos/oia1.mp4', txt: 'Obelisco' },
+                    { video: './assets/videos/oia2.mp4', txt: 'Chácara Du Rona' },
+                    { video: './assets/videos/oia3.mp4', txt: 'Charlets Paradis' },
+                    { video: './assets/videos/oia4.mp4', txt: 'Igreja Nossa Sra. das Graças' }
+                ]
+            }
+          } },
+      'serra do navio': { nome: 'Serra do Navio', bandeira: './assets/bandeiras/serra.png',  hino: './assets/hinos/serra.mp3',  conteudos: {
+            'Historia': { t: 'História', video: './assets/videos/ser360.mp4', tipo: 'video360' },
+            'Cultura': { 
+                t: 'Galeria Cultural', type: 'galeria', itens: [
+                    { img: './assets/imagens/jose.jpg', txt: 'Festividade São José' },
+                    { img: './assets/imagens/manicoba.jpg', txt: 'Maniçoba' },
+                    { img: './assets/imagens/marabaixo.jpg', txt: 'Marabaixo' },
+                    { img: './assets/imagens/tacaca.jpg', txt: 'Tacacá' }
+                ]
+            },
+            'Turismo': { 
+                t: 'Pontos Turísticos', type: 'galeriaVideo', itens: [
+                    { video: './assets/videos/serr1.mp4', txt: 'Mina F12' },
+                    { video: './assets/videos/serr2.mp4', txt: 'Baln. da Pedra Preta' },
+                    { video: './assets/videos/serr3.mp4', txt: 'Cachoeira do Staff' },
+                    { video: './assets/videos/serr4.mp4', txt: 'Lagoa Azul' }
+                ]
+            }
+          } },
+      'santana': { nome: 'Santana', bandeira: './assets/bandeiras/santana.jpg', hino: './assets/hinos/santana.mp3',  conteudos: {
+            'Historia': { t: 'História', video: './assets/videos/sant360.mp4', tipo: 'video360' },
+            'Cultura': { 
+                t: 'Galeria Cultural', type: 'galeria', itens: [
+                    { img: './assets/imagens/sant01.jpg', txt: 'Festival Afrobatuque' },
+                    { img: './assets/imagens/sant02.jpg', txt: 'Trilha da Samaúma' },
+                    { img: './assets/imagens/sant03.jpg', txt: 'Praça do Fórum' },
+                    { img: './assets/imagens/sant04.jpg', txt: 'Aniversário da Cidade' }
+                ]
+            },
+            'Turismo': { 
+                t: 'Pontos Turísticos', type: 'galeriaVideo', itens: [
+                    { video: './assets/videos/sant1.mp4', txt: 'Amazon Beach' },
+                    { video: './assets/videos/sant2.mp4', txt: 'Porto de Santana' },
+                    { video: './assets/videos/sant3.mp4', txt: 'Trilha da Samaúma' },
+                    { video: './assets/videos/sant4.mp4', txt: 'Paróquia de Santana' }
+                ]
+            }
+          } },
+      'amapa': { nome: 'Amapá', bandeira: './assets/bandeiras/amapa.jpg',  hino: './assets/hinos/amapa.mp3',  conteudos: {
+            'Historia': { t: 'História', video: './assets/videos/ap360.mp4', tipo: 'video360' },
+            'Cultura': { 
+                t: 'Galeria Cultural', type: 'galeria', itens: [
+                    { img: './assets/imagens/ap01.jpg', txt: 'Praça de Cabrazinho' },
+                    { img: './assets/imagens/ap02.jpg', txt: 'Aniversário da Cidade' },
+                    { img: './assets/imagens/ap03.jpg', txt: 'Camarão no Bafo' },
+                    { img: './assets/imagens/tacaca.jpg', txt: 'Tacacá' }
+                ]
+            },
+            'Turismo': { 
+                t: 'Pontos Turísticos', type: 'galeriaVideo', itens: [
+                    { video: './assets/videos/ap1.mp4', txt: 'Montanha da Pluma' },
+                    { video: './assets/videos/ap2.mp4', txt: 'Cachoeira Grande' },
+                    { video: './assets/videos/ap3.mp4', txt: 'Praça Cabralzinho' },
+                    { video: './assets/videos/ap4.mp4', txt: 'Igreja Nossa Senhora de Nazaré' }
+                ]
+            }
+          } }
+    };
 
-    let cidadeAtual = '';
-    let audioNarracao = null;
+    let cidadeAtual = '';
+    let audioNarracao = null;
 
-    window.onload = function() {
-      gerarMenuCidades();
-      setupVideoEvents();
-    };
+    window.onload = function() {
+      gerarMenuCidades();
+      setupVideoEvents();
+    };
 
-    /* --- GERAÇÃO DO MENU DE BANDEIRAS (Z-OFFSET CORRIGIDO) --- */
-    function gerarMenuCidades() {
-      const container = document.getElementById('grade-cidades');
-      const chaves = Object.keys(db);
-      const posicoes = [
-          { pos: '-3.5 1.8 -1.5', rot: '0 60 0' }, { pos: '-2.4 1.8 -2.5', rot: '0 40 0' },
-          { pos: '-1.2 1.8 -3.2', rot: '0 20 0' }, { pos: '0 1.8 -3.5',    rot: '0 0 0' },   
-          { pos: '1.2 1.8 -3.2',  rot: '0 -20 0' }, { pos: '2.4 1.8 -2.5',  rot: '0 -40 0' },
-          { pos: '3.5 1.8 -1.5',  rot: '0 -60 0' }  
-      ];
+    /* --- GERAÇÃO DO MENU DE BANDEIRAS --- */
+    function gerarMenuCidades() {
+      const container = document.getElementById('grade-cidades');
+      const chaves = Object.keys(db);
+      const posicoes = [
+          { pos: '-3.5 1.8 -1.5', rot: '0 60 0' }, { pos: '-2.4 1.8 -2.5', rot: '0 40 0' },
+          { pos: '-1.2 1.8 -3.2', rot: '0 20 0' }, { pos: '0 1.8 -3.5',    rot: '0 0 0' },   
+          { pos: '1.2 1.8 -3.2',  rot: '0 -20 0' }, { pos: '2.4 1.8 -2.5',  rot: '0 -40 0' },
+          { pos: '3.5 1.8 -1.5',  rot: '0 -60 0' }  
+      ];
 
-      chaves.forEach((chave, index) => {
-        if(index >= posicoes.length) return;
-        const cidade = db[chave];
-        const p = posicoes[index];
-        const el = document.createElement('a-entity');
-        el.setAttribute('position', p.pos);
-        el.setAttribute('rotation', p.rot);
-        const imagemSrc = cidade.bandeira ? `src="${cidade.bandeira}"` : 'color="#555"';
+      chaves.forEach((chave, index) => {
+        if(index >= posicoes.length) return;
+        const cidade = db[chave];
+        const p = posicoes[index];
+        const el = document.createElement('a-entity');
+        el.setAttribute('position', p.pos);
+        el.setAttribute('rotation', p.rot);
+        const imagemSrc = cidade.bandeira ? `src="${cidade.bandeira}"` : 'color="#555"';
 
-        el.innerHTML = `
-          <a-plane ${imagemSrc} width="1" height="0.7" class="clicavel interativo" onclick="selecionarCidade('${chave}')" material="shader: flat; side: double">
-             <a-plane position="0 0 -0.01" width="1.05" height="0.75" color="#FFD700" material="shader: flat"></a-plane>
-          </a-plane>
-          <a-troika-text value="${cidade.nome}" align="center" position="0 -0.6 0.05" width="4" color="#FFFFFF" outline-width="0.02" outline-color="#000">
-          </a-troika-text>
-        `;
-        container.appendChild(el);
-      });
-    }
+        el.innerHTML = `
+          <a-plane ${imagemSrc} width="1" height="0.7" class="clicavel interativo" onclick="selecionarCidade('${chave}')" material="shader: flat; side: double">
+             <a-plane position="0 0 -0.01" width="1.05" height="0.75" color="#FFD700" material="shader: flat"></a-plane>
+          </a-plane>
+          <a-troika-text value="${cidade.nome}" align="center" position="0 -0.6 0.05" width="4" color="#FFFFFF" outline-width="0.02" outline-color="#000">
+          </a-troika-text>
+        `;
+        container.appendChild(el);
+      });
+    }
 
-    /* --- GALERIA DE CULTURA (Z-OFFSET CORRIGIDO) --- */
-    function montarGaleria(itens) {
-        const container = document.getElementById('container-molduras-cultura');
-        container.innerHTML = ''; 
-        const pos = [ {p: '-2.8 1.6 -2.5', r: '0 30 0'}, {p: '-1 1.6 -3', r: '0 10 0'}, {p: '1 1.6 -3', r: '0 -10 0'}, {p: '2.8 1.6 -2.5', r: '0 -30 0'} ];
-        itens.forEach((item, index) => {
-            if(index >= 4) return;
-            const idTexto = `txt-galeria-${index}`;
-            const el = document.createElement('a-entity');
-            el.setAttribute('position', pos[index].p); el.setAttribute('rotation', pos[index].r);
-            const srcAttr = item.img ? `src="${item.img}"` : 'color="#555"';
-            el.innerHTML = `
-                <a-plane ${srcAttr} width="1.4" height="1" class="clicavel interativo moldura-galeria" data-texto-id="${idTexto}" material="shader: flat; side: double"></a-plane>
-                <a-troika-text id="${idTexto}" value="${item.txt}" visible="false" align="center" position="0 -0.6 0.1" width="2.5" color="#FFD700" outline-width="0.02">
-                </a-troika-text>`;
-            container.appendChild(el);
-        });
-        setupHoverEvents('.moldura-galeria', 'data-texto-id');
-    }
+    /* --- GALERIA DE CULTURA --- */
+    function montarGaleria(itens) {
+        const container = document.getElementById('container-molduras-cultura');
+        container.innerHTML = ''; 
+        const pos = [ {p: '-2.8 1.6 -2.5', r: '0 30 0'}, {p: '-1 1.6 -3', r: '0 10 0'}, {p: '1 1.6 -3', r: '0 -10 0'}, {p: '2.8 1.6 -2.5', r: '0 -30 0'} ];
+        itens.forEach((item, index) => {
+            if(index >= 4) return;
+            const idTexto = `txt-galeria-${index}`;
+            const el = document.createElement('a-entity');
+            el.setAttribute('position', pos[index].p); el.setAttribute('rotation', pos[index].r);
+            const srcAttr = item.img ? `src="${item.img}"` : 'color="#555"';
+            el.innerHTML = `
+                <a-plane ${srcAttr} width="1.4" height="1" class="clicavel interativo moldura-galeria" data-texto-id="${idTexto}" material="shader: flat; side: double"></a-plane>
+                <a-troika-text id="${idTexto}" value="${item.txt}" visible="false" align="center" position="0 -0.6 0.1" width="2.5" color="#FFD700" outline-width="0.02">
+                </a-troika-text>`;
+            container.appendChild(el);
+        });
+        setupHoverEvents('.moldura-galeria', 'data-texto-id');
+    }
 
-   /* --- GALERIA DE TURISMO (CORRIGIDA) --- */
-    function montarGaleriaVideo(itens) {
-        const container = document.getElementById('container-molduras-turismo');
-        container.innerHTML = ''; 
-        const pos = [ {p: '-2.8 1.6 -2', r: '0 30 0'}, {p: '-1 1.6 -3', r: '0 10 0'}, {p: '1 1.6 -3', r: '0 -10 0'}, {p: '2.8 1.6 -2', r: '0 -30 0'} ];
-        
-        itens.forEach((item, index) => {
-            if(index >= 4) return;
-            const videoID = `vid-turismo-${index}`;
-            const idTexto = `txt-turismo-${index}`; // Criamos um ID para o texto
-            
-            const videoEl = document.getElementById(videoID);
-            if(videoEl && item.video) { 
-                videoEl.setAttribute('src', item.video); 
-                videoEl.pause(); 
-            }
+   /* --- GALERIA DE TURISMO --- */
+    function montarGaleriaVideo(itens) {
+        const container = document.getElementById('container-molduras-turismo');
+        container.innerHTML = ''; 
+        const pos = [ {p: '-2.8 1.6 -2', r: '0 30 0'}, {p: '-1 1.6 -3', r: '0 10 0'}, {p: '1 1.6 -3', r: '0 -10 0'}, {p: '2.8 1.6 -2', r: '0 -30 0'} ];
+        
+        itens.forEach((item, index) => {
+            if(index >= 4) return;
+            const videoID = `vid-turismo-${index}`;
+            const idTexto = `txt-turismo-${index}`; 
+            
+            const videoEl = document.getElementById(videoID);
+            if(videoEl && item.video) { 
+                videoEl.setAttribute('src', item.video); 
+                videoEl.pause(); 
+            }
 
-            const el = document.createElement('a-entity');
-            el.setAttribute('position', pos[index].p); 
-            el.setAttribute('rotation', pos[index].r);
-            
-            // Adicionamos data-texto-id no a-plane e visible="false" no a-troika-text
-            el.innerHTML = `
-                <a-plane src="#${videoID}" width="1.8" height="1.2" 
-                         class="clicavel interativo video-moldura" 
-                         data-vid-id="${videoID}" 
-                         data-texto-id="${idTexto}"
-                         material="shader: flat; side: double"></a-plane>
-                <a-troika-text id="${idTexto}" value="${item.txt}" visible="false" 
-                               align="center" position="0 -0.8 0.1" width="2" 
-                               color="#FFF" outline-width="0.02"></a-troika-text>`;
-            container.appendChild(el);
-        });
+            const el = document.createElement('a-entity');
+            el.setAttribute('position', pos[index].p); 
+            el.setAttribute('rotation', pos[index].r);
+            
+            el.innerHTML = `
+                <a-plane src="#${videoID}" width="1.8" height="1.2" 
+                         class="clicavel interativo video-moldura" 
+                         data-vid-id="${videoID}" 
+                         data-texto-id="${idTexto}"
+                         material="shader: flat; side: double"></a-plane>
+                <a-troika-text id="${idTexto}" value="${item.txt}" visible="false" 
+                               align="center" position="0 -0.8 0.1" width="2" 
+                               color="#FFF" outline-width="0.02"></a-troika-text>`;
+            container.appendChild(el);
+        });
 
-        // Atualizamos os eventos para controlar o vídeo E o texto
-        document.querySelectorAll('.video-moldura').forEach(m => {
-            m.addEventListener('mouseenter', function() { 
-                // Dá play no vídeo
-                document.getElementById(this.getAttribute('data-vid-id')).play(); 
-                // Mostra o texto
-                document.getElementById(this.getAttribute('data-texto-id')).setAttribute('visible', 'true');
-            });
-            m.addEventListener('mouseleave', function() { 
-                // Pausa o vídeo
-                document.getElementById(this.getAttribute('data-vid-id')).pause(); 
-                // Esconde o texto
-                document.getElementById(this.getAttribute('data-texto-id')).setAttribute('visible', 'false');
-            });
-        });
-    }
-    /* --- LÓGICA DE NAVEGAÇÃO E ÁUDIO --- */
-    function tocarHino(cidadeKey) {
-        const hinoEl = document.getElementById('audio-hino');
-        const cidade = db[cidadeKey];
-        hinoEl.pause();
-        if (cidade && cidade.hino) {
-            hinoEl.src = cidade.hino; hinoEl.volume = 0.2; hinoEl.loop = true;
-            hinoEl.play().catch(e => console.log("Aguardando interação..."));
-        }
-    }
+        document.querySelectorAll('.video-moldura').forEach(m => {
+            m.addEventListener('mouseenter', function() { 
+                document.getElementById(this.getAttribute('data-vid-id')).play(); 
+                document.getElementById(this.getAttribute('data-texto-id')).setAttribute('visible', 'true');
+            });
+            m.addEventListener('mouseleave', function() { 
+                document.getElementById(this.getAttribute('data-vid-id')).pause(); 
+                document.getElementById(this.getAttribute('data-texto-id')).setAttribute('visible', 'false');
+            });
+        });
+    }
 
-    function irPara(idGrupo) {
-      const grupos = ['grupo-inicio', 'grupo-cidades', 'grupo-categorias', 'grupo-player', 'grupo-cultura-galeria', 'grupo-turismo-galeria','grupo-quiz'];
-      grupos.forEach(g => {
-        const el = document.getElementById(g);
-        if(el) { el.setAttribute('visible', 'false'); el.querySelectorAll('.interativo').forEach(b => b.classList.remove('clicavel')); }
-      });
-      desativarModo360();
-      if (idGrupo === 'grupo-inicio' || idGrupo === 'grupo-cidades') document.getElementById('audio-hino').pause();
-      const destino = document.getElementById(idGrupo);
-      if(destino) {
-          destino.setAttribute('visible', 'true');
-          destino.querySelectorAll('.interativo').forEach(b => b.classList.add('clicavel'));
-          atualizarAmbiente(idGrupo);
-      }
-      if(idGrupo !== 'grupo-categorias') pararMidiasConteudo();
-    }
-
-    function selecionarCidade(chave) {
-      cidadeAtual = chave;
-      document.getElementById('titulo-cidade-cat').setAttribute('value', db[chave].nome);
-      tocarHino(chave);
-      irPara('grupo-categorias');
-    }
-
-    function verConteudo(tipo) {
- // Variáveis globais para controlar o estado do Quiz
+    /* --- VARIÁVEIS E LÓGICA DO QUIZ (AGORA NO ESCOPO CORRETO) --- */
     let perguntasQuiz = [];
     let indicePerguntaAtual = 0;
+
     function iniciarQuiz(perguntas) {
         perguntasQuiz = perguntas;
         indicePerguntaAtual = 0;
@@ -328,13 +288,12 @@
         const containerOpcoes = document.getElementById('quiz-opcoes');
         const feedbackText = document.getElementById('quiz-feedback');
 
-        feedbackText.setAttribute('value', ''); // Limpa o feedback anterior
+        feedbackText.setAttribute('value', ''); 
 
-        // Verifica se o quiz acabou
         if (indicePerguntaAtual >= perguntasQuiz.length) {
             perguntaText.setAttribute('value', 'Parabéns! Você concluiu o Quiz.');
             perguntaText.setAttribute('color', '#00FF00');
-            containerOpcoes.innerHTML = ''; // Limpa os botões
+            containerOpcoes.innerHTML = ''; 
             return;
         }
 
@@ -343,10 +302,8 @@
         perguntaText.setAttribute('color', '#FFD700');
         containerOpcoes.innerHTML = '';
 
-        // Posições verticais para os botões das alternativas
         const posicoesY = [0.8, 0.2, -0.4]; 
 
-        // Cria os botões para cada opção
         perguntaAtual.opcoes.forEach((opcao, index) => {
             const el = document.createElement('a-entity');
             el.setAttribute('position', `0 ${posicoesY[index] || 0} 0`);
@@ -364,127 +321,240 @@
         const feedback = document.getElementById('quiz-feedback');
         const container = document.getElementById('quiz-opcoes');
 
-        // Desativa os cliques temporariamente para evitar cliques duplos
         container.querySelectorAll('.interativo').forEach(b => b.classList.remove('clicavel'));
 
         if (indiceEscolhido === indiceCorreto) {
             feedback.setAttribute('value', 'Acertou!');
-            feedback.setAttribute('color', '#00FF00'); // Verde
+            feedback.setAttribute('color', '#00FF00'); 
             
-            // Espera 2 segundos e vai para a próxima pergunta
             setTimeout(() => {
                 indicePerguntaAtual++;
                 mostrarPergunta();
             }, 2000);
         } else {
             feedback.setAttribute('value', 'Errou. Tente novamente!');
-            feedback.setAttribute('color', '#FF0000'); // Vermelho
+            feedback.setAttribute('color', '#FF0000'); 
             
-            // Espera 2 segundos, limpa o feedback e reativa os cliques
             setTimeout(() => {
                 feedback.setAttribute('value', '');
                 container.querySelectorAll('.interativo').forEach(b => b.classList.add('clicavel'));
             }, 2000);
         }
     }
+
+
+    /* --- LÓGICA DE NAVEGAÇÃO E ÁUDIO --- */
+    function tocarHino(cidadeKey) {
+        const hinoEl = document.getElementById('audio-hino');
+        const cidade = db[cidadeKey];
+        hinoEl.pause();
+        if (cidade && cidade.hino) {
+            hinoEl.src = cidade.hino; hinoEl.volume = 0.2; hinoEl.loop = true;
+            hinoEl.play().catch(e => console.log("Aguardando interação..."));
+        }
+    }
+
+    function irPara(idGrupo) {
+      const grupos = ['grupo-inicio', 'grupo-cidades', 'grupo-categorias', 'grupo-player', 'grupo-cultura-galeria', 'grupo-turismo-galeria','grupo-quiz'];
+      grupos.forEach(g => {
+        const el = document.getElementById(g);
+        if(el) { el.setAttribute('visible', 'false'); el.querySelectorAll('.interativo').forEach(b => b.classList.remove('clicavel')); }
+      });
+      desativarModo360();
+      if (idGrupo === 'grupo-inicio' || idGrupo === 'grupo-cidades') document.getElementById('audio-hino').pause();
+      const destino = document.getElementById(idGrupo);
+      if(destino) {
+          destino.setAttribute('visible', 'true');
+          destino.querySelectorAll('.interativo').forEach(b => b.classList.add('clicavel'));
+          atualizarAmbiente(idGrupo);
+      }
+      if(idGrupo !== 'grupo-categorias') pararMidiasConteudo();
+    }
+
+    function selecionarCidade(chave) {
+      cidadeAtual = chave;
+      document.getElementById('titulo-cidade-cat').setAttribute('value', db[chave].nome);
+      tocarHino(chave);
+      irPara('grupo-categorias');
+    }
+
+    function verConteudo(tipo) {
+      if(!db[cidadeAtual].conteudos[tipo]) return;
+      const dados = db[cidadeAtual].conteudos[tipo];
+      document.getElementById('audio-hino').pause(); pararMidiasConteudo();
       
-      if(!db[cidadeAtual].conteudos[tipo]) return;
-      const dados = db[cidadeAtual].conteudos[tipo];
-      document.getElementById('audio-hino').pause(); pararMidiasConteudo();
-      if (dados.tipo === 'video360') { ativarModo360(dados.video); return; }
-      if (dados.type === 'galeria') { montarGaleria(dados.itens); irPara('grupo-cultura-galeria'); return; }
-      if (dados.type === 'galeriaVideo') { montarGaleriaVideo(dados.itens); irPara('grupo-turismo-galeria'); return; }
+      if (dados.tipo === 'video360') { ativarModo360(dados.video); return; }
+      if (dados.type === 'galeria') { montarGaleria(dados.itens); irPara('grupo-cultura-galeria'); return; }
+      if (dados.type === 'galeriaVideo') { montarGaleriaVideo(dados.itens); irPara('grupo-turismo-galeria'); return; }
       if (dados.type === 'quiz') { iniciarQuiz(dados.perguntas); return; }
       
-      irPara('grupo-player');
-    }
+      irPara('grupo-player');
+    }
 
-    function setupHoverEvents(selector, dataAttr) {
-        document.querySelectorAll(selector).forEach(el => {
-            el.addEventListener('mouseenter', function() { document.getElementById(this.getAttribute(dataAttr)).setAttribute('visible', 'true'); });
-            el.addEventListener('mouseleave', function() { document.getElementById(this.getAttribute(dataAttr)).setAttribute('visible', 'false'); });
-        });
-    }
+    function setupHoverEvents(selector, dataAttr) {
+        document.querySelectorAll(selector).forEach(el => {
+            el.addEventListener('mouseenter', function() { document.getElementById(this.getAttribute(dataAttr)).setAttribute('visible', 'true'); });
+            el.addEventListener('mouseleave', function() { document.getElementById(this.getAttribute(dataAttr)).setAttribute('visible', 'false'); });
+        });
+    }
 
-    function setupVideoEvents() {
-        const video = document.getElementById('video-player');
-        const loader = document.getElementById('loader-360');
-        const controles = document.getElementById('controle-360-gaze');
-        video.addEventListener('playing', () => { loader.setAttribute('visible', 'false'); controles.setAttribute('visible', 'true'); });
-    }
+    function setupVideoEvents() {
+        const video = document.getElementById('video-player');
+        const loader = document.getElementById('loader-360');
+        const controles = document.getElementById('controle-360-gaze');
+        video.addEventListener('playing', () => { loader.setAttribute('visible', 'false'); controles.setAttribute('visible', 'true'); });
+    }
 
-    function ativarModo360(videoSrc) {
-        irPara('null'); // Esconde tudo
-        document.getElementById('ambiente-3d').removeAttribute('environment');
-        const videoEl = document.getElementById('video-player');
-        videoEl.setAttribute('src', videoSrc);
-        document.getElementById('videosphere').setAttribute('visible', 'true');
-        document.getElementById('loader-360').setAttribute('visible', 'true');
-        document.getElementById('btnPlay360').classList.add('clicavel');
-        document.getElementById('btnVoltar360').classList.add('clicavel');
-        videoEl.play();
-    }
+    function ativarModo360(videoSrc) {
+        irPara('null'); 
+        document.getElementById('ambiente-3d').removeAttribute('environment');
+        const videoEl = document.getElementById('video-player');
+        videoEl.setAttribute('src', videoSrc);
+        document.getElementById('videosphere').setAttribute('visible', 'true');
+        document.getElementById('loader-360').setAttribute('visible', 'true');
+        document.getElementById('btnPlay360').classList.add('clicavel');
+        document.getElementById('btnVoltar360').classList.add('clicavel');
+        videoEl.play();
+    }
 
-    function desativarModo360() {
-        const esfera = document.getElementById('videosphere');
-        if (esfera.getAttribute('visible') == false) return; 
-        pararMidiasConteudo();
-        esfera.setAttribute('visible', 'false');
-        document.getElementById('controle-360-gaze').setAttribute('visible', 'false');
-        document.getElementById('loader-360').setAttribute('visible', 'false');
-    }
+    function desativarModo360() {
+        const esfera = document.getElementById('videosphere');
+        if (esfera.getAttribute('visible') == false) return; 
+        pararMidiasConteudo();
+        esfera.setAttribute('visible', 'false');
+        document.getElementById('controle-360-gaze').setAttribute('visible', 'false');
+        document.getElementById('loader-360').setAttribute('visible', 'false');
+    }
 
-function atualizarAmbiente(idGrupo) {
-        if(document.getElementById('videosphere').getAttribute('visible') == true) return;
-        
-        const el = document.getElementById('ambiente-3d');
-        const sky360 = document.getElementById('fundo-360-estatico');
-        
-        // Verifica se a tela atual é interna de uma cidade
-        const telasDaCidade = ['grupo-categorias', 'grupo-cultura-galeria', 'grupo-turismo-galeria'];
-        let usarFoto360 = false;
-        
-        if (cidadeAtual && telasDaCidade.includes(idGrupo)) {
-            const cidade = db[cidadeAtual];
-            // Se a cidade possuir a propriedade fundo360 cadastrada
-            if (cidade && cidade.fundo360) {
-                usarFoto360 = true;
-                // Remove o ambiente gerado (environment) para não sobrepor
-                el.removeAttribute('environment');
-                // Aplica a imagem 360 e a torna visível
-                sky360.setAttribute('src', cidade.fundo360);
-                sky360.setAttribute('visible', 'true');
-            }
-        }
+    function atualizarAmbiente(idGrupo) {
+        if(document.getElementById('videosphere').getAttribute('visible') == true) return;
+        
+        const el = document.getElementById('ambiente-3d');
+        const sky360 = document.getElementById('fundo-360-estatico');
+        
+        const telasDaCidade = ['grupo-categorias', 'grupo-cultura-galeria', 'grupo-turismo-galeria', 'grupo-quiz'];
+        let usarFoto360 = false;
+        
+        if (cidadeAtual && telasDaCidade.includes(idGrupo)) {
+            const cidade = db[cidadeAtual];
+            if (cidade && cidade.fundo360) {
+                usarFoto360 = true;
+                el.removeAttribute('environment');
+                sky360.setAttribute('src', cidade.fundo360);
+                sky360.setAttribute('visible', 'true');
+            }
+        }
 
-        // Se não for para usar foto 360 (ex: Menu Principal ou cidade sem foto), usa os ambientes padrão
-        if (!usarFoto360) {
-            sky360.setAttribute('visible', 'false');
-            let p = 'starry';
-            
-            if(idGrupo === 'grupo-inicio') p = 'forest'; // Mantém a floresta no início
-            if(idGrupo === 'grupo-cidades') p = 'threetowers'; 
-            if(idGrupo === 'grupo-cultura-galeria') p = 'threetowers'; 
-            if(idGrupo === 'grupo-turismo-galeria') p = 'contact'; 
-            if(idGrupo === 'grupo-player') p = 'starry';
-            
-            el.setAttribute('environment', { preset: p, grid: 'cross' });
-        }
-    }
-       function pararMidiasConteudo() {
-      document.getElementById('video-player').pause();
-      for(let i=0; i<4; i++) { if(document.getElementById(`vid-turismo-${i}`)) document.getElementById(`vid-turismo-${i}`).pause(); }
-    }
+        if (!usarFoto360) {
+            sky360.setAttribute('visible', 'false');
+            let p = 'starry';
+            
+            if(idGrupo === 'grupo-inicio') p = 'forest'; 
+            if(idGrupo === 'grupo-cidades') p = 'threetowers'; 
+            if(idGrupo === 'grupo-cultura-galeria') p = 'threetowers'; 
+            if(idGrupo === 'grupo-turismo-galeria') p = 'contact'; 
+            if(idGrupo === 'grupo-player' || idGrupo === 'grupo-quiz') p = 'starry';
+            
+            el.setAttribute('environment', { preset: p, grid: 'cross' });
+        }
+    }
+    
+    function pararMidiasConteudo() {
+      document.getElementById('video-player').pause();
+      for(let i=0; i<4; i++) { if(document.getElementById(`vid-turismo-${i}`)) document.getElementById(`vid-turismo-${i}`).pause(); }
+    }
 
-    function sairDo360() { desativarModo360(); irPara('grupo-categorias'); tocarHino(cidadeAtual); }
-    function voltarParaCategorias() { irPara('grupo-categorias'); tocarHino(cidadeAtual); }
-  </script>
+    function sairDo360() { desativarModo360(); irPara('grupo-categorias'); tocarHino(cidadeAtual); }
+    function voltarParaCategorias() { irPara('grupo-categorias'); tocarHino(cidadeAtual); }
+  </script>
 </head>
 <body>
 
-  <a-scene>
-    <a-assets>
-      <a-entity id="grupo-quiz" visible="false">
+  <a-scene>
+    <a-assets>
+       <video id="video-player" loop crossorigin="anonymous" playsinline webkit-playsinline></video>
+       <video id="vid-turismo-0" loop crossorigin="anonymous" playsinline></video>
+       <video id="vid-turismo-1" loop crossorigin="anonymous" playsinline></video>
+       <video id="vid-turismo-2" loop crossorigin="anonymous" playsinline></video>
+       <video id="vid-turismo-3" loop crossorigin="anonymous" playsinline></video>
+       <audio id="audio-hino" loop></audio>
+       <img id="img-inicio-esq" src="./assets/imagens/amapa.png">
+       <img id="img-inicio-dir" src="./assets/imagens/mapa.png">
+    </a-assets>
+
+    <a-entity id="ambiente-3d" environment="preset: forest"></a-entity>
+    <a-sky id="fundo-360-estatico" visible="false"></a-sky>
+    <a-videosphere id="videosphere" src="#video-player" visible="false" rotation="0 -90 0"></a-videosphere>
+
+    <a-camera>
+       <a-cursor id="cursor" color="yellow" fuse="true" fuse-timeout="1500" raycaster="objects: .clicavel"></a-cursor>
+       <a-entity id="loader-360" visible="false" position="0 0 -2">
+            <a-troika-text value="CARREGANDO..." color="yellow" align="center" width="5"></a-troika-text>
+       </a-entity>
+    </a-camera>
+
+    <a-entity id="controle-360-gaze" visible="false" position="0 1 -2">
+        <a-plane id="btnPlay360" color="#EF2D5E" width="1" height="0.5">
+           <a-troika-text id="btnText360" value="Play/Pause" align="center" position="0 0 0.02" width="2"></a-troika-text>
+        </a-plane>
+        <a-plane id="btnVoltar360" position="0 -0.6 0" width="0.8" height="0.3" color="#444" class="clicavel" onclick="sairDo360()">
+            <a-troika-text value="Sair" align="center" position="0 0 0.02" width="2"></a-troika-text>
+        </a-plane>
+    </a-entity>
+
+    <a-entity id="grupo-inicio" visible="true">
+        <a-troika-text value="Amapá Interativo" align="center" position="0 3 -3" width="10"  color="#FFFFFF" outline-width="0.02" outline-color="#000" ></a-troika-text>     
+        <a-troika-text value="Explore e aprenda sobre cada município." align="center" position="0 2.7 -3" width="6" color="#FFFFFF" outline-width="0.02" outline-color="#000"></a-troika-text>
+        
+        <a-image src="#img-inicio-esq" position="-3 1.8 -4" rotation="0 20 0" width="2.5" height="1.5"></a-image>
+        <a-image src="#img-inicio-dir" position="3 1.8 -4" rotation="0 -20 0" width="2.5" height="1.8"></a-image>
+
+        <a-plane position="0 1.6 -3" width="1.5" height="0.6" color="#004d40" class="clicavel interativo" onclick="irPara('grupo-cidades')">
+            <a-troika-text value="Iniciar" align="center" position="0 0 0.02" width="6"color="#FFFFFF" outline-width="0.02" outline-color="#000"></a-troika-text>
+        </a-plane>
+    </a-entity>
+
+    <a-entity id="grupo-cidades" visible="false">
+        <a-troika-text value="Escolha o Destino" align="center" position="0 2.7 -4" width="8"  color="#FFFFFF" outline-width="0.02" outline-color="#000" ></a-troika-text>
+        <a-entity id="grade-cidades" position="0 0 0"></a-entity>
+        <a-plane position="0 0.3 -3" width="1" height="0.4" color="#444" class="interativo" onclick="irPara('grupo-inicio')">
+            <a-troika-text value="Voltar" align="center" position="0 0 0.02"color="#FFFFFF" outline-width="0.02" outline-color="#000"></a-troika-text>
+        </a-plane>
+    </a-entity>
+
+    <a-entity id="grupo-categorias" visible="false">
+        <a-troika-text id="titulo-cidade-cat" value="CIDADE" align="center" position="0 2.7 -3" width="10" color="#FFFFFF" outline-width="0.02" outline-color="#000"></a-troika-text>
+        <a-plane position="-1.5 2 -3" width="1.2" height="0.6" color="#0000CD" class="interativo" onclick="verConteudo('Historia')">
+            <a-troika-text value="História" align="center" position="0 0 0.02" width="5"color="#FFFFFF" outline-width="0.02" outline-color="#000"></a-troika-text>
+        </a-plane>
+        <a-plane position="0 2 -3" width="1.2" height="0.6" color="#E64A19" class="interativo" onclick="verConteudo('Cultura')">
+            <a-troika-text value="Cultura" align="center" position="0 0 0.02" width="5"color="#FFFFFF" outline-width="0.02" outline-color="#000"></a-troika-text>
+        </a-plane>
+        <a-plane position="1.5 2 -3" width="1.2" height="0.6" color="#388E3C" class="interativo" onclick="verConteudo('Turismo')">
+            <a-troika-text value="Turismo" align="center" position="0 0 0.02" width="5"color="#FFFFFF" outline-width="0.02" outline-color="#000"></a-troika-text>
+        </a-plane>
+        <a-plane position="0 1 -3" width="1" height="0.3" color="#444" class="interativo" onclick="irPara('grupo-cidades')">
+            <a-troika-text value="Voltar" align="center" position="0 0 0.02"color="#FFFFFF" outline-width="0.02" outline-color="#000"></a-troika-text>
+        </a-plane>
+    </a-entity>
+
+    <a-entity id="grupo-cultura-galeria" visible="false">
+        <a-troika-text value="Galeria Cultural" align="center" position="0 2.3 -3" width="8"color="#FFFFFF" outline-width="0.02" outline-color="#000"></a-troika-text>
+        <a-entity id="container-molduras-cultura"></a-entity>
+        <a-plane position="0 0.5 -3" width="1" height="0.3" color="#444" class="interativo" onclick="voltarParaCategorias()">
+            <a-troika-text value="Voltar" align="center" position="0 0 0.02" color="#FFFFFF" outline-width="0.02" outline-color="#000"></a-troika-text>
+        </a-plane>
+    </a-entity>
+
+    <a-entity id="grupo-turismo-galeria" visible="false">
+        <a-troika-text value="Pontos Turísticos" align="center" position="0 2.35 -3" width="8" color="#FFFFFF" outline-width="0.02" outline-color="#000"></a-troika-text>
+        <a-entity id="container-molduras-turismo"></a-entity>
+        <a-plane position="0 0.5 -3" width="1" height="0.3" color="#444" class="interativo" onclick="voltarParaCategorias()">
+            <a-troika-text value="Voltar" align="center" position="0 0 0.02"color="#FFFFFF" outline-width="0.02" outline-color="#000"></a-troika-text>
+        </a-plane>
+    </a-entity>
+
+    <a-entity id="grupo-quiz" visible="false">
         <a-troika-text id="quiz-titulo" value="Quiz" align="center" position="0 3.2 -3" width="8" color="#FFFFFF" outline-width="0.02" outline-color="#000"></a-troika-text>
         
         <a-troika-text id="quiz-pergunta" value="Pergunta" align="center" position="0 2.4 -3" width="6" color="#FFD700" outline-width="0.02" outline-color="#000"></a-troika-text>
@@ -497,88 +567,7 @@ function atualizarAmbiente(idGrupo) {
             <a-troika-text value="Voltar" align="center" position="0 0 0.02" color="#FFFFFF"></a-troika-text>
         </a-plane>
     </a-entity>
-       <video id="video-player" loop crossorigin="anonymous" playsinline webkit-playsinline></video>
-       <video id="vid-turismo-0" loop crossorigin="anonymous" playsinline></video>
-       <video id="vid-turismo-1" loop crossorigin="anonymous" playsinline></video>
-       <video id="vid-turismo-2" loop crossorigin="anonymous" playsinline></video>
-       <video id="vid-turismo-3" loop crossorigin="anonymous" playsinline></video>
-       <audio id="audio-hino" loop></audio>
-       <img id="img-inicio-esq" src="./assets/imagens/amapa.png">
-       <img id="img-inicio-dir" src="./assets/imagens/mapa.png">
-    </a-assets>
 
-    <a-entity id="ambiente-3d" environment="preset: forest"></a-entity>
-    <a-sky id="fundo-360-estatico" visible="false"></a-sky>
-    <a-videosphere id="videosphere" src="#video-player" visible="false" rotation="0 -90 0"></a-videosphere>
-
-    <a-camera>
-       <a-cursor id="cursor" color="yellow" fuse="true" fuse-timeout="1500" raycaster="objects: .clicavel"></a-cursor>
-       <a-entity id="loader-360" visible="false" position="0 0 -2">
-            <a-troika-text value="CARREGANDO..." color="yellow" align="center" width="5"></a-troika-text>
-       </a-entity>
-    </a-camera>
-
-    <a-entity id="controle-360-gaze" visible="false" position="0 1 -2">
-        <a-plane id="btnPlay360" color="#EF2D5E" width="1" height="0.5">
-           <a-troika-text id="btnText360" value="Play/Pause" align="center" position="0 0 0.02" width="2"></a-troika-text>
-        </a-plane>
-        <a-plane id="btnVoltar360" position="0 -0.6 0" width="0.8" height="0.3" color="#444" class="clicavel" onclick="sairDo360()">
-            <a-troika-text value="Sair" align="center" position="0 0 0.02" width="2"></a-troika-text>
-        </a-plane>
-    </a-entity>
-
-    <a-entity id="grupo-inicio" visible="true">
-        <a-troika-text value="Amapá Interativo" align="center" position="0 3 -3" width="10"  color="#FFFFFF" outline-width="0.02" outline-color="#000" ></a-troika-text>     
-        <a-troika-text value="Explore e aprenda sobre cada município." align="center" position="0 2.7 -3" width="6" color="#FFFFFF" outline-width="0.02" outline-color="#000"></a-troika-text>
-        
-        <a-image src="#img-inicio-esq" position="-3 1.8 -4" rotation="0 20 0" width="2.5" height="1.5"></a-image>
-        <a-image src="#img-inicio-dir" position="3 1.8 -4" rotation="0 -20 0" width="2.5" height="1.8"></a-image>
-
-        <a-plane position="0 1.6 -3" width="1.5" height="0.6" color="#004d40" class="clicavel interativo" onclick="irPara('grupo-cidades')">
-            <a-troika-text value="Iniciar" align="center" position="0 0 0.02" width="6"color="#FFFFFF" outline-width="0.02" outline-color="#000"></a-troika-text>
-        </a-plane>
-    </a-entity>
-
-    <a-entity id="grupo-cidades" visible="false">
-        <a-troika-text value="Escolha o Destino" align="center" position="0 2.7 -4" width="8"  color="#FFFFFF" outline-width="0.02" outline-color="#000" ></a-troika-text>
-        <a-entity id="grade-cidades" position="0 0 0"></a-entity>
-        <a-plane position="0 0.3 -3" width="1" height="0.4" color="#444" class="interativo" onclick="irPara('grupo-inicio')">
-            <a-troika-text value="Voltar" align="center" position="0 0 0.02"color="#FFFFFF" outline-width="0.02" outline-color="#000"></a-troika-text>
-        </a-plane>
-    </a-entity>
-
-    <a-entity id="grupo-categorias" visible="false">
-        <a-troika-text id="titulo-cidade-cat" value="CIDADE" align="center" position="0 2.7 -3" width="10" color="#FFFFFF" outline-width="0.02" outline-color="#000"></a-troika-text>
-        <a-plane position="-1.5 2 -3" width="1.2" height="0.6" color="#0000CD" class="interativo" onclick="verConteudo('Historia')">
-            <a-troika-text value="História" align="center" position="0 0 0.02" width="5"color="#FFFFFF" outline-width="0.02" outline-color="#000"></a-troika-text>
-        </a-plane>
-        <a-plane position="0 2 -3" width="1.2" height="0.6" color="#E64A19" class="interativo" onclick="verConteudo('Cultura')">
-            <a-troika-text value="Cultura" align="center" position="0 0 0.02" width="5"color="#FFFFFF" outline-width="0.02" outline-color="#000"></a-troika-text>
-        </a-plane>
-        <a-plane position="1.5 2 -3" width="1.2" height="0.6" color="#388E3C" class="interativo" onclick="verConteudo('Turismo')">
-            <a-troika-text value="Turismo" align="center" position="0 0 0.02" width="5"color="#FFFFFF" outline-width="0.02" outline-color="#000"></a-troika-text>
-        </a-plane>
-        <a-plane position="0 1 -3" width="1" height="0.3" color="#444" class="interativo" onclick="irPara('grupo-cidades')">
-            <a-troika-text value="Voltar" align="center" position="0 0 0.02"color="#FFFFFF" outline-width="0.02" outline-color="#000"></a-troika-text>
-        </a-plane>
-    </a-entity>
-
-    <a-entity id="grupo-cultura-galeria" visible="false">
-        <a-troika-text value="Galeria Cultural" align="center" position="0 2.3 -3" width="8"color="#FFFFFF" outline-width="0.02" outline-color="#000"></a-troika-text>
-        <a-entity id="container-molduras-cultura"></a-entity>
-        <a-plane position="0 0.5 -3" width="1" height="0.3" color="#444" class="interativo" onclick="voltarParaCategorias()">
-            <a-troika-text value="Voltar" align="center" position="0 0 0.02" color="#FFFFFF" outline-width="0.02" outline-color="#000"></a-troika-text>
-        </a-plane>
-    </a-entity>
-
-    <a-entity id="grupo-turismo-galeria" visible="false">
-        <a-troika-text value="Pontos Turísticos" align="center" position="0 2.35 -3" width="8" color="#FFFFFF" outline-width="0.02" outline-color="#000"></a-troika-text>
-        <a-entity id="container-molduras-turismo"></a-entity>
-        <a-plane position="0 0.5 -3" width="1" height="0.3" color="#444" class="interativo" onclick="voltarParaCategorias()">
-            <a-troika-text value="Voltar" align="center" position="0 0 0.02"color="#FFFFFF" outline-width="0.02" outline-color="#000"></a-troika-text>
-        </a-plane>
-    </a-entity>
-
-  </a-scene>
+  </a-scene>
 </body>
 </html>

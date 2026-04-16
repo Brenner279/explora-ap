@@ -287,7 +287,7 @@
     }
 
     function irPara(idGrupo) {
-      const grupos = ['grupo-inicio', 'grupo-cidades', 'grupo-categorias', 'grupo-player', 'grupo-cultura-galeria', 'grupo-turismo-galeria'];
+      const grupos = ['grupo-inicio', 'grupo-cidades', 'grupo-categorias', 'grupo-player', 'grupo-cultura-galeria', 'grupo-turismo-galeria','grupo-quiz'];
       grupos.forEach(g => {
         const el = document.getElementById(g);
         if(el) { el.setAttribute('visible', 'false'); el.querySelectorAll('.interativo').forEach(b => b.classList.remove('clicavel')); }
@@ -311,12 +311,91 @@
     }
 
     function verConteudo(tipo) {
+ // Variáveis globais para controlar o estado do Quiz
+    let perguntasQuiz = [];
+    let indicePerguntaAtual = 0;
+    function iniciarQuiz(perguntas) {
+        perguntasQuiz = perguntas;
+        indicePerguntaAtual = 0;
+        document.getElementById('quiz-feedback').setAttribute('value', '');
+        document.getElementById('quiz-titulo').setAttribute('value', 'Quiz: ' + db[cidadeAtual].nome);
+        mostrarPergunta();
+        irPara('grupo-quiz');
+    }
+
+    function mostrarPergunta() {
+        const perguntaText = document.getElementById('quiz-pergunta');
+        const containerOpcoes = document.getElementById('quiz-opcoes');
+        const feedbackText = document.getElementById('quiz-feedback');
+
+        feedbackText.setAttribute('value', ''); // Limpa o feedback anterior
+
+        // Verifica se o quiz acabou
+        if (indicePerguntaAtual >= perguntasQuiz.length) {
+            perguntaText.setAttribute('value', 'Parabéns! Você concluiu o Quiz.');
+            perguntaText.setAttribute('color', '#00FF00');
+            containerOpcoes.innerHTML = ''; // Limpa os botões
+            return;
+        }
+
+        const perguntaAtual = perguntasQuiz[indicePerguntaAtual];
+        perguntaText.setAttribute('value', perguntaAtual.p);
+        perguntaText.setAttribute('color', '#FFD700');
+        containerOpcoes.innerHTML = '';
+
+        // Posições verticais para os botões das alternativas
+        const posicoesY = [0.8, 0.2, -0.4]; 
+
+        // Cria os botões para cada opção
+        perguntaAtual.opcoes.forEach((opcao, index) => {
+            const el = document.createElement('a-entity');
+            el.setAttribute('position', `0 ${posicoesY[index] || 0} 0`);
+            
+            el.innerHTML = `
+                <a-plane width="3.5" height="0.45" color="#E64A19" class="clicavel interativo" onclick="verificarResposta(${index}, ${perguntaAtual.correta})" material="shader: flat">
+                    <a-troika-text value="${opcao}" align="center" position="0 0 0.02" width="3" color="#FFF"></a-troika-text>
+                </a-plane>
+            `;
+            containerOpcoes.appendChild(el);
+        });
+    }
+
+    function verificarResposta(indiceEscolhido, indiceCorreto) {
+        const feedback = document.getElementById('quiz-feedback');
+        const container = document.getElementById('quiz-opcoes');
+
+        // Desativa os cliques temporariamente para evitar cliques duplos
+        container.querySelectorAll('.interativo').forEach(b => b.classList.remove('clicavel'));
+
+        if (indiceEscolhido === indiceCorreto) {
+            feedback.setAttribute('value', 'Acertou!');
+            feedback.setAttribute('color', '#00FF00'); // Verde
+            
+            // Espera 2 segundos e vai para a próxima pergunta
+            setTimeout(() => {
+                indicePerguntaAtual++;
+                mostrarPergunta();
+            }, 2000);
+        } else {
+            feedback.setAttribute('value', 'Errou. Tente novamente!');
+            feedback.setAttribute('color', '#FF0000'); // Vermelho
+            
+            // Espera 2 segundos, limpa o feedback e reativa os cliques
+            setTimeout(() => {
+                feedback.setAttribute('value', '');
+                container.querySelectorAll('.interativo').forEach(b => b.classList.add('clicavel'));
+            }, 2000);
+        }
+    }
+      
       if(!db[cidadeAtual].conteudos[tipo]) return;
       const dados = db[cidadeAtual].conteudos[tipo];
       document.getElementById('audio-hino').pause(); pararMidiasConteudo();
       if (dados.tipo === 'video360') { ativarModo360(dados.video); return; }
       if (dados.type === 'galeria') { montarGaleria(dados.itens); irPara('grupo-cultura-galeria'); return; }
       if (dados.type === 'galeriaVideo') { montarGaleriaVideo(dados.itens); irPara('grupo-turismo-galeria'); return; }
+      if (dados.type === 'quiz') { iniciarQuiz(dados.perguntas); return; }
+      
       irPara('grupo-player');
     }
 
@@ -405,6 +484,19 @@ function atualizarAmbiente(idGrupo) {
 
   <a-scene>
     <a-assets>
+      <a-entity id="grupo-quiz" visible="false">
+        <a-troika-text id="quiz-titulo" value="Quiz" align="center" position="0 3.2 -3" width="8" color="#FFFFFF" outline-width="0.02" outline-color="#000"></a-troika-text>
+        
+        <a-troika-text id="quiz-pergunta" value="Pergunta" align="center" position="0 2.4 -3" width="6" color="#FFD700" outline-width="0.02" outline-color="#000"></a-troika-text>
+        
+        <a-entity id="quiz-opcoes" position="0 0.5 -3"></a-entity>
+
+        <a-troika-text id="quiz-feedback" value="" align="center" position="0 -0.8 -3" width="6" outline-width="0.02" outline-color="#000"></a-troika-text>
+
+        <a-plane position="0 -1.5 -3" width="1" height="0.3" color="#444" class="interativo" onclick="voltarParaCategorias()">
+            <a-troika-text value="Voltar" align="center" position="0 0 0.02" color="#FFFFFF"></a-troika-text>
+        </a-plane>
+    </a-entity>
        <video id="video-player" loop crossorigin="anonymous" playsinline webkit-playsinline></video>
        <video id="vid-turismo-0" loop crossorigin="anonymous" playsinline></video>
        <video id="vid-turismo-1" loop crossorigin="anonymous" playsinline></video>

@@ -17,7 +17,7 @@
         bandeira: './assets/bandeiras/vitoria.png',
         hino: './assets/hinos/vitoria.mp3', 
         conteudos: {
-          'Historia': { t: 'História', video: './assets/videos/vitoria.mp4', tipo: 'video360' },
+          'Historia': { t: 'História', video: './assets/videos/vit360.mp4', tipo: 'video360' },
           'Cultura': { 
               type: 'quiz', 
               fundo360: './assets/3d/fundo_cultura_vitoria.jpg', 
@@ -419,12 +419,11 @@
         video.addEventListener('playing', () => { loader.setAttribute('visible', 'false'); controles.setAttribute('visible', 'true'); });
     }
 
-    /* --- LÓGICA CORRIGIDA DO VÍDEO 360 (DESLIGAMENTO FORÇADO DO CÉU) --- */
+    /* --- LÓGICA CORRIGIDA DO VÍDEO 360 --- */
     function ativarModo360(videoSrc) {
-        // CORREÇÃO: Força o desligamento absoluto da foto de fundo
         const sky360 = document.getElementById('fundo-360-estatico');
         sky360.setAttribute('visible', 'false');
-        sky360.removeAttribute('src'); // Arranca a imagem da memória visual temporária
+        sky360.removeAttribute('src'); 
 
         irPara('null'); 
         document.getElementById('ambiente-3d').removeAttribute('environment');
@@ -463,13 +462,22 @@
         }
     }
 
+    // AQUI ESTÁ A CORREÇÃO PRINCIPAL: FORÇANDO OS BOTÕES A SUMIREM DE VERDADE
     function desativarModo360() {
         const esfera = document.getElementById('videosphere');
-        if (esfera.getAttribute('visible') == false) return; 
+        
         pararMidiasConteudo();
         esfera.setAttribute('visible', 'false');
+        
+        // Desliga o painel de controle
         document.getElementById('controle-360-gaze').setAttribute('visible', 'false');
         document.getElementById('loader-360').setAttribute('visible', 'false');
+        
+        // Remove a classe clicavel para que os botões invisíveis não bloqueiem outros cliques
+        const btnPlay = document.getElementById('btnPlay360');
+        const btnVoltar = document.getElementById('btnVoltar360');
+        if(btnPlay) btnPlay.classList.remove('clicavel');
+        if(btnVoltar) btnVoltar.classList.remove('clicavel');
     }
 
     function atualizarAmbiente(idGrupo) {

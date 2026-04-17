@@ -27,13 +27,12 @@
               ]
           },
           'Informacoes': { 
-              t: 'Informações Gerais', type: 'galeriaVideo', 
+              t: 'Informações Gerais', type: 'galeriaImagem', 
               fundo360: './assets/3d/praca2.jpg',
               itens: [
-                  { img: './assets/videos/vj1.mp4', txt: 'Serra do Parente' },
-                  { video: './assets/videos/vj2.mp4', txt: 'Orla Vitória do Jari' },
-                  { video: './assets/videos/vj3.mp4', txt: 'Baln. Belas Águas' },
-                  { video: './assets/videos/vj4.mp4', txt: 'Baln. Recanto do Cupu' }
+                  { img: '', txt: 'Serra do Parente' },
+                  { img: '', txt: 'Orla Vitória do Jari' },
+                  { img: '', txt: 'Baln. Belas Águas' }
               ]
           }
         }
@@ -51,11 +50,10 @@
                 ]
             },
             'Informacoes': { 
-                t: 'Informações Gerais', type: 'galeriaVideo', itens: [
-                    { video: './assets/videos/balnearo.mp4', txt: 'Balneário' },
-                    { video: './assets/videos/fortaleza.mp4', txt: 'Fortaleza São José' },
-                    { video: './assets/videos/marco.mp4', txt: 'Marco Zero' },
-                    { video: './assets/videos/museu.mp4', txt: 'Museu Sacaca' }
+                t: 'Informações Gerais', type: 'galeriaImagem', itens: [
+                    { img: '', txt: 'Balneário' },
+                    { img: '', txt: 'Fortaleza São José' },
+                    { img: '', txt: 'Marco Zero' }
                 ]
             }
           }
@@ -65,10 +63,10 @@
             'Historia': { t: 'História', video: './assets/videos/lj360.mp4', tipo: 'video360' },
             'Quiz': { type: 'quiz', perguntas: [{ p: 'Qual a principal cachoeira?', opcoes: ['Santo Antônio', 'Paredão'], correta: 0 }] },
             'Informacoes': { 
-                t: 'Informações Gerais', type: 'galeriaVideo', itens: [
-                    { video: './assets/videos/lj1.mp4', txt: 'Cachoeira de Santo Antônio' },
-                    { video: './assets/videos/lj4.mp4', txt: 'Praça João da Silva Nery' },
-                    { video: './assets/videos/lj2.mp4', txt: 'Baln. Sombra da Mata' }
+                t: 'Informações Gerais', type: 'galeriaImagem', itens: [
+                    { img: '', txt: 'Cachoeira de Santo Antônio' },
+                    { img: '', txt: 'Praça João da Silva Nery' },
+                    { img: '', txt: 'Baln. Sombra da Mata' }
                 ]
             }
           } 
@@ -78,10 +76,10 @@
             'Historia': { t: 'História', video: './assets/videos/oia360.mp4', tipo: 'video360' },
             'Quiz': { type: 'quiz', perguntas: [{ p: 'Faz fronteira com qual país?', opcoes: ['Suriname', 'Guiana Francesa'], correta: 1 }] },
             'Informacoes': { 
-                t: 'Informações Gerais', type: 'galeriaVideo', itens: [
-                    { video: './assets/videos/oia1.mp4', txt: 'Obelisco' },
-                    { video: './assets/videos/oia4.mp4', txt: 'Igreja' },
-                    { video: './assets/videos/oia2.mp4', txt: 'Chácara' }
+                t: 'Informações Gerais', type: 'galeriaImagem', itens: [
+                    { img: '', txt: 'Obelisco' },
+                    { img: '', txt: 'Igreja' },
+                    { img: '', txt: 'Chácara' }
                 ]
             }
           } 
@@ -91,10 +89,10 @@
             'Historia': { t: 'História', video: './assets/videos/sant360.mp4', tipo: 'video360' },
             'Quiz': { type: 'quiz', perguntas: [{ p: 'Qual o principal porto?', opcoes: ['Santana', 'Macapá'], correta: 0 }] },
             'Informacoes': { 
-                t: 'Informações Gerais', type: 'galeriaVideo', itens: [
-                    { video: './assets/videos/sant1.mp4', txt: 'Amazon Beach' },
-                    { video: './assets/videos/sant2.mp4', txt: 'Porto de Santana' },
-                    { video: './assets/videos/sant4.mp4', txt: 'Paróquia' }
+                t: 'Informações Gerais', type: 'galeriaImagem', itens: [
+                    { img: '', txt: 'Amazon Beach' },
+                    { img: '', txt: 'Porto de Santana' },
+                    { img: '', txt: 'Paróquia' }
                 ]
             }
           } 
@@ -182,13 +180,13 @@
       categoriaAtual = tipo;
       pararMidiasConteudo();
       if (dados.tipo === 'video360') { ativarModo360(dados.video); return; }
-      if (dados.type === 'galeriaVideo') { montarGaleriaVideo(dados.itens); irPara('grupo-informacoes-galeria'); return; }
+      if (dados.type === 'galeriaImagem') { montarGaleriaImagens(dados.itens); irPara('grupo-informacoes-galeria'); return; }
       if (dados.type === 'quiz') { iniciarQuiz(dados.perguntas); return; }
       irPara('grupo-player');
     }
 
-    /* --- MONTAGEM DA GALERIA (INFORMAÇÕES COM 3 GRADES E PROPORÇÃO ATUALIZADA) --- */
-    function montarGaleriaVideo(itens) {
+    /* --- MONTAGEM DA GALERIA DE IMAGENS (INFORMAÇÕES) --- */
+    function montarGaleriaImagens(itens) {
         const container = document.getElementById('container-molduras-info');
         container.innerHTML = ''; 
         
@@ -200,35 +198,30 @@
         ];
 
         itens.forEach((item, index) => {
-            if(index >= 3) return; // Restringe a exibição a no máximo 3 itens
+            if(index >= 3) return; 
             
-            const videoID = `vid-info-${index}`;
             const idTexto = `txt-info-${index}`; 
-            const videoEl = document.getElementById(videoID);
-            
-            if(videoEl && item.video) { 
-                videoEl.setAttribute('src', item.video); 
-                videoEl.pause(); 
-            }
             
             const el = document.createElement('a-entity');
             el.setAttribute('position', pos[index].p); 
             el.setAttribute('rotation', pos[index].r);
             
+            // Se tiver imagem preenchida, usa ela. Se não, usa um fundo cinza temporário
+            const srcAttr = item.img ? `src="${item.img}"` : 'color="#555"';
+            
             // Largura 2.0 e Altura 1.125 reflete a proporção clássica de imagens (16:9)
             el.innerHTML = `
-                <a-plane src="#${videoID}" width="2.0" height="1.125" class="clicavel interativo video-moldura" data-vid-id="${videoID}" data-texto-id="${idTexto}" material="shader: flat; side: double"></a-plane>
+                <a-plane ${srcAttr} width="2.0" height="1.125" class="clicavel interativo img-moldura" data-texto-id="${idTexto}" material="shader: flat; side: double"></a-plane>
                 <a-troika-text id="${idTexto}" value="${item.txt}" visible="false" align="center" position="0 -0.8 0.1" width="2" color="#FFF" outline-width="0.02"></a-troika-text>`;
             container.appendChild(el);
         });
 
-        document.querySelectorAll('.video-moldura').forEach(m => {
+        // Eventos apenas para mostrar/esconder o texto (removido a lógica de play/pause de vídeo)
+        document.querySelectorAll('.img-moldura').forEach(m => {
             m.addEventListener('mouseenter', function() { 
-                document.getElementById(this.getAttribute('data-vid-id')).play(); 
                 document.getElementById(this.getAttribute('data-texto-id')).setAttribute('visible', 'true');
             });
             m.addEventListener('mouseleave', function() { 
-                document.getElementById(this.getAttribute('data-vid-id')).pause(); 
                 document.getElementById(this.getAttribute('data-texto-id')).setAttribute('visible', 'false');
             });
         });
@@ -338,8 +331,9 @@
     }
     
     function pararMidiasConteudo() {
-      document.getElementById('video-player').pause();
-      for(let i=0; i<3; i++) { if(document.getElementById(`vid-info-${i}`)) document.getElementById(`vid-info-${i}`).pause(); }
+      // Como não há mais vídeos na galeria, apenas pausa o vídeo 360 se ele estiver tocando
+      const vp = document.getElementById('video-player');
+      if (vp && !vp.paused) vp.pause();
     }
   </script>
 </head>
@@ -348,9 +342,6 @@
   <a-scene>
     <a-assets>
        <video id="video-player" loop crossorigin="anonymous" playsinline></video>
-       <video id="vid-info-0" loop crossorigin="anonymous" playsinline></video>
-       <video id="vid-info-1" loop crossorigin="anonymous" playsinline></video>
-       <video id="vid-info-2" loop crossorigin="anonymous" playsinline></video>
        <audio id="audio-hino" loop></audio>
     </a-assets>
 

@@ -30,7 +30,7 @@
               t: 'Informações Gerais', type: 'galeriaVideo', 
               fundo360: './assets/3d/praca2.jpg',
               itens: [
-                  { video: './assets/videos/vj1.mp4', txt: 'Serra do Parente' },
+                  { img: './assets/videos/vj1.mp4', txt: 'Serra do Parente' },
                   { video: './assets/videos/vj2.mp4', txt: 'Orla Vitória do Jari' },
                   { video: './assets/videos/vj3.mp4', txt: 'Baln. Belas Águas' },
                   { video: './assets/videos/vj4.mp4', txt: 'Baln. Recanto do Cupu' }
@@ -67,7 +67,8 @@
             'Informacoes': { 
                 t: 'Informações Gerais', type: 'galeriaVideo', itens: [
                     { video: './assets/videos/lj1.mp4', txt: 'Cachoeira de Santo Antônio' },
-                    { video: './assets/videos/lj4.mp4', txt: 'Praça João da Silva Nery' }
+                    { video: './assets/videos/lj4.mp4', txt: 'Praça João da Silva Nery' },
+                    { video: './assets/videos/lj2.mp4', txt: 'Baln. Sombra da Mata' }
                 ]
             }
           } 
@@ -79,7 +80,8 @@
             'Informacoes': { 
                 t: 'Informações Gerais', type: 'galeriaVideo', itens: [
                     { video: './assets/videos/oia1.mp4', txt: 'Obelisco' },
-                    { video: './assets/videos/oia4.mp4', txt: 'Igreja' }
+                    { video: './assets/videos/oia4.mp4', txt: 'Igreja' },
+                    { video: './assets/videos/oia2.mp4', txt: 'Chácara' }
                 ]
             }
           } 
@@ -90,6 +92,7 @@
             'Quiz': { type: 'quiz', perguntas: [{ p: 'Qual o principal porto?', opcoes: ['Santana', 'Macapá'], correta: 0 }] },
             'Informacoes': { 
                 t: 'Informações Gerais', type: 'galeriaVideo', itens: [
+                    { video: './assets/videos/sant1.mp4', txt: 'Amazon Beach' },
                     { video: './assets/videos/sant2.mp4', txt: 'Porto de Santana' },
                     { video: './assets/videos/sant4.mp4', txt: 'Paróquia' }
                 ]
@@ -184,24 +187,41 @@
       irPara('grupo-player');
     }
 
-    /* --- MONTAGEM DA GALERIA (INFORMAÇÕES) --- */
+    /* --- MONTAGEM DA GALERIA (INFORMAÇÕES COM 3 GRADES E PROPORÇÃO ATUALIZADA) --- */
     function montarGaleriaVideo(itens) {
         const container = document.getElementById('container-molduras-info');
         container.innerHTML = ''; 
-        const pos = [ {p: '-2.8 1.6 -2', r: '0 30 0'}, {p: '-1 1.6 -3', r: '0 10 0'}, {p: '1 1.6 -3', r: '0 -10 0'}, {p: '2.8 1.6 -2', r: '0 -30 0'} ];
+        
+        // Posições ajustadas para exibir apenas 3 painéis centralizados
+        const pos = [ 
+            {p: '-2.2 1.6 -2.5', r: '0 25 0'}, 
+            {p: '0 1.6 -3', r: '0 0 0'}, 
+            {p: '2.2 1.6 -2.5', r: '0 -25 0'} 
+        ];
+
         itens.forEach((item, index) => {
-            if(index >= 4) return;
+            if(index >= 3) return; // Restringe a exibição a no máximo 3 itens
+            
             const videoID = `vid-info-${index}`;
             const idTexto = `txt-info-${index}`; 
             const videoEl = document.getElementById(videoID);
-            if(videoEl && item.video) { videoEl.setAttribute('src', item.video); videoEl.pause(); }
+            
+            if(videoEl && item.video) { 
+                videoEl.setAttribute('src', item.video); 
+                videoEl.pause(); 
+            }
+            
             const el = document.createElement('a-entity');
-            el.setAttribute('position', pos[index].p); el.setAttribute('rotation', pos[index].r);
+            el.setAttribute('position', pos[index].p); 
+            el.setAttribute('rotation', pos[index].r);
+            
+            // Largura 2.0 e Altura 1.125 reflete a proporção clássica de imagens (16:9)
             el.innerHTML = `
-                <a-plane src="#${videoID}" width="1.8" height="1.2" class="clicavel interativo video-moldura" data-vid-id="${videoID}" data-texto-id="${idTexto}" material="shader: flat; side: double"></a-plane>
+                <a-plane src="#${videoID}" width="2.0" height="1.125" class="clicavel interativo video-moldura" data-vid-id="${videoID}" data-texto-id="${idTexto}" material="shader: flat; side: double"></a-plane>
                 <a-troika-text id="${idTexto}" value="${item.txt}" visible="false" align="center" position="0 -0.8 0.1" width="2" color="#FFF" outline-width="0.02"></a-troika-text>`;
             container.appendChild(el);
         });
+
         document.querySelectorAll('.video-moldura').forEach(m => {
             m.addEventListener('mouseenter', function() { 
                 document.getElementById(this.getAttribute('data-vid-id')).play(); 
@@ -319,7 +339,7 @@
     
     function pararMidiasConteudo() {
       document.getElementById('video-player').pause();
-      for(let i=0; i<4; i++) { if(document.getElementById(`vid-info-${i}`)) document.getElementById(`vid-info-${i}`).pause(); }
+      for(let i=0; i<3; i++) { if(document.getElementById(`vid-info-${i}`)) document.getElementById(`vid-info-${i}`).pause(); }
     }
   </script>
 </head>
@@ -331,7 +351,6 @@
        <video id="vid-info-0" loop crossorigin="anonymous" playsinline></video>
        <video id="vid-info-1" loop crossorigin="anonymous" playsinline></video>
        <video id="vid-info-2" loop crossorigin="anonymous" playsinline></video>
-       <video id="vid-info-3" loop crossorigin="anonymous" playsinline></video>
        <audio id="audio-hino" loop></audio>
     </a-assets>
 
@@ -401,7 +420,7 @@
     </a-entity>
 
     <a-entity id="grupo-informacoes-galeria" visible="false">
-        <a-troika-text value="Informações Gerais" align="center" position="0 2.35 -3" width="8" color="#FFF" outline-width="0.02" outline-color="#000"></a-troika-text>
+        <a-troika-text value="Informações Gerais" align="center" position="0 2.8 -3" width="8" color="#FFF" outline-width="0.02" outline-color="#000"></a-troika-text>
         <a-entity id="container-molduras-info"></a-entity>
         <a-plane position="0 0.5 -3" width="1" height="0.3" color="#444" class="interativo" onclick="irPara('grupo-categorias')">
             <a-troika-text value="Voltar" align="center" position="0 0 0.02"></a-troika-text>

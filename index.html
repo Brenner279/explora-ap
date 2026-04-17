@@ -17,7 +17,7 @@
         bandeira: './assets/bandeiras/vitoria.png',
         hino: './assets/hinos/vitoria.mp3', 
         conteudos: {
-          'Historia': { t: 'História', video: './assets/videos/vitoria.mp4', tipo: 'video360' },
+          'Historia': { t: 'História', video: './assets/videos/vit360.mp4', tipo: 'video360' },
           'Cultura': { 
               type: 'quiz', 
               fundo360: './assets/3d/fundo_cultura_vitoria.jpg', 
@@ -112,27 +112,6 @@
             }
           } 
       },
-      'serra do navio': { nome: 'Serra do Navio', bandeira: './assets/bandeiras/serra.png',  hino: './assets/hinos/serra.mp3',  
-          conteudos: {
-            'Historia': { t: 'História', video: './assets/videos/ser360.mp4', tipo: 'video360' },
-            'Cultura': { 
-                t: 'Galeria Cultural', type: 'galeria', itens: [
-                    { img: './assets/imagens/jose.jpg', txt: 'Festividade São José' },
-                    { img: './assets/imagens/manicoba.jpg', txt: 'Maniçoba' },
-                    { img: './assets/imagens/marabaixo.jpg', txt: 'Marabaixo' },
-                    { img: './assets/imagens/tacaca.jpg', txt: 'Tacacá' }
-                ]
-            },
-            'Turismo': { 
-                t: 'Pontos Turísticos', type: 'galeriaVideo', itens: [
-                    { video: './assets/videos/serr1.mp4', txt: 'Mina F12' },
-                    { video: './assets/videos/serr2.mp4', txt: 'Baln. da Pedra Preta' },
-                    { video: './assets/videos/serr3.mp4', txt: 'Cachoeira do Staff' },
-                    { video: './assets/videos/serr4.mp4', txt: 'Lagoa Azul' }
-                ]
-            }
-          } 
-      },
       'santana': { nome: 'Santana', bandeira: './assets/bandeiras/santana.jpg', hino: './assets/hinos/santana.mp3',  
           conteudos: {
             'Historia': { t: 'História', video: './assets/videos/sant360.mp4', tipo: 'video360' },
@@ -153,27 +132,6 @@
                 ]
             }
           } 
-      },
-      'amapa': { nome: 'Amapá', bandeira: './assets/bandeiras/amapa.jpg',  hino: './assets/hinos/amapa.mp3',  
-          conteudos: {
-            'Historia': { t: 'História', video: './assets/videos/ap360.mp4', tipo: 'video360' },
-            'Cultura': { 
-                t: 'Galeria Cultural', type: 'galeria', itens: [
-                    { img: './assets/imagens/ap01.jpg', txt: 'Praça de Cabrazinho' },
-                    { img: './assets/imagens/ap02.jpg', txt: 'Aniversário da Cidade' },
-                    { img: './assets/imagens/ap03.jpg', txt: 'Camarão no Bafo' },
-                    { img: './assets/imagens/tacaca.jpg', txt: 'Tacacá' }
-                ]
-            },
-            'Turismo': { 
-                t: 'Pontos Turísticos', type: 'galeriaVideo', itens: [
-                    { video: './assets/videos/ap1.mp4', txt: 'Montanha da Pluma' },
-                    { video: './assets/videos/ap2.mp4', txt: 'Cachoeira Grande' },
-                    { video: './assets/videos/ap3.mp4', txt: 'Praça Cabralzinho' },
-                    { video: './assets/videos/ap4.mp4', txt: 'Igreja Nossa Senhora de Nazaré' }
-                ]
-            }
-          } 
       }
     };
 
@@ -186,15 +144,18 @@
       setupVideoEvents();
     };
 
-    /* --- GERAÇÃO DO MENU DE BANDEIRAS --- */
+    /* --- GERAÇÃO DO MENU DE BANDEIRAS (5 Cidades) --- */
     function gerarMenuCidades() {
       const container = document.getElementById('grade-cidades');
       const chaves = Object.keys(db);
+      
+      // Nova disposição em arco perfeitamente centrada para 5 itens
       const posicoes = [
-          { pos: '-3.5 1.8 -1.5', rot: '0 60 0' }, { pos: '-2.4 1.8 -2.5', rot: '0 40 0' },
-          { pos: '-1.2 1.8 -3.2', rot: '0 20 0' }, { pos: '0 1.8 -3.5',    rot: '0 0 0' },   
-          { pos: '1.2 1.8 -3.2',  rot: '0 -20 0' }, { pos: '2.4 1.8 -2.5',  rot: '0 -40 0' },
-          { pos: '3.5 1.8 -1.5',  rot: '0 -60 0' }  
+          { pos: '-2.8 1.8 -2.0', rot: '0 45 0' },  
+          { pos: '-1.4 1.8 -3.0', rot: '0 25 0' },  
+          { pos: '0 1.8 -3.5',    rot: '0 0 0' },     
+          { pos: '1.4 1.8 -3.0',  rot: '0 -25 0' }, 
+          { pos: '2.8 1.8 -2.0',  rot: '0 -45 0' }  
       ];
 
       chaves.forEach((chave, index) => {
@@ -419,7 +380,7 @@
         video.addEventListener('playing', () => { loader.setAttribute('visible', 'false'); controles.setAttribute('visible', 'true'); });
     }
 
-    /* --- LÓGICA CORRIGIDA DO VÍDEO 360 --- */
+    /* --- LÓGICA DO VÍDEO 360 --- */
     function ativarModo360(videoSrc) {
         const sky360 = document.getElementById('fundo-360-estatico');
         sky360.setAttribute('visible', 'false');
@@ -462,18 +423,15 @@
         }
     }
 
-    // AQUI ESTÁ A CORREÇÃO PRINCIPAL: FORÇANDO OS BOTÕES A SUMIREM DE VERDADE
     function desativarModo360() {
         const esfera = document.getElementById('videosphere');
         
         pararMidiasConteudo();
         esfera.setAttribute('visible', 'false');
         
-        // Desliga o painel de controle
         document.getElementById('controle-360-gaze').setAttribute('visible', 'false');
         document.getElementById('loader-360').setAttribute('visible', 'false');
         
-        // Remove a classe clicavel para que os botões invisíveis não bloqueiem outros cliques
         const btnPlay = document.getElementById('btnPlay360');
         const btnVoltar = document.getElementById('btnVoltar360');
         if(btnPlay) btnPlay.classList.remove('clicavel');

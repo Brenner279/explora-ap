@@ -211,7 +211,7 @@
             
             // Largura 2.0 e Altura 1.125 reflete a proporção clássica de imagens (16:9)
             el.innerHTML = `
-                <a-plane ${srcAttr} width="2.0" height="1.125" class="clicavel interativo img-moldura" data-texto-id="${idTexto}" material="shader: flat; side: double"></a-plane>
+                <a-plane ${srcAttr} width="1.5" height="3" class="clicavel interativo img-moldura" data-texto-id="${idTexto}" material="shader: flat; side: double"></a-plane>
                 <a-troika-text id="${idTexto}" value="${item.txt}" visible="false" align="center" position="0 -0.8 0.1" width="2" color="#FFF" outline-width="0.02"></a-troika-text>`;
             container.appendChild(el);
         });

@@ -336,10 +336,13 @@ function verConteudo(tipo) {
     }
     
     function pararMidiasConteudo() {
-      // Como não há mais vídeos na galeria, apenas pausa o vídeo 360 se ele estiver tocando
-      const vp = document.getElementById('video-player');
-      if (vp && !vp.paused) vp.pause();
+        const vp = document.getElementById('video-player');
+        if (vp) {
+            vp.pause();
+            vp.currentTime = 0; // Opcional: faz o vídeo voltar para o começo
+        }
     }
+
   </script>
 </head>
 <body>

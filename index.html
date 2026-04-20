@@ -168,18 +168,17 @@
       irPara('grupo-categorias');
     }
 
-function verConteudo(tipo) {
-  if (tipo === 'Hino') {
-      const cidade = db[cidadeAtual];
-      document.getElementById('audio-hino').src = cidade.hino;
-      
-      // Agora ele puxa a nova imagem do hino. Se você ainda não tiver colocado, ele deixa vazio.
-      const imagemDoHino = cidade.imgHino ? cidade.imgHino : '';
-      document.getElementById('img-hino-display').setAttribute('src', imagemDoHino);
-      
-      irPara('grupo-hino');
-      return;
-  }
+    function verConteudo(tipo) {
+      if (tipo === 'Hino') {
+          const cidade = db[cidadeAtual];
+          document.getElementById('audio-hino').src = cidade.hino;
+          
+          const imagemDoHino = cidade.imgHino ? cidade.imgHino : '';
+          document.getElementById('img-hino-display').setAttribute('src', imagemDoHino);
+          
+          irPara('grupo-hino');
+          return;
+      }
       if(!db[cidadeAtual].conteudos[tipo]) return;
       const dados = db[cidadeAtual].conteudos[tipo];
       categoriaAtual = tipo;
@@ -195,7 +194,6 @@ function verConteudo(tipo) {
         const container = document.getElementById('container-molduras-info');
         container.innerHTML = ''; 
         
-        // Posições ajustadas para exibir apenas 3 painéis centralizados
         const pos = [ 
             {p: '-2.2 1.6 -2.5', r: '0 25 0'}, 
             {p: '0 1.6 -3', r: '0 0 0'}, 
@@ -211,17 +209,14 @@ function verConteudo(tipo) {
             el.setAttribute('position', pos[index].p); 
             el.setAttribute('rotation', pos[index].r);
             
-            // Se tiver imagem preenchida, usa ela. Se não, usa um fundo cinza temporário
             const srcAttr = item.img ? `src="${item.img}"` : 'color="#555"';
             
-            // Largura 2.0 e Altura 1.125 reflete a proporção clássica de imagens (16:9)
             el.innerHTML = `
                 <a-plane ${srcAttr} width="1.5" height="2" class="clicavel interativo img-moldura" data-texto-id="${idTexto}" material="shader: flat; side: double"></a-plane>
                 <a-troika-text id="${idTexto}" value="${item.txt}" visible="false" align="center" position="0 -0.8 0.1" width="2" color="#FFF" outline-width="0.02"></a-troika-text>`;
             container.appendChild(el);
         });
 
-        // Eventos apenas para mostrar/esconder o texto (removido a lógica de play/pause de vídeo)
         document.querySelectorAll('.img-moldura').forEach(m => {
             m.addEventListener('mouseenter', function() { 
                 document.getElementById(this.getAttribute('data-texto-id')).setAttribute('visible', 'true');
@@ -335,14 +330,15 @@ function verConteudo(tipo) {
         }
     }
     
+    // FUNÇÃO ATUALIZADA: Corta o áudio definitivamente do vídeo 360
     function pararMidiasConteudo() {
         const vp = document.getElementById('video-player');
         if (vp) {
             vp.pause();
-            vp.currentTime = 0; // Opcional: faz o vídeo voltar para o começo
+            vp.removeAttribute('src'); 
+            vp.load(); 
         }
     }
-
   </script>
 </head>
 <body>

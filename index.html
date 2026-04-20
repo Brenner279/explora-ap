@@ -15,7 +15,8 @@
         nome: 'Vitória do Jari',
         fundo360: './assets/3d/praca.jpg', 
         bandeira: './assets/imagens/vitoria.png',
-        hino: './assets/hinos/vitoria.mp3', 
+        hino: './assets/audios/vitoria.mp3', 
+        imgHino: './assets/imagens/hino.png'
         conteudos: {
           'Historia': { t: 'História', video: './assets/videos/vit360.mp4', tipo: 'video360' },
           'Quiz': { 
@@ -167,14 +168,18 @@
       irPara('grupo-categorias');
     }
 
-    function verConteudo(tipo) {
-      if (tipo === 'Hino') {
-          const cidade = db[cidadeAtual];
-          document.getElementById('audio-hino').src = cidade.hino;
-          document.getElementById('img-hino-display').setAttribute('src', cidade.bandeira);
-          irPara('grupo-hino');
-          return;
-      }
+function verConteudo(tipo) {
+  if (tipo === 'Hino') {
+      const cidade = db[cidadeAtual];
+      document.getElementById('audio-hino').src = cidade.hino;
+      
+      // Agora ele puxa a nova imagem do hino. Se você ainda não tiver colocado, ele deixa vazio.
+      const imagemDoHino = cidade.imgHino ? cidade.imgHino : '';
+      document.getElementById('img-hino-display').setAttribute('src', imagemDoHino);
+      
+      irPara('grupo-hino');
+      return;
+  }
       if(!db[cidadeAtual].conteudos[tipo]) return;
       const dados = db[cidadeAtual].conteudos[tipo];
       categoriaAtual = tipo;

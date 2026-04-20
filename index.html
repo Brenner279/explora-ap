@@ -189,8 +189,7 @@
       irPara('grupo-player');
     }
 
-
-function montarGaleriaImagens(itens) {
+    function montarGaleriaImagens(itens) {
         const container = document.getElementById('container-molduras-info');
         container.innerHTML = ''; 
         
@@ -209,14 +208,12 @@ function montarGaleriaImagens(itens) {
             
             const srcAttr = item.img ? `src="${item.img}"` : 'color="#555"';
             
-            // Removido o texto e o data-texto-id. Fica apenas a imagem.
             el.innerHTML = `
                 <a-plane ${srcAttr} width="1.5" height="2" class="img-moldura" material="shader: flat; side: double"></a-plane>`;
             container.appendChild(el);
         });
-        
-        // Os eventos de mouseenter e mouseleave foram apagados daqui.
     }
+
     /* --- LÓGICA DO QUIZ --- */
     let perguntasQuiz = [];
     let indicePerguntaAtual = 0;
@@ -234,36 +231,60 @@ function montarGaleriaImagens(itens) {
         const containerOpcoes = document.getElementById('quiz-opcoes');
         const feedbackText = document.getElementById('quiz-feedback');
         feedbackText.setAttribute('value', ''); 
+        
         if (indicePerguntaAtual >= perguntasQuiz.length) {
             perguntaText.setAttribute('value', 'Parabéns! Concluiu o Quiz.');
             perguntaText.setAttribute('color', '#00FF00');
             containerOpcoes.innerHTML = ''; return;
         }
+        
         const perguntaAtual = perguntasQuiz[indicePerguntaAtual];
         perguntaText.setAttribute('value', perguntaAtual.p);
+        perguntaText.setAttribute('color', '#FFD700'); // Reseta a cor para amarelo a cada pergunta
         containerOpcoes.innerHTML = '';
+        
         const posicoesY = [0.8, 0.2, -0.4]; 
         perguntaAtual.opcoes.forEach((opcao, index) => {
             const el = document.createElement('a-entity');
             el.setAttribute('position', `0 ${posicoesY[index]} 0`);
+            
+            // Alteração: Passei a palavra "this" dentro do verificarResposta para o código saber qual botão foi clicado
             el.innerHTML = `
-                <a-plane width="3.5" height="0.45" color="#E64A19" class="clicavel interativo" onclick="verificarResposta(${index}, ${perguntaAtual.correta})" material="shader: flat">
+                <a-plane width="3.5" height="0.45" color="#E64A19" class="clicavel interativo" onclick="verificarResposta(${index}, ${perguntaAtual.correta}, this)" material="shader: flat">
                     <a-troika-text value="${opcao}" align="center" position="0 0 0.02" width="3" color="#FFF"></a-troika-text>
                 </a-plane>`;
             containerOpcoes.appendChild(el);
         });
     }
 
-    function verificarResposta(indiceEscolhido, indiceCorreto) {
+    // Alteração: Agora a função recebe o botão ("btn") para podermos pintar ele
+    function verificarResposta(indiceEscolhido, indiceCorreto, btn) {
         const feedback = document.getElementById('quiz-feedback');
         const container = document.getElementById('quiz-opcoes');
+        
+        // Remove a interatividade para evitar cliques duplos rápidos
         container.querySelectorAll('.interativo').forEach(b => b.classList.remove('clicavel'));
-        if (indiceEscolhido === indiceCorreto) {
-            feedback.setAttribute('value', 'Acertou!'); feedback.setAttribute('color', '#00FF00'); 
-            setTimeout(() => { indicePerguntaAtual++; mostrarPergunta(); }, 2000);
+        
+        // Alterado de === para == para garantir que textos e números se comparem corretamente
+        if (indiceEscolhido == indiceCorreto) {
+            btn.setAttribute('color', '#388E3C'); // Pinta o botão de VERDE ESCURO
+            feedback.setAttribute('value', 'Acertou!'); 
+            feedback.setAttribute('color', '#00FF00'); 
+            
+            setTimeout(() => { 
+                indicePerguntaAtual++; 
+                mostrarPergunta(); 
+            }, 2000);
         } else {
-            feedback.setAttribute('value', 'Errou. Tente novamente!'); feedback.setAttribute('color', '#FF0000'); 
-            setTimeout(() => { feedback.setAttribute('value', ''); container.querySelectorAll('.interativo').forEach(b => b.classList.add('clicavel')); }, 2000);
+            btn.setAttribute('color', '#D32F2F'); // Pinta o botão de VERMELHO
+            feedback.setAttribute('value', 'Errou. Tente novamente!'); 
+            feedback.setAttribute('color', '#FF0000'); 
+            
+            setTimeout(() => { 
+                feedback.setAttribute('value', ''); 
+                btn.setAttribute('color', '#E64A19'); // Volta a cor Laranja original
+                container.querySelectorAll('.interativo').forEach(b => b.classList.add('clicavel')); 
+            }, 2000);
         }
     }
 
@@ -320,7 +341,6 @@ function montarGaleriaImagens(itens) {
         }
     }
     
-    // FUNÇÃO ATUALIZADA: Corta o áudio definitivamente do vídeo 360
     function pararMidiasConteudo() {
         const vp = document.getElementById('video-player');
         if (vp) {

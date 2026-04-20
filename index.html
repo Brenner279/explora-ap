@@ -189,8 +189,8 @@
       irPara('grupo-player');
     }
 
-    /* --- MONTAGEM DA GALERIA DE IMAGENS (INFORMAÇÕES) --- */
-    function montarGaleriaImagens(itens) {
+
+function montarGaleriaImagens(itens) {
         const container = document.getElementById('container-molduras-info');
         container.innerHTML = ''; 
         
@@ -203,30 +203,20 @@
         itens.forEach((item, index) => {
             if(index >= 3) return; 
             
-            const idTexto = `txt-info-${index}`; 
-            
             const el = document.createElement('a-entity');
             el.setAttribute('position', pos[index].p); 
             el.setAttribute('rotation', pos[index].r);
             
             const srcAttr = item.img ? `src="${item.img}"` : 'color="#555"';
             
+            // Removido o texto e o data-texto-id. Fica apenas a imagem.
             el.innerHTML = `
-                <a-plane ${srcAttr} width="1.5" height="2" class="clicavel interativo img-moldura" data-texto-id="${idTexto}" material="shader: flat; side: double"></a-plane>
-                <a-troika-text id="${idTexto}" value="${item.txt}" visible="false" align="center" position="0 -0.8 0.1" width="2" color="#FFF" outline-width="0.02"></a-troika-text>`;
+                <a-plane ${srcAttr} width="1.5" height="2" class="img-moldura" material="shader: flat; side: double"></a-plane>`;
             container.appendChild(el);
         });
-
-        document.querySelectorAll('.img-moldura').forEach(m => {
-            m.addEventListener('mouseenter', function() { 
-                document.getElementById(this.getAttribute('data-texto-id')).setAttribute('visible', 'true');
-            });
-            m.addEventListener('mouseleave', function() { 
-                document.getElementById(this.getAttribute('data-texto-id')).setAttribute('visible', 'false');
-            });
-        });
+        
+        // Os eventos de mouseenter e mouseleave foram apagados daqui.
     }
-
     /* --- LÓGICA DO QUIZ --- */
     let perguntasQuiz = [];
     let indicePerguntaAtual = 0;
@@ -417,7 +407,7 @@
     <a-entity id="grupo-informacoes-galeria" visible="false">
         <a-troika-text value="Informações Gerais" align="center" position="0 2.8 -3" width="8" color="#FFF" outline-width="0.02" outline-color="#000"></a-troika-text>
         <a-entity id="container-molduras-info"></a-entity>
-        <a-plane position="0 0.5 -3" width="1" height="0.3" color="#444" class="interativo" onclick="irPara('grupo-categorias')">
+        <a-plane position="0 0.2 -3" width="1" height="0.3" color="#444" class="interativo" onclick="irPara('grupo-categorias')">
             <a-troika-text value="Voltar" align="center" position="0 0 0.02"></a-troika-text>
         </a-plane>
     </a-entity>

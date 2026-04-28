@@ -9,93 +9,117 @@
   <script src="https://unpkg.com/aframe-troika-text@0.10.0/dist/aframe-troika-text.min.js"></script>
   
   <script>
-    /* --- CONFIGURAÇÃO E DADOS-- --- */
+    /* --- CONFIGURAÇÃO E DADOS --- */
     const db = {
       'vitoria': {
         nome: 'Vitória do Jari',
         fundo360: './assets/imagens/1vtj360.jpg',
+        fundo360Hino: './assets/imagens/fundo_hino_vitoria.jpg', /* Insira a imagem 360 do hino aqui */
         bandeira: './assets/imagens/vitoria.png',
-        hino: './assets/audios/vitoria.mp3',
-        fundo360: './assets/imagens/2mcp360.jpg',
+        hino: './assets/audios/vitoria.mp3', 
         imgHino: './assets/imagens/hino.png',
         conteudos: {
           'Historia': { t: 'História', video: './assets/videos/vit360.mp4', tipo: 'video360' },
           'Quiz': { 
               type: 'quiz', 
-              fundo360: './assets/imagens/2vtj.jpg', 
+              fundo360: './assets/3d/rot.jpg', 
               perguntas: [
                   { p: 'Em que data foi criado o município de Vitória do Jari?', opcoes: ['08 de setembro de 1990', '08 de setembro de 1994', '05 de outubro de 1988'], correta: 1 },
-                {  p: 'Qual é o principal rio que banha o município?', opcoes: [ 'Rio Jari', 'Rio Amazonas', 'Rio Araguari'], correta: 0 },
+                  { p: 'Qual é o principal rio que banha o município?', opcoes: [ 'Rio Jari', 'Rio Amazonas', 'Rio Araguari'], correta: 0 },
                   { p: 'Qual o gentílico de quem nasce em Vitória do Jari?', opcoes: ['Jariense', 'Macapaense', 'Vitorense'], correta: 2 },
-                 { p: 'De qual município Vitória do Jari foi desmembrado para sua criação?', opcoes: ['Laranjal do Jari', 'Mazagão', 'Macapá'], correta: 0 },
-                 { p: 'Qual é o bioma predominante no território de Vitória do Jari?', opcoes: ['Cerrado', 'Pantanal', 'Amazônia'], correta: 2 }
+                  { p: 'De qual município Vitória do Jari foi desmembrado para sua criação?', opcoes: ['Laranjal do Jari', 'Mazagão', 'Macapá'], correta: 0 },
+                  { p: 'Qual é o bioma predominante no território de Vitória do Jari?', opcoes: ['Cerrado', 'Pantanal', 'Amazônia'], correta: 2 }
               ]
           }
         }
       },
       'macapa': { 
-          nome: 'Macapá',
+        nome: 'Macapá',
         fundo360: './assets/imagens/4mcp360.jpg',
-          bandeira: './assets/imagens/macapa.png', 
-          hino: './assets/audios/macapa.mp3',
-        
-          conteudos: {
+        fundo360Hino: '', /* Deixe vazio ou coloque o link se tiver um fundo específico pro hino */
+        bandeira: './assets/imagens/macapa.png', 
+        hino: './assets/audios/macapa.mp3', 
+        imgHino: '',
+        conteudos: {
             'Historia': { t: 'História', video: './assets/videos/mac360.mp4', tipo: 'video360' },
             'Quiz': { 
                 type: 'quiz',
                 fundo360: './assets/imagens/2mcp360.jpg', 
                 perguntas: [
-                    { p: 'Qual é o significado original do nome "Macapá", de origem Tupi?', opcoes: ['Terra dos Tucunarés', 'Lugar de muitas bacabas', 'Caminho das águas'], correta: 1 },
+                  { p: 'Qual é o significado original do nome "Macapá", de origem Tupi?', opcoes: ['Terra dos Tucunarés', 'Lugar de muitas bacabas', 'Caminho das águas'], correta: 1 },
                   { p: 'Macapá é a única capital brasileira atravessada por qual linha imaginária?', opcoes: ['Trópico de Capricórnio', 'Círculo Polar Ártico', 'Linha do Equador'], correta: 2 },
-                  {   p: 'Qual é o principal monumento histórico militar da cidade, construído no século XVIII?', opcoes: ['Fortaleza de São José do Macapá', 'Real Forte Príncipe da Beira', 'Forte de Copacabana'], correta: 0 },
-                  {   p: 'Em que data é comemorado o aniversário de fundação da cidade de Macapá?', opcoes: ['4 de fevereiro', '13 de setembro', '25 de dezembro'], correta: 0 },
-                  {  p: 'Qual monumento marca a linha do Equador?', opcoes: ['Fortaleza', 'Marco Zero', 'Trapiche'], correta: 1 }
+                  { p: 'Qual é o principal monumento histórico militar da cidade, construído no século XVIII?', opcoes: ['Fortaleza de São José do Macapá', 'Real Forte Príncipe da Beira', 'Forte de Copacabana'], correta: 0 },
+                  { p: 'Em que data é comemorado o aniversário de fundação da cidade de Macapá?', opcoes: ['4 de fevereiro', '13 de setembro', '25 de dezembro'], correta: 0 },
+                  { p: 'Qual monumento marca a linha do Equador?', opcoes: ['Fortaleza', 'Marco Zero', 'Trapiche'], correta: 1 }
                 ]
             }
-          }
+        }
       },
-      'laranjal do jari': { nome: 'Laranjal do Jari',   fundo360: './assets/imagens/1lj360.jpg',
-                           bandeira: './assets/imagens/laranjal.png', hino: './assets/audios/laranjal.mp3', 
-          conteudos: {
+      'laranjal do jari': { 
+        nome: 'Laranjal do Jari',   
+        fundo360: './assets/imagens/1lj360.jpg',
+        fundo360Hino: '',
+        bandeira: './assets/imagens/laranjal.png', 
+        hino: './assets/audios/laranjal.mp3', 
+        imgHino: '',
+        conteudos: {
             'Historia': { t: 'História', video: './assets/videos/lj360.mp4', tipo: 'video360' },
-            'Quiz': { type: 'quiz', fundo360: './assets/imagens/2lj360.jpg', 
-                     perguntas: [
+            'Quiz': { 
+                type: 'quiz', 
+                fundo360: './assets/imagens/2lj360.jpg', 
+                perguntas: [
                   { p: 'Qual a principal cachoeira de Laranjal do Jari?', opcoes: ['Santo Antônio', 'Paredão', 'São Benedito'], correta: 0 },
                   { p: 'Laranjal do Jari é separado do estado do Pará (e do distrito de Monte Dourado) por qual rio?', opcoes: ['Rio Amazonas', ' Rio Jari', 'Rio Oiapoque'], correta: 1 },
                   { p: 'Qual é a principal via de acesso terrestre que liga Macapá a Laranjal do Jari?', opcoes: ['BR-156', 'BR-210', 'Rodovia AP-010'], correta: 0 },
-                  {   p: 'Em que ano o município de Laranjal do Jari foi oficialmente criado?', opcoes: ['1992', '1988', '1987'], correta: 2 },
-                  {   p: 'De qual município Laranjal do Jari foi desmembrado para sua criação?', opcoes: ['Mazagão', 'Macapá', 'Santana'], correta: 0 }
-                      ]                                        
-                    }
-          } 
+                  { p: 'Em que ano o município de Laranjal do Jari foi oficialmente criado?', opcoes: ['1992', '1988', '1987'], correta: 2 },
+                  { p: 'De qual município Laranjal do Jari foi desmembrado para sua criação?', opcoes: ['Mazagão', 'Macapá', 'Santana'], correta: 0 }
+                ]                                        
+            }
+        } 
       },
-      'oiapoque': { nome: 'Oiapoque', fundo360: './assets/imagens/1oia360.jpg', bandeira: './assets/imagens/oiapoque.png', hino: './assets/audios/oiapoque.mp3',  
-          conteudos: {
+      'oiapoque': { 
+        nome: 'Oiapoque', 
+        fundo360: './assets/imagens/1oia360.jpg', 
+        fundo360Hino: '',
+        bandeira: './assets/imagens/oiapoque.png', 
+        hino: './assets/audios/oiapoque.mp3',  
+        imgHino: '',
+        conteudos: {
             'Historia': { t: 'História', video: './assets/videos/oia360.mp4', tipo: 'video360' },
-            'Quiz': { type: 'quiz', fundo360: './assets/imagens/2oia360.jpg', 
-                     perguntas: [
-                { p: 'Em que ano o município de Oiapoque foi oficialmente criado?', opcoes: ['1935', '1945', '1955'], correta: 1 },
-                { p: 'Qual importante estrutura rodoviária conecta a cidade de Oiapoque (Brasil) à cidade de Saint-Georges (Guiana Francesa)?', opcoes: ['Ponte Binacional', 'Ponte Rio-Niterói', 'Ponte da Amizade'], correta: 0 },
-                { p: 'Oiapoque faz divisa com qual país?', opcoes: ['Equador', 'Venezuela', 'Guiana Francesa'], correta: 2 },
-                { p: 'Qual o nome da base militar histórica localizada no município?', opcoes: ['Clevelândia do Norte', 'Forte de São José', 'Base de Alcântara'], correta: 0 },
-                { p: 'Qual é a maior reserva ambiental que abrange o município?', opcoes: [' Parque do Jari', 'Parque do Tumucumaque', 'Reserva do Cajari'], correta: 1 }
-                       ] 
+            'Quiz': { 
+                type: 'quiz', 
+                fundo360: './assets/imagens/2oia360.jpg', 
+                perguntas: [
+                  { p: 'Em que ano o município de Oiapoque foi oficialmente criado?', opcoes: ['1935', '1945', '1955'], correta: 1 },
+                  { p: 'Qual importante estrutura rodoviária conecta a cidade de Oiapoque (Brasil) à cidade de Saint-Georges (Guiana Francesa)?', opcoes: ['Ponte Binacional', 'Ponte Rio-Niterói', 'Ponte da Amizade'], correta: 0 },
+                  { p: 'Oiapoque faz divisa com qual país?', opcoes: ['Equador', 'Venezuela', 'Guiana Francesa'], correta: 2 },
+                  { p: 'Qual o nome da base militar histórica localizada no município?', opcoes: ['Clevelândia do Norte', 'Forte de São José', 'Base de Alcântara'], correta: 0 },
+                  { p: 'Qual é a maior reserva ambiental que abrange o município?', opcoes: [' Parque do Jari', 'Parque do Tumucumaque', 'Reserva do Cajari'], correta: 1 }
+                ] 
             }
-          } 
+        } 
       },
-      'santana': { nome: 'Santana', fundo360: './assets/imagens/1snt360.jpg', bandeira: './assets/imagens/santana.jpg', hino: './assets/audios/santana.mp3',  
-          conteudos: {
+      'santana': { 
+        nome: 'Santana', 
+        fundo360: './assets/imagens/1snt360.jpg', 
+        fundo360Hino: '',
+        bandeira: './assets/imagens/santana.jpg', 
+        hino: './assets/audios/santana.mp3',  
+        imgHino: '',
+        conteudos: {
             'Historia': { t: 'História', video: './assets/videos/sant360.mp4', tipo: 'video360' },
-            'Quiz': { type: 'quiz', fundo360: './assets/imagens/2snt360.jpg', 
-                     perguntas: [
-                       { p: 'Em que ano Santana foi oficialmente criada como município?', opcoes: ['1982', '1987', '1988'], correta: 1 },
-                       { p: 'Qual é a principal infraestrutura econômica de Santana?', opcoes: ['Aeroporto Internacional', 'Porto Grande', 'Porto de Santana'], correta: 2 },
-                       { p: 'Antes de ser município, Santana era um distrito de qual cidade?', opcoes: ['Macapá', 'Oiapoque', 'Mazagão'], correta: 0 },
-                       { p: 'Qual mineradora histórica impulsionou o crescimento de Santana no século XX?', opcoes: ['Vale', 'Jari', ' ICOMI'], correta: 2 },
-                       { p: 'Qual rio banha a orla da cidade de Santana?', opcoes: ['Rio Araguari', 'Rio Amazonas', 'Rio Jari'], correta: 1 }
-                     ] 
+            'Quiz': { 
+                type: 'quiz', 
+                fundo360: './assets/imagens/2snt360.jpg', 
+                perguntas: [
+                  { p: 'Em que ano Santana foi oficialmente criada como município?', opcoes: ['1982', '1987', '1988'], correta: 1 },
+                  { p: 'Qual é a principal infraestrutura econômica de Santana?', opcoes: ['Aeroporto Internacional', 'Porto Grande', 'Porto de Santana'], correta: 2 },
+                  { p: 'Antes de ser município, Santana era um distrito de qual cidade?', opcoes: ['Macapá', 'Oiapoque', 'Mazagão'], correta: 0 },
+                  { p: 'Qual mineradora histórica impulsionou o crescimento de Santana no século XX?', opcoes: ['Vale', 'Jari', ' ICOMI'], correta: 2 },
+                  { p: 'Qual rio banha a orla da cidade de Santana?', opcoes: ['Rio Araguari', 'Rio Amazonas', 'Rio Jari'], correta: 1 }
+                ] 
             }
-          } 
+        } 
       }
     };
 
@@ -168,6 +192,8 @@
     }
 
     function verConteudo(tipo) {
+      categoriaAtual = tipo; 
+      
       if (tipo === 'Hino') {
           const cidade = db[cidadeAtual];
           document.getElementById('audio-hino').src = cidade.hino;
@@ -180,7 +206,6 @@
       }
       if(!db[cidadeAtual].conteudos[tipo]) return;
       const dados = db[cidadeAtual].conteudos[tipo];
-      categoriaAtual = tipo;
       pararMidiasConteudo();
       if (dados.tipo === 'video360') { ativarModo360(dados.video); return; }
       if (dados.type === 'quiz') { iniciarQuiz(dados.perguntas); return; }
@@ -297,11 +322,25 @@
         const sky360 = document.getElementById('fundo-360-estatico');
         const telasDaCidade = ['grupo-categorias', 'grupo-quiz', 'grupo-hino'];
         let usarFoto360 = false;
+        
         if (cidadeAtual && telasDaCidade.includes(idGrupo)) {
             const cidade = db[cidadeAtual];
-            let imagemFundo = (idGrupo === 'grupo-categorias') ? cidade.fundo360 : (cidade.conteudos[categoriaAtual] ? cidade.conteudos[categoriaAtual].fundo360 || cidade.fundo360 : cidade.fundo360);
-            if (imagemFundo) { usarFoto360 = true; el.removeAttribute('environment'); sky360.setAttribute('src', imagemFundo); sky360.setAttribute('visible', 'true'); }
+            let imagemFundo = cidade.fundo360; 
+
+            if (idGrupo === 'grupo-quiz' && cidade.conteudos['Quiz']) {
+                imagemFundo = cidade.conteudos['Quiz'].fundo360 || cidade.fundo360;
+            } else if (idGrupo === 'grupo-hino') {
+                imagemFundo = cidade.fundo360Hino || cidade.fundo360; 
+            }
+
+            if (imagemFundo) { 
+                usarFoto360 = true; 
+                el.removeAttribute('environment'); 
+                sky360.setAttribute('src', imagemFundo); 
+                sky360.setAttribute('visible', 'true'); 
+            }
         }
+        
         if (!usarFoto360) {
             sky360.setAttribute('visible', 'false');
             let p = (idGrupo === 'grupo-inicio') ? 'forest' : 'starry';
@@ -349,8 +388,8 @@
 
     <a-entity id="grupo-inicio" visible="true">
         <a-troika-text value="Amapá Interativo" align="center" position="0 3 -3" width="10" color="#FFF" outline-width="0.02" outline-color="#000"></a-troika-text>     
-            <a-troika-text value="Uma viagem imersiva através da Realidade Virtual." align="center" position="0 2.7 -3" width="6" color="#FFFFFF" outline-width="0.02" outline-color="#000"></a-troika-text>  
-      <a-plane position="0 1.6 -3" width="1.5" height="0.6" color="#004d40" class="clicavel interativo" onclick="irPara('grupo-cidades')">
+        <a-troika-text value="Uma viagem imersiva através da Realidade Virtual." align="center" position="0 2.7 -3" width="6" color="#FFFFFF" outline-width="0.02" outline-color="#000"></a-troika-text>  
+        <a-plane position="0 1.6 -3" width="1.5" height="0.6" color="#004d40" class="clicavel interativo" onclick="irPara('grupo-cidades')">
             <a-troika-text value="Iniciar" align="center" position="0 0 0.02" width="6"></a-troika-text>
         </a-plane>
     </a-entity>
@@ -363,7 +402,7 @@
         </a-plane>
     </a-entity>
 
-     <a-entity id="grupo-categorias" visible="false">
+    <a-entity id="grupo-categorias" visible="false">
         <a-troika-text id="titulo-cidade-cat" value="CIDADE" align="center" position="0 2.7 -3" width="10" color="#FFF" outline-width="0.02" outline-color="#000"></a-troika-text>
         
         <a-plane position="-1.2 2 -3" width="1.2" height="0.6" color="#0000CD" class="interativo" onclick="verConteudo('Historia')">

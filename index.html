@@ -40,19 +40,23 @@
         }
       },
       'macapa': { 
-          nome: 'Macapá', 
+          nome: 'Macapá',
+        fundo360: './assets/imagens/1mcp360.jpg',
           bandeira: './assets/imagens/macapa.png', 
           hino: './assets/audios/macapa.mp3', 
           conteudos: {
             'Historia': { t: 'História', video: './assets/videos/mac360.mp4', tipo: 'video360' },
             'Quiz': { 
-                type: 'quiz', 
+                type: 'quiz',
+                fundo360: './assets/imagens/2mcp360.jpg', 
                 perguntas: [
                     { p: 'Qual monumento marca a linha do Equador?', opcoes: ['Fortaleza', 'Marco Zero', 'Trapiche'], correta: 1 }
                 ]
             },
             'Informacoes': { 
-                t: 'Informações Gerais', type: 'galeriaImagem', itens: [
+                t: 'Informações Gerais', type: 'galeriaImagem', 
+                fundo360: './assets/imagens/3mcp360.jpg',
+              itens: [
                     { img: '', txt: 'Balneário' },
                     { img: '', txt: 'Fortaleza São José' },
                     { img: '', txt: 'Marco Zero' }
@@ -60,7 +64,8 @@
             }
           }
       },
-      'laranjal do jari': { nome: 'Laranjal do Jari', bandeira: './assets/imagens/laranjal.png', hino: './assets/audios/laranjal.mp3', 
+      'laranjal do jari': { nome: 'Laranjal do Jari',   fundo360: './assets/imagens/1lj360.jpg',
+                           bandeira: './assets/imagens/laranjal.png', hino: './assets/audios/laranjal.mp3', 
           conteudos: {
             'Historia': { t: 'História', video: './assets/videos/lj360.mp4', tipo: 'video360' },
             'Quiz': { type: 'quiz', perguntas: [{ p: 'Qual a principal cachoeira?', opcoes: ['Santo Antônio', 'Paredão'], correta: 0 }] },
